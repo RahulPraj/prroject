@@ -1,0 +1,2016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Visualization — The Complete Course</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&family=Sora:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d0d0d;--surface:#161616;--surface2:#1e1e1e;--border:#2a2a2a;--border2:#333;
+  --mpl:#e07b39;--mpl2:#f09a5c;
+  --sns:#7c4dff;--sns2:#a280ff;
+  --plt:#00b4d8;--plt2:#48cae4;
+  --green:#06d6a0;--red:#ef476f;--yellow:#ffd166;--orange:#fb8500;
+  --text:#f0f0f0;--text2:#a0a0a0;--text3:#555;
+  --accent:#e07b39;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;display:flex;min-height:100vh;}
+
+/* SIDEBAR */
+#sidebar{width:262px;min-width:262px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;overflow-y:auto;z-index:100;}
+.sb-logo{padding:20px 18px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.sb-icon{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;background:linear-gradient(135deg,#b5450b,#e07b39);}
+.sb-logo h2{font-size:13.5px;font-weight:700;line-height:1.25;}
+.sb-logo span{font-size:11px;color:var(--text3);}
+.sb-section{padding:13px 18px 5px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);}
+.sb-item{display:flex;align-items:center;gap:9px;padding:8px 18px;cursor:pointer;font-size:12.5px;color:var(--text2);border-left:3px solid transparent;transition:all .15s;line-height:1.3;}
+.sb-item:hover{color:var(--text);background:rgba(255,255,255,.04);}
+.sb-item.active{color:var(--mpl);background:rgba(224,123,57,.08);border-left-color:var(--mpl);font-weight:600;}
+.sb-item.sns-active{color:var(--sns);background:rgba(124,77,255,.08);border-left-color:var(--sns);}
+.sb-item .ic{width:15px;text-align:center;font-size:13px;flex-shrink:0;}
+.prog-wrap{margin:14px;margin-top:auto;background:var(--surface2);border-radius:8px;padding:12px;border:1px solid var(--border);}
+.prog-wrap .lbl{font-size:11px;color:var(--text2);margin-bottom:7px;display:flex;justify-content:space-between;}
+.prog-track{height:5px;background:var(--border2);border-radius:3px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,#b5450b,#e07b39,#7c4dff,#00b4d8);border-radius:3px;transition:width .5s ease;}
+
+/* MAIN */
+#main{margin-left:262px;flex:1;display:flex;flex-direction:column;min-height:100vh;}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.topbar-title{font-size:13px;color:var(--text2);}
+.topbar-title b{color:var(--text);}
+.badges{display:flex;gap:8px;}
+.badge{padding:3px 10px;border-radius:20px;font-size:10px;font-weight:600;font-family:'IBM Plex Mono',monospace;}
+.badge-mpl{background:rgba(224,123,57,.15);color:var(--mpl);border:1px solid rgba(224,123,57,.3);}
+.badge-sns{background:rgba(124,77,255,.15);color:var(--sns);border:1px solid rgba(124,77,255,.3);}
+.badge-plt{background:rgba(0,180,216,.15);color:var(--plt);border:1px solid rgba(0,180,216,.3);}
+
+/* PAGES */
+.page{display:none;padding:36px 44px;max-width:1080px;animation:fadeIn .3s ease;}
+.page.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* PAGE HEADER */
+.page-header{margin-bottom:32px;}
+.phase-tag{display:inline-block;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:3px 9px;border-radius:4px;margin-bottom:10px;font-family:'IBM Plex Mono',monospace;}
+.ph-intro{background:rgba(255,209,102,.1);color:var(--yellow);}
+.ph-mpl{background:rgba(224,123,57,.15);color:var(--mpl);}
+.ph-sns{background:rgba(124,77,255,.15);color:var(--sns);}
+.ph-adv{background:rgba(6,214,160,.12);color:var(--green);}
+.page-header h1{font-size:34px;font-weight:800;line-height:1.1;margin-bottom:10px;}
+.page-header h1.mpl-grad{background:linear-gradient(135deg,var(--text) 0%,var(--mpl) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.page-header h1.sns-grad{background:linear-gradient(135deg,var(--text) 0%,var(--sns) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.page-header p{font-size:14px;color:var(--text2);line-height:1.75;max-width:660px;}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;margin-bottom:22px;}
+.card-title{font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text2);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.card-title::before{content:'';width:3px;height:13px;background:var(--mpl);border-radius:2px;flex-shrink:0;}
+.card-title.sns-bar::before{background:var(--sns);}
+.card-title.plt-bar::before{background:var(--plt);}
+
+/* CODE BLOCKS */
+.cb{background:#0a0a0a;border:1px solid var(--border);border-radius:8px;margin:14px 0;overflow:hidden;font-family:'IBM Plex Mono',monospace;font-size:12.5px;line-height:1.75;}
+.ch{background:var(--surface2);border-bottom:1px solid var(--border);padding:7px 14px;display:flex;align-items:center;justify-content:space-between;}
+.clang{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--mpl);font-family:'IBM Plex Mono',monospace;}
+.clang.sns{color:var(--sns);}
+.clang.plt{color:var(--plt);}
+.cpbtn{background:none;border:1px solid var(--border2);color:var(--text2);padding:2px 9px;border-radius:4px;cursor:pointer;font-size:10px;font-family:'IBM Plex Mono',monospace;transition:all .15s;}
+.cpbtn:hover{background:var(--border2);color:var(--text);}
+.cpbtn.copied{color:var(--green);border-color:var(--green);}
+.cbody{padding:14px;overflow-x:auto;}
+.cbody pre{white-space:pre;}
+
+/* Python syntax */
+.kw{color:#c792ea;font-weight:600;}
+.fn{color:#82aaff;}
+.fn2{color:#ffcb6b;}
+.str{color:#c3e88d;}
+.num{color:#f78c6c;}
+.cmt{color:#546e7a;font-style:italic;}
+.imp{color:#c792ea;}
+.mpl-c{color:#e07b39;}
+.sns-c{color:#a280ff;}
+.plt-c{color:#48cae4;}
+.np-c{color:#4dabf7;}
+
+/* INFO BOXES */
+.ib{border-radius:8px;padding:14px 18px;margin:14px 0;display:flex;gap:11px;align-items:flex-start;font-size:13px;line-height:1.65;}
+.ib .ico{font-size:17px;flex-shrink:0;margin-top:1px;}
+.ib.info{background:rgba(224,123,57,.07);border:1px solid rgba(224,123,57,.2);}
+.ib.sns{background:rgba(124,77,255,.07);border:1px solid rgba(124,77,255,.2);}
+.ib.warn{background:rgba(255,209,102,.07);border:1px solid rgba(255,209,102,.2);}
+.ib.ok{background:rgba(6,214,160,.07);border:1px solid rgba(6,214,160,.2);}
+.ib.err{background:rgba(239,71,111,.07);border:1px solid rgba(239,71,111,.2);}
+
+/* TABLES */
+.st{width:100%;border-collapse:collapse;font-size:12.5px;margin:10px 0;font-family:'IBM Plex Mono',monospace;}
+.st th{background:var(--surface2);padding:9px 13px;text-align:left;font-weight:600;color:var(--mpl);border:1px solid var(--border);font-size:11px;}
+.st th.sns-h{color:var(--sns);}
+.st th.plt-h{color:var(--plt);}
+.st td{padding:8px 13px;border:1px solid var(--border);color:var(--text2);}
+.st tr:hover td{background:rgba(255,255,255,.02);}
+.vok{color:var(--green);} .vnull{color:var(--red);font-style:italic;}
+
+/* GRIDS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;}
+
+/* CONCEPT CARDS */
+.cc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;}
+.cc .ico{font-size:22px;margin-bottom:8px;}
+.cc h3{font-size:13px;font-weight:700;margin-bottom:5px;}
+.cc p{font-size:12.5px;color:var(--text2);line-height:1.6;}
+
+/* MISC */
+.ll{list-style:none;}
+.ll li{padding:7px 0;border-bottom:1px solid var(--border);font-size:13.5px;color:var(--text2);display:flex;align-items:flex-start;gap:9px;line-height:1.5;}
+.ll li:last-child{border-bottom:none;}
+.ll li::before{content:'→';color:var(--mpl);font-weight:700;flex-shrink:0;margin-top:1px;}
+.ll.sns-li li::before{color:var(--sns);}
+.out{background:#080808;border:1px solid var(--border);border-radius:8px;padding:14px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--green);margin:10px 0;}
+.out-lbl{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);font-weight:700;margin-bottom:7px;}
+code{background:#111;border:1px solid var(--border2);border-radius:4px;padding:2px 6px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--mpl);}
+code.sns{color:var(--sns);}
+.hint-box{background:rgba(224,123,57,.07);border:1px solid rgba(224,123,57,.15);border-radius:8px;padding:14px 18px;font-size:13px;color:var(--text2);margin:14px 0;line-height:1.65;}
+.hint-box.sns-hint{background:rgba(124,77,255,.07);border-color:rgba(124,77,255,.15);}
+
+/* HERO */
+.hero{border-radius:16px;padding:44px;margin-bottom:28px;position:relative;overflow:hidden;border:1px solid var(--border);background:linear-gradient(135deg,#1a0c04 0%,#0d0d0d 50%,#0d0a14 100%);}
+.hero::before{content:'';position:absolute;top:-50px;right:-50px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(180,80,20,.3) 0%,transparent 70%);}
+.hero::after{content:'';position:absolute;bottom:-30px;left:30%;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(124,77,255,.12) 0%,transparent 70%);}
+.hero h1{font-size:46px;font-weight:800;line-height:1.05;margin-bottom:14px;position:relative;z-index:1;background:linear-gradient(135deg,#fff 0%,var(--mpl) 50%,var(--sns) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hero p{font-size:15px;color:var(--text2);line-height:1.8;max-width:580px;position:relative;z-index:1;margin-bottom:26px;}
+.hero-stats{display:flex;gap:28px;position:relative;z-index:1;}
+.hs .val{font-size:26px;font-weight:800;color:var(--mpl);}
+.hs .lbl{font-size:11px;color:var(--text3);margin-top:2px;}
+
+/* PLOT PREVIEW BOX */
+.plot-box{background:#111;border:1px solid var(--border);border-radius:8px;padding:18px 22px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text2);margin:12px 0;position:relative;}
+.plot-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:8px;}
+
+@media(max-width:860px){#sidebar{transform:translateX(-100%);}#main{margin-left:0;}.page{padding:22px 18px;}.g2,.g3,.g4{grid-template-columns:1fr;}.hero h1{font-size:30px;}}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sb-logo">
+    <div class="sb-icon">📊</div>
+    <div><h2>Data Visualization</h2><span>The Complete Course</span></div>
+  </div>
+
+  <div class="sb-section">Getting Started</div>
+  <div class="sb-item active" onclick="nav('home',this,'')"><span class="ic">🏠</span>Home</div>
+  <div class="sb-item" onclick="nav('libraries',this,'')"><span class="ic">📚</span>Libraries Overview</div>
+
+  <div class="sb-section">Matplotlib</div>
+  <div class="sb-item" onclick="nav('mpl-basics',this,'')"><span class="ic">📈</span>Basics — plot() & Labels</div>
+  <div class="sb-item" onclick="nav('mpl-subplots',this,'')"><span class="ic">🔲</span>Subplots</div>
+  <div class="sb-item" onclick="nav('mpl-oo',this,'')"><span class="ic">🖼️</span>Object Oriented Way</div>
+  <div class="sb-item" onclick="nav('mpl-plottypes',this,'')"><span class="ic">🗃️</span>Plot Types</div>
+  <div class="sb-item" onclick="nav('mpl-save',this,'')"><span class="ic">💾</span>Saving & Images</div>
+
+  <div class="sb-section">Seaborn — Distribution</div>
+  <div class="sb-item" onclick="nav('sns-intro',this,'sns')"><span class="ic">🐦</span>Seaborn Intro & Setup</div>
+  <div class="sb-item" onclick="nav('sns-distplot',this,'sns')"><span class="ic">📊</span>histplot / displot / KDE</div>
+  <div class="sb-item" onclick="nav('sns-jointplot',this,'sns')"><span class="ic">🔵</span>Jointplot</div>
+  <div class="sb-item" onclick="nav('sns-pairplot',this,'sns')"><span class="ic">🔷</span>Pairplot & Hue</div>
+
+  <div class="sb-section">Seaborn — Categorical</div>
+  <div class="sb-item" onclick="nav('sns-countbar',this,'sns')"><span class="ic">📊</span>countplot & barplot</div>
+  <div class="sb-item" onclick="nav('sns-boxplot',this,'sns')"><span class="ic">📦</span>boxplot</div>
+  <div class="sb-item" onclick="nav('sns-violin',this,'sns')"><span class="ic">🎻</span>violinplot</div>
+  <div class="sb-item" onclick="nav('sns-stripswarm',this,'sns')"><span class="ic">🔘</span>stripplot & swarmplot</div>
+
+  <div class="sb-section">Seaborn — Matrix</div>
+  <div class="sb-item" onclick="nav('sns-correlation',this,'sns')"><span class="ic">🔗</span>Correlation Explained</div>
+  <div class="sb-item" onclick="nav('sns-heatmap',this,'sns')"><span class="ic">🌡️</span>Heatmap</div>
+
+  <div class="prog-wrap">
+    <div class="lbl"><span>Progress</span><span id="ppct">5%</span></div>
+    <div class="prog-track"><div class="prog-fill" id="pfill" style="width:5%"></div></div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div id="main">
+  <div class="topbar">
+    <div class="topbar-title"><b id="ttitle">Home</b></div>
+    <div class="badges">
+      <span class="badge badge-mpl">Matplotlib</span>
+      <span class="badge badge-sns">Seaborn</span>
+      <span class="badge badge-plt">Plotly</span>
+    </div>
+  </div>
+
+<!-- ══════════ HOME ══════════ -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <h1>Data<br>Visualization</h1>
+    <p>Data is just numbers — until you turn it into a picture. Learn Matplotlib from scratch, master Seaborn's statistical plots, and understand when to use which chart. Built from your notes.</p>
+    <div class="hero-stats">
+      <div class="hs"><div class="val">18</div><div class="lbl">Topics</div></div>
+      <div class="hs"><div class="val">3</div><div class="lbl">Libraries</div></div>
+      <div class="hs"><div class="val">50+</div><div class="lbl">Code Examples</div></div>
+      <div class="hs"><div class="val">12</div><div class="lbl">Chart Types</div></div>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-title">Matplotlib Topics</div>
+      <ul class="ll">
+        <li>plot() — basic line graph with x,y axes</li>
+        <li>Title, xlabel, ylabel — adding labels</li>
+        <li>subplot() — multiple plots on one canvas</li>
+        <li>Object Oriented: fig, add_axes, figsize</li>
+        <li>scatter() — dot plots</li>
+        <li>hist() — histograms with sample data</li>
+        <li>boxplot() — box and whisker plots</li>
+        <li>savefig() — save as PNG/PDF</li>
+        <li>Working with images — imread, imshow</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title sns-bar">Seaborn Topics</div>
+      <ul class="ll sns-li">
+        <li>displot / histplot — distribution with KDE</li>
+        <li>jointplot — 2-variable relationship + distribution</li>
+        <li>pairplot — all pairs, with hue</li>
+        <li>countplot — category counts with hue</li>
+        <li>barplot — category vs numeric with estimator</li>
+        <li>boxplot — 5-number summary, outliers</li>
+        <li>violinplot — distribution shape per category</li>
+        <li>stripplot — jittered individual points</li>
+        <li>swarmplot — non-overlapping point display</li>
+        <li>Correlation — Pearson coefficient, +1 to -1</li>
+        <li>heatmap — color-coded correlation matrix</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ LIBRARIES OVERVIEW ══════════ -->
+<div class="page" id="page-libraries">
+  <div class="page-header">
+    <div class="phase-tag ph-intro">Getting Started</div>
+    <h1 style="background:linear-gradient(135deg,var(--text) 0%,var(--yellow) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Data Visualization Libraries</h1>
+    <p>Python provides several powerful libraries for data visualization. Each has its strengths. Understanding which to use when is an important skill.</p>
+  </div>
+  <div class="ib warn"><span class="ico">💡</span><div><strong>"Data is just numbers — until you turn it into a picture."</strong> Visualization helps us understand patterns, trends, and insights from data by representing it in graphical form.</div></div>
+
+  <div class="card">
+    <div class="card-title">With Code vs With Tools</div>
+    <div class="g2">
+      <div style="background:rgba(224,123,57,.08);border:1px solid rgba(224,123,57,.25);border-radius:10px;padding:16px">
+        <div style="font-size:13px;font-weight:700;color:var(--mpl);margin-bottom:10px">💻 With Code</div>
+        <ul class="ll" style="font-size:12.5px">
+          <li>Matplotlib, Seaborn, Plotly</li>
+          <li>Very high flexibility — customize every element</li>
+          <li>Can integrate into apps &amp; ML pipelines</li>
+        </ul>
+      </div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px">
+        <div style="font-size:13px;font-weight:700;color:var(--text3);margin-bottom:10px">🛠️ With Tools</div>
+        <ul class="ll" style="font-size:12.5px">
+          <li>Power BI, Tableau, Google Data Studio</li>
+          <li>Limited to what the tool allows</li>
+          <li>Very tough to integrate with ML pipelines</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">1. Matplotlib</div>
+    <div class="g2">
+      <div>
+        <ul class="ll" style="font-size:13px">
+          <li>Developed in <strong style="color:var(--text)">2003</strong> by John D. Hunter</li>
+          <li>The <strong style="color:var(--text)">foundational plotting library</strong> in Python</li>
+          <li>Works well for basic charts: line, bar, histogram</li>
+          <li>Highly customizable — more code required</li>
+          <li>Many other libraries are built <strong style="color:var(--text)">on top of it</strong></li>
+        </ul>
+        <div class="ib info" style="margin-top:10px"><span class="ico">👉</span><div><strong>Best for:</strong> Learning fundamentals and creating fully customized plots</div></div>
+      </div>
+      <div class="cb">
+        <div class="ch"><span class="clang">Python — Import</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+        <div class="cbody"><pre><span class="imp">import</span> <span class="np-c">numpy</span> <span class="imp">as</span> <span class="np-c">np</span>
+<span class="imp">import</span> pandas <span class="imp">as</span> pd
+<span class="imp">import</span> <span class="mpl-c">matplotlib</span>.pyplot <span class="imp">as</span> <span class="mpl-c">plt</span></pre></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title sns-bar">2. Seaborn</div>
+    <div class="g2">
+      <div>
+        <ul class="ll sns-li" style="font-size:13px">
+          <li>Built <strong style="color:var(--text)">on top of Matplotlib</strong></li>
+          <li>Designed for <strong style="color:var(--text)">statistical data visualization</strong></li>
+          <li>Beautiful default styles and color themes</li>
+          <li>Heatmaps, pair plots, distribution plots — easy</li>
+          <li>Works perfectly with <strong style="color:var(--text)">Pandas DataFrames</strong></li>
+        </ul>
+        <div class="ib sns" style="margin-top:10px"><span class="ico">👉</span><div><strong>Best for:</strong> Quick, attractive, and statistical visualizations with less code</div></div>
+      </div>
+      <div class="cb">
+        <div class="ch"><span class="clang sns">Python — Import</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+        <div class="cbody"><pre><span class="imp">import</span> <span class="mpl-c">matplotlib</span>.pyplot <span class="imp">as</span> <span class="mpl-c">plt</span>
+<span class="imp">import</span> <span class="sns-c">seaborn</span> <span class="imp">as</span> <span class="sns-c">sns</span>
+
+<span class="cmt"># Load built-in dataset</span>
+df = <span class="sns-c">sns</span>.<span class="fn">load_dataset</span>(<span class="str">'tips'</span>)
+df.<span class="fn">head</span>()</pre></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="card-title plt-bar">3. Cufflinks</div>
+      <ul class="ll" style="font-size:13px">
+        <li>Connects <strong style="color:var(--text)">Pandas with Plotly</strong></li>
+        <li>Interactive charts directly from DataFrames</li>
+        <li>Minimal coding — great for presentations</li>
+        <li>Zooming, hovering, dynamic updates</li>
+      </ul>
+      <div class="ib ok" style="margin-top:10px"><span class="ico">👉</span><div><strong>Best for:</strong> Interactive dashboards and quick visualization without deep coding</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title plt-bar">4. Plotly (Bonus)</div>
+      <ul class="ll" style="font-size:13px">
+        <li>Powerful for <strong style="color:var(--text)">interactive &amp; web-based</strong> visualizations</li>
+        <li>Supports <strong style="color:var(--text)">3D plots, dashboards, real-time data</strong></li>
+        <li>Widely used in business analytics and web apps</li>
+      </ul>
+      <div class="ib ok" style="margin-top:10px"><span class="ico">👉</span><div><strong>Best for:</strong> Advanced interactive visualizations and dashboards</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Library Comparison</div>
+    <table class="st">
+      <tr><th>Feature</th><th style="color:var(--mpl)">Matplotlib</th><th style="color:var(--sns)">Seaborn</th><th style="color:var(--plt)">Plotly/Cufflinks</th></tr>
+      <tr><td>Interactivity</td><td class="vnull">Static only</td><td class="vnull">Static only</td><td class="vok">Interactive ✅</td></tr>
+      <tr><td>Code required</td><td>More code</td><td>Less code</td><td>Minimal</td></tr>
+      <tr><td>Statistical plots</td><td>Manual</td><td class="vok">Built-in ✅</td><td>Limited</td></tr>
+      <tr><td>Customization</td><td class="vok">Maximum ✅</td><td>Good</td><td>Good</td></tr>
+      <tr><td>Works with DataFrames</td><td>Yes</td><td class="vok">Optimized ✅</td><td class="vok">Yes ✅</td></tr>
+      <tr><td>ML integration</td><td class="vok">Easy ✅</td><td class="vok">Easy ✅</td><td>Harder</td></tr>
+    </table>
+  </div>
+</div>
+<!-- ══════════ MPL BASICS ══════════ -->
+<div class="page" id="page-mpl-basics">
+  <div class="page-header">
+    <div class="phase-tag ph-mpl">Matplotlib</div>
+    <h1 class="mpl-grad">Basics — plot() & Labels</h1>
+    <p>The most fundamental Matplotlib function is <code>plt.plot(x, y)</code> which creates a line graph. You can enhance it with title, axis labels, and more.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Setup — Create the Data Arrays</div>
+    <div class="cb">
+      <div class="ch"><span class="clang">Python — Setup</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="imp">import</span> <span class="np-c">numpy</span> <span class="imp">as</span> <span class="np-c">np</span>
+<span class="imp">import</span> <span class="mpl-c">matplotlib</span>.pyplot <span class="imp">as</span> <span class="mpl-c">plt</span>
+
+<span class="cmt"># Create 11 evenly spaced numbers from 0 to 5</span>
+x = <span class="np-c">np</span>.<span class="fn">linspace</span>(<span class="num">0</span>, <span class="num">5</span>, <span class="num">11</span>)
+<span class="cmt"># array([0. , 0.5, 1. , 1.5, 2. , 2.5, 3. , 3.5, 4. , 4.5, 5. ])</span>
+
+y = x ** <span class="num">2</span>
+<span class="cmt"># array([ 0.  , 0.25, 1.  , 2.25, 4.  , 6.25, 9.  , 12.25, 16.  , 20.25, 25.  ])</span></pre></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">1. Basic Line Plot — plt.plot(x, y)</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px">A line graph connects all the (x, y) points with a continuous line. It shows how y changes as x increases.</p>
+    <div class="cb">
+      <div class="ch"><span class="clang">Python</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="mpl-c">plt</span>.<span class="fn">plot</span>(x, y)
+<span class="mpl-c">plt</span>.<span class="fn">show</span>()</pre></div>
+    </div>
+    <!-- Live Chart Preview -->
+    <canvas id="chart-basic" width="560" height="280" style="display:block;background:#111;border-radius:8px;margin:12px 0;border:1px solid #2a2a2a;"></canvas>
+  </div>
+
+  <div class="card">
+    <div class="card-title">2. Adding Labels — title, xlabel, ylabel</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px">A chart without labels is incomplete. Always add a title and axis labels so your reader knows what they are looking at.</p>
+    <div class="cb">
+      <div class="ch"><span class="clang">Python</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="mpl-c">plt</span>.<span class="fn">plot</span>(x, y)
+
+<span class="cmt"># Give the graph a title</span>
+<span class="mpl-c">plt</span>.<span class="fn">title</span>(<span class="str">"Hello"</span>)
+
+<span class="cmt"># Label the x-axis</span>
+<span class="mpl-c">plt</span>.<span class="fn">xlabel</span>(<span class="str">"number"</span>)
+
+<span class="cmt"># Label the y-axis</span>
+<span class="mpl-c">plt</span>.<span class="fn">ylabel</span>(<span class="str">"square"</span>)
+
+<span class="mpl-c">plt</span>.<span class="fn">show</span>()</pre></div>
+    </div>
+    <!-- Live Chart with labels -->
+    <canvas id="chart-labels" width="560" height="300" style="display:block;background:#111;border-radius:8px;margin:12px 0;border:1px solid #2a2a2a;"></canvas>
+    <div class="g3" style="margin-top:12px">
+      <div class="ib info" style="margin:0"><span class="ico">🏷️</span><div><code>plt.title()</code><br>Graph title at top</div></div>
+      <div class="ib info" style="margin:0"><span class="ico">↔️</span><div><code>plt.xlabel()</code><br>X-axis label below</div></div>
+      <div class="ib info" style="margin:0"><span class="ico">↕️</span><div><code>plt.ylabel()</code><br>Y-axis label on left</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ MPL SUBPLOTS ══════════ -->
+<div class="page" id="page-mpl-subplots">
+  <div class="page-header">
+    <div class="phase-tag ph-mpl">Matplotlib</div>
+    <h1 class="mpl-grad">Subplots</h1>
+    <p>Subplots let you create multiple plots on one canvas at the same time. You divide the canvas into rows and columns, and each cell gets its own plot.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">How subplot() Works</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px"><code>plt.subplot(rows, cols, cell_number)</code> — you specify the grid size and then which cell to draw in. Cell numbers go left to right, top to bottom starting from 1.</p>
+    <div class="cb">
+      <div class="ch"><span class="clang">Python — Syntax</span></div>
+      <div class="cbody"><pre><span class="cmt"># plt.subplot(rows, cols, cell_number)</span>
+<span class="mpl-c">plt</span>.<span class="fn">subplot</span>(<span class="num">2</span>, <span class="num">2</span>, <span class="num">1</span>)  <span class="cmt"># 2 rows, 2 cols, cell 1 (top-left)</span>
+<span class="mpl-c">plt</span>.<span class="fn">subplot</span>(<span class="num">2</span>, <span class="num">2</span>, <span class="num">2</span>)  <span class="cmt"># top-right</span>
+<span class="mpl-c">plt</span>.<span class="fn">subplot</span>(<span class="num">2</span>, <span class="num">2</span>, <span class="num">3</span>)  <span class="cmt"># bottom-left</span>
+<span class="mpl-c">plt</span>.<span class="fn">subplot</span>(<span class="num">2</span>, <span class="num">2</span>, <span class="num">4</span>)  <span class="cmt"># bottom-right</span></pre></div>
+    </div>
+    <!-- Grid visual -->
+    <canvas id="chart-subgrid" width="560" height="280" style="display:block;background:#111;border-radius:8px;margin:12px 0;border:1px solid #2a2a2a;"></canvas>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Plot in Cell 1 Only</div>
+    <div class="cb">
+      <div class="ch"><span class="clang">Python</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="mpl-c">plt</span>.<span class="fn">subplot</span>(<span class="num">2</span>, <span class="num">2</span>, <span class="num">1</span>)
+<span class="mpl-c">plt</span>.<span class="fn">plot</span>(x, y)    <span class="cmt"># ← plot goes into cell 1</span>
+
+<span class="mpl-c">plt</span>.<span class="fn">subplot</span>(<span class="num">2</span>, <span class="num">2</span>, <span class="num">2</span>)   <span class="cmt"># empty</span>
+<span class="mpl-c">plt</span>.<span class="fn">subplot</span>(<span class="num">2</span>, <span class="num">2</span>, <span class="num">3</span>)   <span class="cmt"># empty</span>
+<span class="mpl-c">plt</span>.<span class="fn">subplot</span>(<span class="num">2</span>, <span class="num">2</span>, <span class="num">4</span>)   <span class="cmt"># empty</span></pre></div>
+    </div>
+    <canvas id="chart-sub1" width="560" height="300" style="display:block;background:#111;border-radius:8px;margin:12px 0;border:1px solid #2a2a2a;"></canvas>
+  </div>
+
+  <div class="card">
+    <div class="card-title">All 4 Cells With Different Plots</div>
+    <div class="cb">
+      <div class="ch"><span class="clang">Python</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="mpl-c">plt</span>.<span class="fn">subplot</span>(<span class="num">2</span>, <span class="num">2</span>, <span class="num">1</span>)
+<span class="mpl-c">plt</span>.<span class="fn">plot</span>(x, y)          <span class="cmt"># x vs x²</span>
+
+<span class="mpl-c">plt</span>.<span class="fn">subplot</span>(<span class="num">2</span>, <span class="num">2</span>, <span class="num">2</span>)
+<span class="mpl-c">plt</span>.<span class="fn">plot</span>(x**<span class="num">2</span>, y)        <span class="cmt"># x² vs x²</span>
+
+<span class="mpl-c">plt</span>.<span class="fn">subplot</span>(<span class="num">2</span>, <span class="num">2</span>, <span class="num">3</span>)
+<span class="mpl-c">plt</span>.<span class="fn">plot</span>(x**<span class="num">2</span>, x**<span class="num">2</span>)    <span class="cmt"># x² vs x²</span>
+
+<span class="mpl-c">plt</span>.<span class="fn">subplot</span>(<span class="num">2</span>, <span class="num">2</span>, <span class="num">4</span>)
+<span class="mpl-c">plt</span>.<span class="fn">plot</span>(x, y)           <span class="cmt"># x vs x²</span></pre></div>
+    </div>
+    <canvas id="chart-sub4" width="560" height="320" style="display:block;background:#111;border-radius:8px;margin:12px 0;border:1px solid #2a2a2a;"></canvas>
+  </div>
+</div>
+
+<!-- ══════════ MPL OO ══════════ -->
+<div class="page" id="page-mpl-oo">
+  <div class="page-header">
+    <div class="phase-tag ph-mpl">Matplotlib</div>
+    <h1 class="mpl-grad">Object Oriented Way</h1>
+    <p>The Object Oriented (OO) approach gives you full control over the canvas (figure) and axes. This lets you place plots anywhere — even one on top of another.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">The Canvas — plt.figure()</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px">In the OO approach, you first create a <strong style="color:var(--text)">Figure</strong> (the blank canvas/white background). Then you manually add <strong style="color:var(--text)">Axes</strong> objects onto it and plot on each axes.</p>
+    <div class="cb">
+      <div class="ch"><span class="clang">Python</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="cmt"># Create blank figure canvas</span>
+fig = <span class="mpl-c">plt</span>.<span class="fn">figure</span>()
+fig
+<span class="cmt"># Output: &lt;Figure size 640x480 with 0 Axes&gt;</span></pre></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">add_axes() — Place Axes on Canvas</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px"><code>fig.add_axes([left, bottom, width, height])</code> — all 4 values are between 0 and 1 (proportions of the figure). This is how you precisely position plots on the canvas.</p>
+    <table class="st">
+      <tr><th>Parameter</th><th>Meaning</th><th>Example</th></tr>
+      <tr><td>left (1st)</td><td>How far from left edge</td><td>0.1 = 10% from left</td></tr>
+      <tr><td>bottom (2nd)</td><td>How far from bottom</td><td>0.1 = 10% from bottom</td></tr>
+      <tr><td>width (3rd)</td><td>Width of axes area</td><td>0.8 = 80% wide</td></tr>
+      <tr><td>height (4th)</td><td>Height of axes area</td><td>0.8 = 80% tall</td></tr>
+    </table>
+    <div class="cb" style="margin-top:12px">
+      <div class="ch"><span class="clang">Python — Single Axes</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre>fig = <span class="mpl-c">plt</span>.<span class="fn">figure</span>()
+<span class="cmt"># Add axes: left=0.1, bottom=0.1, width=0.8, height=0.8</span>
+fig.<span class="fn">add_axes</span>([<span class="num">0.1</span>, <span class="num">0.1</span>, <span class="num">0.8</span>, <span class="num">0.8</span>])
+fig</pre></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Two Axes — One Inside Another</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px">This is the key advantage of OO approach — you can place a smaller plot <em>inside</em> a larger plot. Like an inset or zoom window.</p>
+    <div class="cb">
+      <div class="ch"><span class="clang">Python — Two Overlapping Axes</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre>fig = <span class="mpl-c">plt</span>.<span class="fn">figure</span>()
+
+<span class="cmt"># Main (big) axes</span>
+axes1 = fig.<span class="fn">add_axes</span>([<span class="num">0.1</span>, <span class="num">0.1</span>, <span class="num">0.8</span>, <span class="num">0.8</span>])
+axes1.<span class="fn">plot</span>(x, y)
+
+<span class="cmt"># Smaller axes placed inside (inset)</span>
+axes2 = fig.<span class="fn">add_axes</span>([<span class="num">0.3</span>, <span class="num">0.4</span>, <span class="num">0.4</span>, <span class="num">0.4</span>])
+axes2.<span class="fn">plot</span>(x, y)</pre></div>
+    </div>
+    <canvas id="chart-oo" width="560" height="320" style="display:block;background:#111;border-radius:8px;margin:12px 0;border:1px solid #2a2a2a;"></canvas>
+  </div>
+
+  <div class="card">
+    <div class="card-title">figsize — Control Canvas Size</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px">The default figure size is 6.4 × 4.8 inches. Pass <code>figsize=(width, height)</code> to control it. 12 × 100 = 1200 pixels wide, 8 × 100 = 800 pixels tall.</p>
+    <div class="cb">
+      <div class="ch"><span class="clang">Python — figsize</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="cmt"># 12 x 100 = 1200px wide, 8 x 100 = 800px tall</span>
+fig = <span class="mpl-c">plt</span>.<span class="fn">figure</span>(figsize=(<span class="num">12</span>, <span class="num">8</span>))
+
+axes1 = fig.<span class="fn">add_axes</span>([<span class="num">0.1</span>, <span class="num">0.1</span>, <span class="num">0.4</span>, <span class="num">0.8</span>])
+axes1.<span class="fn">plot</span>(x, y)
+
+axes2 = fig.<span class="fn">add_axes</span>([<span class="num">0.3</span>, <span class="num">0.4</span>, <span class="num">0.4</span>, <span class="num">0.4</span>])
+axes2.<span class="fn">plot</span>(x, y)</pre></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ MPL PLOT TYPES ══════════ -->
+<div class="page" id="page-mpl-plottypes">
+  <div class="page-header">
+    <div class="phase-tag ph-mpl">Matplotlib</div>
+    <h1 class="mpl-grad">Types of Plots</h1>
+    <p>Matplotlib supports many plot types beyond the line graph. Each is suited to different kinds of data and questions.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">a. Scatter Plot — plt.scatter(x, y)</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px">A scatter plot shows individual data points as dots. Great for showing relationships between two variables without connecting them. Unlike a line plot, there is no connecting line — just dots.</p>
+    <div class="cb">
+      <div class="ch"><span class="clang">Python — Scatter Plot</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre>x = <span class="np-c">np</span>.<span class="fn">linspace</span>(<span class="num">0</span>, <span class="num">5</span>, <span class="num">11</span>)
+y = x ** <span class="num">2</span>
+
+<span class="mpl-c">plt</span>.<span class="fn">scatter</span>(x, y)
+<span class="mpl-c">plt</span>.<span class="fn">title</span>(<span class="str">"Scatter Plot"</span>)
+<span class="mpl-c">plt</span>.<span class="fn">xlabel</span>(<span class="str">"x"</span>)
+<span class="mpl-c">plt</span>.<span class="fn">ylabel</span>(<span class="str">"x²"</span>)
+<span class="mpl-c">plt</span>.<span class="fn">show</span>()</pre></div>
+    </div>
+    <canvas id="chart-scatter" width="560" height="280" style="display:block;background:#111;border-radius:8px;margin:12px 0;border:1px solid #2a2a2a;"></canvas>
+    <div class="ib info"><span class="ico">💡</span><div><strong>line plot vs scatter plot:</strong> Line plot connects dots with a line — for trends over time. Scatter plot shows only the dots — for correlations between variables.</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">b. Histogram — plt.hist(data)</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px">A histogram takes a single array of data (not x and y separately) and groups values into <strong style="color:var(--text)">bins</strong> (ranges). The height of each bar shows how many values fall into that bin. Great for seeing the distribution of data.</p>
+    <div class="cb">
+      <div class="ch"><span class="clang">Python — Histogram</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="kw">from</span> random <span class="imp">import</span> sample
+
+<span class="cmt"># Get 100 random numbers between 1 and 999</span>
+data = <span class="fn">sample</span>(<span class="fn">range</span>(<span class="num">1</span>, <span class="num">1000</span>), <span class="num">100</span>)
+
+<span class="mpl-c">plt</span>.<span class="fn">hist</span>(data)
+<span class="mpl-c">plt</span>.<span class="fn">title</span>(<span class="str">"Histogram"</span>)
+<span class="mpl-c">plt</span>.<span class="fn">show</span>()
+
+<span class="cmt"># Output array: how many values in each bin
+# (array([12., 12., 14., 12., 8., 3., 7., 13., 12., 7.]),
+#  array([  4., 102.9, 201.8, ...993.]))</span></pre></div>
+    </div>
+    <canvas id="chart-hist" width="560" height="280" style="display:block;background:#111;border-radius:8px;margin:12px 0;border:1px solid #2a2a2a;"></canvas>
+  </div>
+
+  <div class="card">
+    <div class="card-title">c. Boxplot — plt.boxplot(x)</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px">A box plot (box-and-whisker plot) shows the statistical distribution of a single variable. It uses a box to show Q1, median, Q3 and whiskers for min/max. Takes only <strong style="color:var(--text)">one value</strong>.</p>
+    <div class="cb">
+      <div class="ch"><span class="clang">Python — Boxplot</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre>x = <span class="np-c">np</span>.<span class="fn">linspace</span>(<span class="num">0</span>, <span class="num">5</span>, <span class="num">11</span>)
+
+<span class="mpl-c">plt</span>.<span class="fn">boxplot</span>(x)
+<span class="mpl-c">plt</span>.<span class="fn">title</span>(<span class="str">"Boxplot"</span>)
+<span class="mpl-c">plt</span>.<span class="fn">show</span>()</pre></div>
+    </div>
+    <canvas id="chart-box" width="340" height="280" style="display:block;background:#111;border-radius:8px;margin:12px 0;border:1px solid #2a2a2a;"></canvas>
+    <table class="st" style="margin-top:12px">
+      <tr><th>Part</th><th>What it shows</th></tr>
+      <tr><td>Bottom of box</td><td>Q1 — 25th percentile (lower quartile)</td></tr>
+      <tr><td>Line inside box</td><td>Median (Q2 — 50th percentile)</td></tr>
+      <tr><td>Top of box</td><td>Q3 — 75th percentile (upper quartile)</td></tr>
+      <tr><td>Whiskers</td><td>Typical min and max values</td></tr>
+      <tr><td>Dots beyond whiskers</td><td>Outliers — unusually extreme values</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════ MPL SAVE ══════════ -->
+<div class="page" id="page-mpl-save">
+  <div class="page-header">
+    <div class="phase-tag ph-mpl">Matplotlib</div>
+    <h1 class="mpl-grad">Saving Plots & Working with Images</h1>
+    <p>Matplotlib can save plots as files and also read, display, and manipulate actual image files. Seaborn cannot work with images — only Matplotlib can.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">5. savefig() — Save Your Plot</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px"><code>plt.savefig("filename.format")</code> automatically saves the current figure to your folder. You can save as PNG, PDF, SVG, JPG, and more.</p>
+    <div class="cb">
+      <div class="ch"><span class="clang">Python — Save a Plot</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre>fig = <span class="mpl-c">plt</span>.<span class="fn">figure</span>()
+axes = fig.<span class="fn">add_axes</span>([<span class="num">0.1</span>, <span class="num">0.1</span>, <span class="num">0.8</span>, <span class="num">0.8</span>])
+axes.<span class="fn">plot</span>(x, y)
+
+<span class="cmt"># Save as PNG in current folder</span>
+<span class="mpl-c">plt</span>.<span class="fn">savefig</span>(<span class="str">"basicplot.png"</span>)
+<span class="cmt"># Creates: basicplot.png in your project folder</span>
+
+<span class="cmt"># Save as PDF (vector — scalable)</span>
+<span class="mpl-c">plt</span>.<span class="fn">savefig</span>(<span class="str">"basicplot.pdf"</span>)
+
+<span class="cmt"># Save with high resolution (300 DPI)</span>
+<span class="mpl-c">plt</span>.<span class="fn">savefig</span>(<span class="str">"basicplot.png"</span>, dpi=<span class="num">300</span>)</pre></div>
+    </div>
+    <div class="ib info"><span class="ico">📁</span><div>The file is automatically saved in the same folder as your Python/Jupyter file. You'll see it appear in your file explorer (e.g., <code>basicplot.png</code> next to <code>Matplotlib.ipynb</code>).</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">6. Working with Images</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px">Matplotlib can read image files and display them. When you read an image, it is stored as a <strong style="color:var(--text)">NumPy array of pixel values</strong> (3D array: height × width × RGB channels).</p>
+    <div class="cb">
+      <div class="ch"><span class="clang">Python — Read & Show Image</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="cmt"># Import the image sub-module</span>
+<span class="imp">import</span> <span class="mpl-c">matplotlib</span>.image <span class="imp">as</span> mpimg
+
+<span class="cmt"># Read image → returns 3D NumPy array</span>
+img = mpimg.<span class="fn">imread</span>(<span class="str">'image.jpg'</span>)
+img
+<span class="cmt"># array([[[219, 172,  56],
+#         [221, 173,  62], ...]])
+# shape: (height, width, 3) — 3 = R, G, B values</span>
+
+<span class="cmt"># Display the image WITH axis numbers</span>
+<span class="mpl-c">plt</span>.<span class="fn">imshow</span>(img)
+<span class="mpl-c">plt</span>.<span class="fn">show</span>()
+
+<span class="cmt"># Display WITHOUT axis numbers (cleaner look)</span>
+<span class="mpl-c">plt</span>.<span class="fn">imshow</span>(img)
+<span class="mpl-c">plt</span>.<span class="fn">axis</span>(<span class="str">"off"</span>)   <span class="cmt"># removes the tick marks</span>
+<span class="mpl-c">plt</span>.<span class="fn">show</span>()</pre></div>
+    </div>
+    <canvas id="chart-img" width="560" height="220" style="display:block;background:#111;border-radius:8px;margin:12px 0;border:1px solid #2a2a2a;"></canvas>
+    <div class="g2" style="margin-top:10px">
+      <div class="ib info"><span class="ico">🖼️</span><div><code>plt.imshow(img)</code> — shows image with x/y axis tick numbers visible around it.</div></div>
+      <div class="ib ok"><span class="ico">✨</span><div><code>plt.axis("off")</code> — hides the axis ticks for a clean image display.</div></div>
+    </div>
+  </div>
+</div>
+<!-- ══════════ SNS INTRO ══════════ -->
+<div class="page" id="page-sns-intro">
+  <div class="page-header">
+    <div class="phase-tag ph-sns">Seaborn</div>
+    <h1 class="sns-grad">Seaborn Intro & Setup</h1>
+    <p>Seaborn is built on top of Matplotlib and provides beautiful statistical plots with less code. It works perfectly with Pandas DataFrames and includes built-in datasets to practice on.</p>
+  </div>
+  <div class="card">
+    <div class="card-title sns-bar">Quantitative vs Qualitative Variables</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px">Before choosing a plot type in Seaborn, you must understand your data type. This determines which plot to use.</p>
+    <div class="g2">
+      <div style="background:rgba(124,77,255,.08);border:1px solid rgba(124,77,255,.25);border-radius:10px;padding:16px">
+        <div style="font-size:13px;font-weight:700;color:var(--sns);margin-bottom:8px">📊 Quantitative (Numeric)</div>
+        <p style="font-size:12.5px;color:var(--text2);line-height:1.65;margin-bottom:8px">Variables you <strong style="color:var(--text)">cannot</strong> categorize — they are measured numbers.</p>
+        <p style="font-size:12px;font-family:'IBM Plex Mono',monospace;color:var(--mpl)">Examples: Age (22, 26, 42), Salary (60k, 90k), Total Bill</p>
+      </div>
+      <div style="background:rgba(255,209,102,.07);border:1px solid rgba(255,209,102,.2);border-radius:10px;padding:16px">
+        <div style="font-size:13px;font-weight:700;color:var(--yellow);margin-bottom:8px">🏷️ Qualitative (Categorical)</div>
+        <p style="font-size:12.5px;color:var(--text2);line-height:1.65;margin-bottom:8px">Variables you <strong style="color:var(--text)">can</strong> categorize into groups or labels.</p>
+        <p style="font-size:12px;font-family:'IBM Plex Mono',monospace;color:var(--yellow)">Examples: Gender (M/F), Smoker (Yes/No), Day (Mon–Sun)</p>
+      </div>
+    </div>
+    <table class="st" style="margin-top:14px">
+      <tr><th>Plot Type</th><th style="color:var(--sns)">Used For</th><th>Variable Types</th></tr>
+      <tr><td>displot / histplot</td><td>Distribution of data</td><td>1 Quantitative</td></tr>
+      <tr><td>jointplot</td><td>2-variable relationship</td><td>2 Quantitative</td></tr>
+      <tr><td>pairplot</td><td>All-pairs matrix</td><td>All numeric columns</td></tr>
+      <tr><td>countplot</td><td>Count of categories</td><td>1 Qualitative</td></tr>
+      <tr><td>barplot</td><td>Category vs numeric avg</td><td>1 Qual + 1 Quant</td></tr>
+      <tr><td>boxplot</td><td>Distribution by category</td><td>1 Qual + 1 Quant</td></tr>
+      <tr><td>violinplot</td><td>Full distribution shape</td><td>1 Qual + 1 Quant</td></tr>
+      <tr><td>heatmap</td><td>Correlation matrix</td><td>All numeric</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-title sns-bar">Setup & The Tips Dataset</div>
+    <div class="cb">
+      <div class="ch"><span class="clang sns">Python — Import & Load Data</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="imp">import</span> <span class="mpl-c">matplotlib</span>.pyplot <span class="imp">as</span> <span class="mpl-c">plt</span>
+<span class="imp">import</span> <span class="sns-c">seaborn</span> <span class="imp">as</span> <span class="sns-c">sns</span>
+
+<span class="cmt"># Load built-in 'tips' dataset (internet required)</span>
+df = <span class="sns-c">sns</span>.<span class="fn">load_dataset</span>(<span class="str">'tips'</span>)
+<span class="fn">print</span>(df.<span class="fn">head</span>())
+
+<span class="cmt"># Available datasets: tips, titanic, iris, flights, penguins
+# Browse: https://seaborn.pydata.org/generated/seaborn.load_dataset.html
+# GitHub: https://github.com/mwaskom/seaborn-data</span></pre></div>
+    </div>
+    <table class="st">
+      <tr><th></th><th style="color:var(--sns)">total_bill</th><th style="color:var(--sns)">tip</th><th>sex</th><th>smoker</th><th>day</th><th>time</th><th>size</th></tr>
+      <tr><td>0</td><td>16.99</td><td>1.01</td><td>Female</td><td>No</td><td>Sun</td><td>Dinner</td><td>2</td></tr>
+      <tr><td>1</td><td>10.34</td><td>1.66</td><td>Male</td><td>No</td><td>Sun</td><td>Dinner</td><td>3</td></tr>
+      <tr><td>2</td><td>21.01</td><td>3.50</td><td>Male</td><td>No</td><td>Sun</td><td>Dinner</td><td>3</td></tr>
+      <tr><td>3</td><td>23.68</td><td>3.31</td><td>Male</td><td>No</td><td>Sun</td><td>Dinner</td><td>2</td></tr>
+      <tr><td>4</td><td>24.59</td><td>3.61</td><td>Female</td><td>No</td><td>Sun</td><td>Dinner</td><td>4</td></tr>
+    </table>
+    <div class="ib sns" style="margin-top:10px"><span class="ico">💡</span><div>In the tips dataset, only <strong>total_bill</strong> and <strong>tip</strong> are quantitative (numeric). The rest — sex, smoker, day, time — are qualitative (categorical).</div></div>
+  </div>
+</div>
+
+<!-- ══════════ SNS DISTPLOT ══════════ -->
+<div class="page" id="page-sns-distplot">
+  <div class="page-header">
+    <div class="phase-tag ph-sns">Seaborn — Distribution</div>
+    <h1 class="sns-grad">histplot / displot / KDE</h1>
+    <p>Distribution plots show how data is spread across a range of values. They answer: "Where does most of my data cluster? Is it spread out or concentrated?"</p>
+  </div>
+  <div class="card">
+    <div class="card-title sns-bar">1. displot() — Basic Distribution</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px"><code>sns.displot(data)</code> creates a histogram — divides data into bins and counts how many values fall in each bin. The x-axis is the value range, y-axis is the count.</p>
+    <div class="cb">
+      <div class="ch"><span class="clang sns">Python</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="cmt"># Basic distribution of total_bill column</span>
+<span class="sns-c">sns</span>.<span class="fn">displot</span>(df[<span class="str">"total_bill"</span>])
+
+<span class="cmt"># Control number of bins (groups)</span>
+<span class="sns-c">sns</span>.<span class="fn">displot</span>(df[<span class="str">"total_bill"</span>], bins=<span class="num">10</span>)
+
+<span class="cmt"># Same result with histplot:</span>
+<span class="sns-c">sns</span>.<span class="fn">histplot</span>(df[<span class="str">"total_bill"</span>], bins=<span class="num">10</span>)</pre></div>
+    </div>
+    <canvas id="chart-hist-sns" width="560" height="280" style="display:block;background:#111;border-radius:8px;margin:12px 0;border:1px solid #2a2a2a;"></canvas>
+  </div>
+  <div class="card">
+    <div class="card-title sns-bar">KDE — Kernel Density Estimate</div>
+    <div class="g2">
+      <div>
+        <p style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:8px">📊 A Histogram:</p>
+        <ul class="ll sns-li" style="font-size:12.5px">
+          <li>Divides data into rigid bins (intervals)</li>
+          <li>Counts how many values fall into each bin</li>
+          <li>Looks like bars — blocky and discrete</li>
+        </ul>
+      </div>
+      <div>
+        <p style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:8px">〰️ KDE (Kernel Density Estimate):</p>
+        <ul class="ll sns-li" style="font-size:12.5px">
+          <li>Places a smooth curve on each data point</li>
+          <li>Combines into one smooth continuous line</li>
+          <li>Shows true shape: peaks, spread, skewness</li>
+        </ul>
+      </div>
+    </div>
+    <div class="cb" style="margin-top:12px">
+      <div class="ch"><span class="clang sns">Python — KDE Overlay</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="cmt"># Add KDE smooth curve on top of histogram</span>
+<span class="sns-c">sns</span>.<span class="fn">displot</span>(df[<span class="str">"total_bill"</span>], bins=<span class="num">10</span>, kde=<span class="kw">True</span>)
+<span class="cmt"># or equivalently:</span>
+<span class="sns-c">sns</span>.<span class="fn">histplot</span>(df[<span class="str">"total_bill"</span>], bins=<span class="num">10</span>, kde=<span class="kw">True</span>)</pre></div>
+    </div>
+    <canvas id="chart-hist-kde" width="560" height="280" style="display:block;background:#111;border-radius:8px;margin:12px 0;border:1px solid #2a2a2a;"></canvas>
+  </div>
+  <div class="card">
+    <div class="card-title sns-bar">Two Histograms Side by Side</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px">Use <code>plt.subplot()</code> to place two Seaborn plots side by side on one canvas — compare total_bill and tip distributions:</p>
+    <div class="cb">
+      <div class="ch"><span class="clang sns">Python — Two histplots on same canvas</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="cmt"># Left plot: total_bill distribution</span>
+<span class="mpl-c">plt</span>.<span class="fn">subplot</span>(<span class="num">1</span>, <span class="num">2</span>, <span class="num">1</span>)
+<span class="sns-c">sns</span>.<span class="fn">histplot</span>(df[<span class="str">"total_bill"</span>], bins=<span class="num">20</span>, kde=<span class="kw">True</span>)
+
+<span class="cmt"># Right plot: tip distribution</span>
+<span class="mpl-c">plt</span>.<span class="fn">subplot</span>(<span class="num">1</span>, <span class="num">2</span>, <span class="num">2</span>)
+<span class="sns-c">sns</span>.<span class="fn">histplot</span>(df[<span class="str">"tip"</span>], bins=<span class="num">20</span>, kde=<span class="kw">True</span>)</pre></div>
+    </div>
+    <canvas id="chart-two-hist" width="560" height="240" style="display:block;background:#111;border-radius:8px;margin:12px 0;border:1px solid #2a2a2a;"></canvas>
+  </div>
+</div>
+
+<!-- ══════════ SNS JOINTPLOT ══════════ -->
+<div class="page" id="page-sns-jointplot">
+  <div class="page-header">
+    <div class="phase-tag ph-sns">Seaborn — Distribution</div>
+    <h1 class="sns-grad">Jointplot</h1>
+    <p>Jointplot shows the relationship between two variables AND their individual distributions — all in one view. Instead of drawing 3 separate graphs, you get everything together.</p>
+  </div>
+  <div class="card">
+    <div class="card-title sns-bar">Structure of a Jointplot</div>
+    <div class="g3">
+      <div class="cc" style="border-color:rgba(124,77,255,.3)"><div class="ico">🔵</div><h3>Center Plot</h3><p>Relationship between x and y (scatter, KDE, regression, or hex)</p></div>
+      <div class="cc" style="border-color:rgba(124,77,255,.3)"><div class="ico">📊</div><h3>Top Plot</h3><p>Distribution of x alone (histogram or KDE)</p></div>
+      <div class="cc" style="border-color:rgba(124,77,255,.3)"><div class="ico">📊</div><h3>Right Plot</h3><p>Distribution of y alone (histogram or KDE)</p></div>
+    </div>
+    <div class="cb" style="margin-top:14px">
+      <div class="ch"><span class="clang sns">Python — jointplot()</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="cmt"># Basic scatter jointplot</span>
+<span class="sns-c">sns</span>.<span class="fn">jointplot</span>(x=<span class="str">'total_bill'</span>, y=<span class="str">'tip'</span>, data=df, kind=<span class="str">'scatter'</span>)
+
+<span class="cmt"># KDE (smooth density)</span>
+<span class="sns-c">sns</span>.<span class="fn">jointplot</span>(x=<span class="str">'total_bill'</span>, y=<span class="str">'tip'</span>, data=df, kind=<span class="str">'kde'</span>)
+
+<span class="cmt"># Regression line</span>
+<span class="sns-c">sns</span>.<span class="fn">jointplot</span>(x=<span class="str">'total_bill'</span>, y=<span class="str">'tip'</span>, data=df, kind=<span class="str">'reg'</span>)
+
+<span class="cmt"># Hexagonal bins (for large datasets)</span>
+<span class="sns-c">sns</span>.<span class="fn">jointplot</span>(x=<span class="str">'total_bill'</span>, y=<span class="str">'tip'</span>, data=df, kind=<span class="str">'hex'</span>)
+
+<span class="cmt"># 2D histogram</span>
+<span class="sns-c">sns</span>.<span class="fn">jointplot</span>(x=<span class="str">'total_bill'</span>, y=<span class="str">'tip'</span>, data=df, kind=<span class="str">'hist'</span>)</pre></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title sns-bar">kind Parameter — 5 Types</div>
+    <table class="st">
+      <tr><th class="sns-h">kind=</th><th>What appears in center</th><th>Best for</th></tr>
+      <tr><td><code class="sns">'scatter'</code></td><td>Individual dots (default)</td><td>Small datasets, see every point</td></tr>
+      <tr><td><code class="sns">'reg'</code></td><td>Scatter + regression trend line</td><td>Checking linear relationships</td></tr>
+      <tr><td><code class="sns">'kde'</code></td><td>Smooth density contour (no dots)</td><td>Where points cluster most</td></tr>
+      <tr><td><code class="sns">'hex'</code></td><td>Hexagonal bins (color = density)</td><td>Large datasets — 1000s of points</td></tr>
+      <tr><td><code class="sns">'hist'</code></td><td>2D histogram grid</td><td>Count-based frequency view</td></tr>
+    </table>
+    <canvas id="chart-joint" width="560" height="300" style="display:block;background:#111;border-radius:8px;margin:14px 0;border:1px solid #2a2a2a;"></canvas>
+  </div>
+</div>
+
+<!-- ══════════ SNS PAIRPLOT ══════════ -->
+<div class="page" id="page-sns-pairplot">
+  <div class="page-header">
+    <div class="phase-tag ph-sns">Seaborn — Distribution</div>
+    <h1 class="sns-grad">Pairplot & Hue</h1>
+    <p>Pairplot shows the relationships between every pair of numerical variables in your dataset — all at once in a matrix of plots.</p>
+  </div>
+  <div class="card">
+    <div class="card-title sns-bar">How Pairplot Works</div>
+    <div class="g3">
+      <div class="cc" style="border-color:rgba(124,77,255,.3)"><div class="ico">📐</div><h3>Matrix Structure</h3><p>Each row & column = one variable. Creates n×n grid for n numeric columns.</p></div>
+      <div class="cc" style="border-color:rgba(124,77,255,.3)"><div class="ico">🔵</div><h3>Off-diagonal Cells</h3><p>Scatter plot showing relationship between two different variables.</p></div>
+      <div class="cc" style="border-color:rgba(124,77,255,.3)"><div class="ico">📊</div><h3>Diagonal Cells</h3><p>Distribution (histogram/KDE) of a single variable — where it appears with itself.</p></div>
+    </div>
+    <div class="cb" style="margin-top:14px">
+      <div class="ch"><span class="clang sns">Python — pairplot</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="cmt"># Basic pairplot — all numeric columns</span>
+<span class="sns-c">sns</span>.<span class="fn">pairplot</span>(df)
+<span class="cmt"># Creates: total_bill × tip, total_bill × size, tip × size...
+# All combinations in one grid!</span></pre></div>
+    </div>
+    <canvas id="chart-pairplot" width="560" height="320" style="display:block;background:#111;border-radius:8px;margin:12px 0;border:1px solid #2a2a2a;"></canvas>
+  </div>
+  <div class="card">
+    <div class="card-title sns-bar">hue — Colour-Code by Category</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px"><code>hue</code> splits the data by a categorical column and gives each group a different color. It answers: <em>"How do different groups behave inside the same data?"</em></p>
+    <div class="cb">
+      <div class="ch"><span class="clang sns">Python — pairplot with hue</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="cmt"># Color each point by sex (Male=blue, Female=orange)</span>
+<span class="sns-c">sns</span>.<span class="fn">pairplot</span>(df, hue=<span class="str">'sex'</span>)
+
+<span class="cmt"># Or by smoker status</span>
+<span class="sns-c">sns</span>.<span class="fn">pairplot</span>(df, hue=<span class="str">'smoker'</span>)</pre></div>
+    </div>
+    <canvas id="chart-pairplot-hue" width="560" height="320" style="display:block;background:#111;border-radius:8px;margin:12px 0;border:1px solid #2a2a2a;"></canvas>
+    <div class="ib sns"><span class="ico">💡</span><div><strong>hue</strong> adds a categorical distinction using colors. It tells you not just the overall pattern, but whether two groups (e.g., Male vs Female) behave differently.</div></div>
+  </div>
+</div>
+
+<!-- ══════════ SNS COUNTBAR ══════════ -->
+<div class="page" id="page-sns-countbar">
+  <div class="page-header">
+    <div class="phase-tag ph-sns">Seaborn — Categorical</div>
+    <h1 class="sns-grad">countplot & barplot</h1>
+    <p>Two of the most commonly used categorical plots. countplot counts how many times each category appears. barplot shows the average of a numeric value per category.</p>
+  </div>
+  <div class="card">
+    <div class="card-title sns-bar">1. countplot — Count Each Category</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px"><code>sns.countplot()</code> simply counts how many rows belong to each category and draws a bar. It does NOT need a y-value — it counts automatically.</p>
+    <div class="cb">
+      <div class="ch"><span class="clang sns">Python — countplot</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="cmt"># How many Males and Females in dataset?</span>
+<span class="sns-c">sns</span>.<span class="fn">countplot</span>(df[<span class="str">'sex'</span>])
+<span class="cmt"># or:</span>
+<span class="sns-c">sns</span>.<span class="fn">countplot</span>(x=df[<span class="str">'sex'</span>])
+
+<span class="cmt"># Add hue: how many Males/Females who smoke vs don't smoke?</span>
+<span class="sns-c">sns</span>.<span class="fn">countplot</span>(x=df[<span class="str">'sex'</span>], hue=df[<span class="str">'smoker'</span>])</pre></div>
+    </div>
+    <canvas id="chart-countplot" width="560" height="260" style="display:block;background:#111;border-radius:8px;margin:12px 0;border:1px solid #2a2a2a;"></canvas>
+  </div>
+  <div class="card">
+    <div class="card-title sns-bar">2. barplot — Category vs Numeric Average</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px"><code>sns.barplot()</code> shows the relationship between a categorical variable and a numerical value. <strong style="color:var(--red)">Important:</strong> By default it shows the <strong style="color:var(--text)">MEAN (average)</strong> — NOT the count!</p>
+    <div class="ib err"><span class="ico">⚠️</span><div><strong>Most common student confusion:</strong> barplot does NOT show counts by default. It shows the <strong>average (mean)</strong> of the numerical column for each category. Use <code>countplot</code> for counts.</div></div>
+    <div class="cb" style="margin-top:12px">
+      <div class="ch"><span class="clang sns">Python — barplot with estimator</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="imp">import</span> <span class="np-c">numpy</span> <span class="imp">as</span> <span class="np-c">np</span>
+
+<span class="cmt"># Default: mean of total_bill per sex</span>
+<span class="sns-c">sns</span>.<span class="fn">barplot</span>(x=df[<span class="str">'sex'</span>], y=df[<span class="str">'total_bill'</span>])
+<span class="cmt"># Male bar height ≈ 20.7 (average bill for males)
+# Female bar height ≈ 18.1 (average bill for females)</span>
+
+<span class="cmt"># Change estimator to SUM</span>
+<span class="sns-c">sns</span>.<span class="fn">barplot</span>(x=df[<span class="str">'sex'</span>], y=df[<span class="str">'total_bill'</span>], estimator=<span class="np-c">np</span>.sum)
+<span class="cmt"># Now shows total bill sum per gender</span>
+
+<span class="cmt"># Other estimators:</span>
+estimator=<span class="np-c">np</span>.mean    <span class="cmt"># average (default)</span>
+estimator=<span class="np-c">np</span>.median  <span class="cmt"># middle value</span>
+estimator=<span class="np-c">np</span>.sum     <span class="cmt"># total sum</span>
+estimator=<span class="np-c">np</span>.std     <span class="cmt"># standard deviation</span>
+estimator=<span class="np-c">np</span>.min     <span class="cmt"># minimum value</span>
+estimator=<span class="np-c">np</span>.max     <span class="cmt"># maximum value</span>
+estimator=<span class="fn">len</span>        <span class="cmt"># count (number of observations)</span></pre></div>
+    </div>
+    <canvas id="chart-barplot" width="560" height="260" style="display:block;background:#111;border-radius:8px;margin:12px 0;border:1px solid #2a2a2a;"></canvas>
+    <div class="g2" style="margin-top:10px">
+      <div class="ib sns"><span class="ico">📏</span><div><strong>X-axis</strong> → categories (Male/Female, Day, Product)</div></div>
+      <div class="ib sns"><span class="ico">📐</span><div><strong>Y-axis</strong> → numeric value; <strong>height = mean</strong> of that value by default</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ SNS BOXPLOT ══════════ -->
+<div class="page" id="page-sns-boxplot">
+  <div class="page-header">
+    <div class="phase-tag ph-sns">Seaborn — Categorical</div>
+    <h1 class="sns-grad">Boxplot</h1>
+    <p>A boxplot (box-and-whisker plot) compactly shows the full statistical distribution of a numeric variable across categories using 5 key numbers.</p>
+  </div>
+  <div class="card">
+    <div class="card-title sns-bar">The 5 Parts of a Boxplot</div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px">
+      <div style="display:flex;gap:12px;align-items:center;padding:10px 14px;background:rgba(124,77,255,.08);border-radius:8px;border:1px solid rgba(124,77,255,.2)">
+        <span style="font-size:18px;flex-shrink:0">➖</span>
+        <div><span style="font-size:12.5px;font-weight:700;color:var(--sns)">Median (Q2)</span> <span style="font-size:12.5px;color:var(--text2);margin-left:8px">The line inside the box — the middle value (50th percentile)</span></div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:center;padding:10px 14px;background:var(--surface2);border-radius:8px;border:1px solid var(--border)">
+        <span style="font-size:18px;flex-shrink:0">📦</span>
+        <div><span style="font-size:12.5px;font-weight:700;color:var(--text)">Q1 (25%) → Bottom of box</span> <span style="font-size:12.5px;color:var(--text2);margin-left:8px">Lower quartile — 25% of data falls below this</span></div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:center;padding:10px 14px;background:var(--surface2);border-radius:8px;border:1px solid var(--border)">
+        <span style="font-size:18px;flex-shrink:0">📦</span>
+        <div><span style="font-size:12.5px;font-weight:700;color:var(--text)">Q3 (75%) → Top of box</span> <span style="font-size:12.5px;color:var(--text2);margin-left:8px">Upper quartile — 75% of data falls below this</span></div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:center;padding:10px 14px;background:var(--surface2);border-radius:8px;border:1px solid var(--border)">
+        <span style="font-size:18px;flex-shrink:0">📏</span>
+        <div><span style="font-size:12.5px;font-weight:700;color:var(--yellow)">IQR = Q3 - Q1</span> <span style="font-size:12.5px;color:var(--text2);margin-left:8px">Interquartile Range — the height of the box (middle 50% of data)</span></div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:center;padding:10px 14px;background:var(--surface2);border-radius:8px;border:1px solid var(--border)">
+        <span style="font-size:18px;flex-shrink:0">↕️</span>
+        <div><span style="font-size:12.5px;font-weight:700;color:var(--green)">Whiskers</span> <span style="font-size:12.5px;color:var(--text2);margin-left:8px">Extend to typical min/max values (within 1.5×IQR from box edges)</span></div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:center;padding:10px 14px;background:rgba(239,71,111,.07);border-radius:8px;border:1px solid rgba(239,71,111,.2)">
+        <span style="font-size:18px;flex-shrink:0">⚫</span>
+        <div><span style="font-size:12.5px;font-weight:700;color:var(--red)">Outliers</span> <span style="font-size:12.5px;color:var(--text2);margin-left:8px">Dots beyond the whiskers — unusually high or low values</span></div>
+      </div>
+    </div>
+    <div class="cb">
+      <div class="ch"><span class="clang sns">Python — boxplot</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="cmt"># Tip amount distribution for each day of the week</span>
+<span class="sns-c">sns</span>.<span class="fn">boxplot</span>(x=<span class="str">'tip'</span>, y=<span class="str">'day'</span>, data=df, palette=<span class="str">'rainbow'</span>)
+<span class="cmt"># x='tip'   → numerical variable (tip amount)
+# y='day'   → categorical variable (Thur, Fri, Sat, Sun)
+# palette   → just changes colors (rainbow, Blues, Set2...)</span></pre></div>
+    </div>
+    <canvas id="chart-boxplot" width="560" height="300" style="display:block;background:#111;border-radius:8px;margin:12px 0;border:1px solid #2a2a2a;"></canvas>
+  </div>
+  <div class="card">
+    <div class="card-title sns-bar">How to Read This Boxplot — Tips by Day</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="padding:12px 16px;background:var(--surface2);border-radius:8px;border-left:3px solid var(--sns)">
+        <div style="font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:4px">1. Median (center line inside each box)</div>
+        <div style="font-size:12.5px;color:var(--text2)">Saturday &amp; Sunday → slightly higher median tips. Thursday &amp; Friday → slightly lower. <span style="color:var(--green)">→ Meaning: weekends tend to have higher tips</span></div>
+      </div>
+      <div style="padding:12px 16px;background:var(--surface2);border-radius:8px;border-left:3px solid var(--yellow)">
+        <div style="font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:4px">2. Spread (size of the box = IQR)</div>
+        <div style="font-size:12.5px;color:var(--text2)">Saturday → widest box → more variation in tips. Friday → tighter box → more consistent tips. <span style="color:var(--green)">→ Saturday has both low and very high tips</span></div>
+      </div>
+      <div style="padding:12px 16px;background:var(--surface2);border-radius:8px;border-left:3px solid var(--green)">
+        <div style="font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:4px">3. Whiskers (normal range)</div>
+        <div style="font-size:12.5px;color:var(--text2)">Show typical min and max. Sunday extends further → wider range of normal tips.</div>
+      </div>
+      <div style="padding:12px 16px;background:rgba(239,71,111,.07);border-radius:8px;border-left:3px solid var(--red)">
+        <div style="font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:4px">4. Outliers (circles beyond whiskers)</div>
+        <div style="font-size:12.5px;color:var(--text2)">Saturday → many outliers (some tips near 10!). Thursday → a few outliers. Friday → fewer extreme values. <span style="color:var(--green)">→ Big tips mostly happen on weekends</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ SNS VIOLIN ══════════ -->
+<div class="page" id="page-sns-violin">
+  <div class="page-header">
+    <div class="phase-tag ph-sns">Seaborn — Categorical</div>
+    <h1 class="sns-grad">Violinplot</h1>
+    <p>A violin plot shows the full distribution shape of data across categories using a smooth density curve. It combines the boxplot's summary with KDE's continuous shape.</p>
+  </div>
+  <div class="card">
+    <div class="card-title sns-bar">How a Violin Plot Works</div>
+    <div class="g3">
+      <div class="cc" style="border-color:rgba(124,77,255,.3)"><div class="ico">🎻</div><h3>Violin Shape</h3><p>The outline is a mirrored KDE curve — symmetric on both sides.</p></div>
+      <div class="cc" style="border-color:rgba(124,77,255,.3)"><div class="ico">↔️</div><h3>Width = Density</h3><p>Wider parts → more data points there. Narrow parts → fewer data points.</p></div>
+      <div class="cc" style="border-color:rgba(124,77,255,.3)"><div class="ico">📦</div><h3>Box Inside</h3><p>Usually includes median and IQR box inside the violin shape.</p></div>
+    </div>
+    <div class="ib sns" style="margin-top:12px"><span class="ico">💡</span><div><strong>Boxplot vs Violinplot:</strong> A boxplot summarizes data with 5 numbers and highlights outliers. A violinplot shows the full distribution shape using a density curve — you see where data is dense and where it's sparse.</div></div>
+    <div class="cb" style="margin-top:12px">
+      <div class="ch"><span class="clang sns">Python — violinplot</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="sns-c">sns</span>.<span class="fn">violinplot</span>(x=<span class="str">'day'</span>, y=<span class="str">'total_bill'</span>, data=df)
+<span class="cmt"># x='day'        → categorical variable (Thu, Fri, Sat, Sun)
+# y='total_bill' → numerical variable (bill amount)
+# For each day → draws a violin-shaped distribution</span>
+
+<span class="cmt"># Add color palette</span>
+<span class="sns-c">sns</span>.<span class="fn">violinplot</span>(x=<span class="str">'day'</span>, y=<span class="str">'total_bill'</span>, data=df, palette=<span class="str">'rainbow'</span>)
+
+<span class="cmt"># Split by gender using hue</span>
+<span class="sns-c">sns</span>.<span class="fn">violinplot</span>(x=<span class="str">'day'</span>, y=<span class="str">'total_bill'</span>, data=df, hue=<span class="str">'sex'</span>)</pre></div>
+    </div>
+    <canvas id="chart-violin" width="560" height="300" style="display:block;background:#111;border-radius:8px;margin:12px 0;border:1px solid #2a2a2a;"></canvas>
+  </div>
+</div>
+
+<!-- ══════════ SNS STRIP SWARM ══════════ -->
+<div class="page" id="page-sns-stripswarm">
+  <div class="page-header">
+    <div class="phase-tag ph-sns">Seaborn — Categorical</div>
+    <h1 class="sns-grad">stripplot & swarmplot</h1>
+    <p>Both plots show individual data points for each category. The difference is how overlapping points are handled.</p>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-title sns-bar">stripplot — Jittered Points</div>
+      <p style="font-size:12.5px;color:var(--text2);margin-bottom:10px">A scatter plot where one axis is categorical. Points are <strong style="color:var(--text)">randomly jittered</strong> slightly sideways so they don't all stack on top of each other.</p>
+      <ul class="ll sns-li" style="font-size:12.5px;margin-bottom:12px">
+        <li>Each dot = one observation (one row in data)</li>
+        <li>X-axis = category (day, sex, etc.)</li>
+        <li>Y-axis = numerical value</li>
+        <li>Points spread randomly (jitter) to avoid overlap</li>
+      </ul>
+      <div class="cb">
+        <div class="ch"><span class="clang sns">Python</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+        <div class="cbody"><pre><span class="sns-c">sns</span>.<span class="fn">stripplot</span>(x=<span class="str">'day'</span>, y=<span class="str">'total_bill'</span>,
+             data=df, palette=<span class="str">'rainbow'</span>)</pre></div>
+      </div>
+      <canvas id="chart-strip" width="300" height="260" style="display:block;background:#111;border-radius:8px;margin:8px 0;border:1px solid #2a2a2a;"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-title sns-bar">swarmplot — Non-overlapping</div>
+      <p style="font-size:12.5px;color:var(--text2);margin-bottom:10px">Similar to stripplot but points are <strong style="color:var(--text)">carefully arranged</strong> so NO points overlap. Each point preserves its exact y-value while being pushed sideways to avoid collisions.</p>
+      <ul class="ll sns-li" style="font-size:12.5px;margin-bottom:12px">
+        <li>Same as stripplot but no overlapping dots</li>
+        <li>Creates a clearer, more accurate view</li>
+        <li>Looks like a tree or swarm of bees</li>
+        <li>Slow for very large datasets (50k+ points)</li>
+      </ul>
+      <div class="cb">
+        <div class="ch"><span class="clang sns">Python</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+        <div class="cbody"><pre><span class="sns-c">sns</span>.<span class="fn">swarmplot</span>(x=<span class="str">'day'</span>, y=<span class="str">'total_bill'</span>,
+              data=df, palette=<span class="str">'rainbow'</span>)</pre></div>
+      </div>
+      <canvas id="chart-swarm" width="300" height="260" style="display:block;background:#111;border-radius:8px;margin:8px 0;border:1px solid #2a2a2a;"></canvas>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title sns-bar">stripplot vs swarmplot — Quick Comparison</div>
+    <table class="st">
+      <tr><th>Feature</th><th style="color:var(--sns)">stripplot</th><th style="color:var(--sns)">swarmplot</th></tr>
+      <tr><td>Overlap handling</td><td>Random jitter (may overlap)</td><td class="vok">No overlapping ✅</td></tr>
+      <tr><td>Point accuracy</td><td>Approximate x position</td><td class="vok">Exact y, shifted x</td></tr>
+      <tr><td>Speed</td><td class="vok">Faster</td><td>Slower (large data)</td></tr>
+      <tr><td>Readability</td><td>Good</td><td class="vok">Better ✅</td></tr>
+      <tr><td>Best for</td><td>Quick look</td><td>Presentation/analysis</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════ SNS CORRELATION ══════════ -->
+<div class="page" id="page-sns-correlation">
+  <div class="page-header">
+    <div class="phase-tag ph-sns">Seaborn — Matrix</div>
+    <h1 class="sns-grad">Correlation Explained</h1>
+    <p>Before creating a heatmap, you must understand correlation — how two numerical variables move in relation to each other. This is the foundation of the heatmap.</p>
+  </div>
+  <div class="card">
+    <div class="card-title sns-bar">What is Correlation?</div>
+    <p style="font-size:13.5px;color:var(--text2);line-height:1.8;margin-bottom:14px">Correlation measures how strongly two numerical variables are related. The most common measure is the <strong style="color:var(--text)">Pearson correlation coefficient</strong>, which always falls between <strong style="color:var(--red)">-1</strong> and <strong style="color:var(--green)">+1</strong>.</p>
+    <div class="g3">
+      <div style="background:rgba(6,214,160,.08);border:1px solid rgba(6,214,160,.25);border-radius:10px;padding:16px;text-align:center">
+        <div style="font-size:28px;font-weight:800;color:var(--green)">+1</div>
+        <div style="font-size:12.5px;font-weight:700;color:var(--green);margin:4px 0">Positive Correlation</div>
+        <div style="font-size:12px;color:var(--text2)">As one variable increases, the other also increases</div>
+      </div>
+      <div style="background:rgba(255,209,102,.07);border:1px solid rgba(255,209,102,.2);border-radius:10px;padding:16px;text-align:center">
+        <div style="font-size:28px;font-weight:800;color:var(--yellow)">0</div>
+        <div style="font-size:12.5px;font-weight:700;color:var(--yellow);margin:4px 0">No Correlation</div>
+        <div style="font-size:12px;color:var(--text2)">No consistent relationship between the two variables</div>
+      </div>
+      <div style="background:rgba(239,71,111,.07);border:1px solid rgba(239,71,111,.2);border-radius:10px;padding:16px;text-align:center">
+        <div style="font-size:28px;font-weight:800;color:var(--red)">-1</div>
+        <div style="font-size:12.5px;font-weight:700;color:var(--red);margin:4px 0">Negative Correlation</div>
+        <div style="font-size:12px;color:var(--text2)">As one increases, the other decreases</div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title sns-bar">Simple Example — Understanding the 3 Types</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px">Let's use a simple dataset to see all 3 types of correlation:</p>
+    <table class="st">
+      <tr><th>A (Index)</th><th>B (Values)</th><th>C (Values)</th></tr>
+      <tr><td>1</td><td>1000</td><td>100</td></tr>
+      <tr><td>2</td><td>900</td><td>200</td></tr>
+      <tr><td>3</td><td>500</td><td>300</td></tr>
+      <tr><td>4</td><td>400</td><td>400</td></tr>
+      <tr><td>5</td><td>300</td><td>550</td></tr>
+    </table>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">
+      <div style="padding:10px 14px;background:rgba(239,71,111,.08);border-radius:8px;border-left:3px solid var(--red)">
+        <span style="font-size:12.5px;font-weight:700;color:var(--red)">🔻 B vs A — Negative Correlation</span>
+        <span style="font-size:12.5px;color:var(--text2);margin-left:8px">As A increases (1→5), B decreases (1000→300)</span>
+      </div>
+      <div style="padding:10px 14px;background:rgba(6,214,160,.07);border-radius:8px;border-left:3px solid var(--green)">
+        <span style="font-size:12.5px;font-weight:700;color:var(--green)">🔺 C vs A — Positive Correlation</span>
+        <span style="font-size:12.5px;color:var(--text2);margin-left:8px">As A increases (1→5), C increases (100→550)</span>
+      </div>
+      <div style="padding:10px 14px;background:rgba(239,71,111,.08);border-radius:8px;border-left:3px solid var(--red)">
+        <span style="font-size:12.5px;font-weight:700;color:var(--red)">🔁 B vs C — Negative Correlation</span>
+        <span style="font-size:12.5px;color:var(--text2);margin-left:8px">As B decreases, C increases — also negative</span>
+      </div>
+    </div>
+    <canvas id="chart-corr-demo" width="560" height="200" style="display:block;background:#111;border-radius:8px;margin:14px 0;border:1px solid #2a2a2a;"></canvas>
+  </div>
+  <div class="card">
+    <div class="card-title sns-bar">Pearson Correlation on Real Data — .corr()</div>
+    <div class="cb">
+      <div class="ch"><span class="clang sns">Python — Compute Correlation Matrix</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="cmt"># Select only numeric columns from tips dataset</span>
+tipscorr = tips[[<span class="str">"total_bill"</span>, <span class="str">'tip'</span>, <span class="str">'size'</span>]]
+tipscorr
+
+<span class="cmt"># Compute Pearson correlation matrix</span>
+tipscorr.<span class="fn">corr</span>()</pre></div>
+    </div>
+    <table class="st">
+      <tr><th></th><th style="color:var(--sns)">total_bill</th><th style="color:var(--sns)">tip</th><th style="color:var(--sns)">size</th></tr>
+      <tr><td><strong>total_bill</strong></td><td class="vok">1.000000</td><td>0.675734</td><td>0.598315</td></tr>
+      <tr><td><strong>tip</strong></td><td>0.675734</td><td class="vok">1.000000</td><td>0.489299</td></tr>
+      <tr><td><strong>size</strong></td><td>0.598315</td><td>0.489299</td><td class="vok">1.000000</td></tr>
+    </table>
+    <div class="ib sns" style="margin-top:10px"><span class="ico">🔍</span><div>Reading the table: total_bill &amp; tip have correlation <strong>0.675</strong> — a moderate positive relationship (higher bills tend to get higher tips). The diagonal is always <strong>1.0</strong> — every variable is perfectly correlated with itself.</div></div>
+  </div>
+</div>
+
+<!-- ══════════ SNS HEATMAP ══════════ -->
+<div class="page" id="page-sns-heatmap">
+  <div class="page-header">
+    <div class="phase-tag ph-sns">Seaborn — Matrix</div>
+    <h1 class="sns-grad">Heatmap</h1>
+    <p>A heatmap visualizes a grid of numbers (like a correlation matrix) using colors — making it easy to instantly spot strong relationships and patterns.</p>
+  </div>
+  <div class="card">
+    <div class="card-title sns-bar">What a Heatmap Shows</div>
+    <div class="g3">
+      <div class="cc" style="border-color:rgba(124,77,255,.3)"><div class="ico">🟥</div><h3>Each Cell = A Value</h3><p>For correlation matrices, each cell shows the Pearson correlation between two variables.</p></div>
+      <div class="cc" style="border-color:rgba(124,77,255,.3)"><div class="ico">🎨</div><h3>Color = Magnitude</h3><p>Bright/warm = high value (near +1). Dark/cool = low value (near 0 or -1).</p></div>
+      <div class="cc" style="border-color:rgba(124,77,255,.3)"><div class="ico">⚡</div><h3>Instant Insights</h3><p>Spot strong relationships, patterns, and symmetry at a glance — no reading numbers.</p></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title sns-bar">Creating a Heatmap — Tips Dataset</div>
+    <div class="cb">
+      <div class="ch"><span class="clang sns">Python — Full Heatmap Workflow</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="imp">import</span> <span class="sns-c">seaborn</span> <span class="imp">as</span> <span class="sns-c">sns</span>
+<span class="imp">import</span> <span class="mpl-c">matplotlib</span>.pyplot <span class="imp">as</span> <span class="mpl-c">plt</span>
+
+<span class="cmt"># Load dataset</span>
+tips = <span class="sns-c">sns</span>.<span class="fn">load_dataset</span>(<span class="str">'tips'</span>)
+
+<span class="cmt"># Step 1: Select numeric columns only</span>
+tipscorr = tips[[<span class="str">"total_bill"</span>, <span class="str">'tip'</span>, <span class="str">'size'</span>]]
+
+<span class="cmt"># Step 2: Compute Pearson correlation matrix</span>
+corr_matrix = tipscorr.<span class="fn">corr</span>()
+
+<span class="cmt"># Step 3: Plot the heatmap</span>
+<span class="sns-c">sns</span>.<span class="fn">heatmap</span>(corr_matrix)
+<span class="mpl-c">plt</span>.<span class="fn">show</span>()</pre></div>
+    </div>
+    <canvas id="chart-heatmap" width="440" height="320" style="display:block;background:#111;border-radius:8px;margin:14px 0;border:1px solid #2a2a2a;"></canvas>
+  </div>
+  <div class="card">
+    <div class="card-title sns-bar">Heatmap with Flights Dataset</div>
+    <div class="cb">
+      <div class="ch"><span class="clang sns">Python — Flights Heatmap</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="cmt"># Load flights dataset: year, month, passengers</span>
+flights = <span class="sns-c">sns</span>.<span class="fn">load_dataset</span>(<span class="str">'flights'</span>)
+
+<span class="cmt"># Pivot: rows=months, columns=years, values=passengers</span>
+flights_pivot = flights.<span class="fn">pivot</span>(index=<span class="str">'month'</span>,
+                               columns=<span class="str">'year'</span>,
+                               values=<span class="str">'passengers'</span>)
+
+<span class="cmt"># Draw heatmap with value annotations</span>
+<span class="sns-c">sns</span>.<span class="fn">heatmap</span>(flights_pivot, annot=<span class="kw">True</span>, fmt=<span class="str">'d'</span>, cmap=<span class="str">'YlOrRd'</span>)
+<span class="mpl-c">plt</span>.<span class="fn">title</span>(<span class="str">"Monthly Passengers by Year"</span>)
+<span class="mpl-c">plt</span>.<span class="fn">show</span>()
+
+<span class="cmt"># annot=True  → show numbers inside each cell
+# fmt='d'     → format numbers as integers
+# cmap        → color scheme (YlOrRd, Blues, coolwarm...)</span></pre></div>
+    </div>
+    <canvas id="chart-heatmap2" width="560" height="340" style="display:block;background:#111;border-radius:8px;margin:12px 0;border:1px solid #2a2a2a;"></canvas>
+    <table class="st" style="margin-top:14px">
+      <tr><th class="sns-h">Parameter</th><th>What it does</th><th>Example</th></tr>
+      <tr><td><code class="sns">annot=True</code></td><td>Show numbers inside each cell</td><td>Shows 0.67 in correlation cells</td></tr>
+      <tr><td><code class="sns">fmt='d'</code></td><td>Format numbers (d=integer, .2f=2 decimals)</td><td>Shows 112 instead of 112.0</td></tr>
+      <tr><td><code class="sns">cmap='YlOrRd'</code></td><td>Color scheme</td><td>Yellow→Orange→Red for low→high</td></tr>
+      <tr><td><code class="sns">linewidths=0.5</code></td><td>Grid lines between cells</td><td>Adds white border between cells</td></tr>
+      <tr><td><code class="sns">vmin, vmax</code></td><td>Color scale range</td><td>vmin=-1, vmax=1 for correlation</td></tr>
+    </table>
+    <div class="ib ok" style="margin-top:14px"><span class="ico">🎉</span><div><strong>Congratulations!</strong> You have completed the full Data Visualization course — Matplotlib basics, subplots, OO approach, scatter/hist/boxplot, and all major Seaborn plots including distribution, categorical, and matrix plots!</div></div>
+  </div>
+</div>
+
+</div><!-- /#main -->
+<script>
+/* ============ HELPER FUNCTIONS ============ */
+function clearCanvas(id){
+  const c = document.getElementById(id);
+  if(!c) return {ctx:null};
+  const ctx = c.getContext('2d');
+  ctx.clearRect(0,0,c.width,c.height);
+  ctx.fillStyle = '#111';
+  ctx.fillRect(0,0,c.width,c.height);
+  return {c, ctx, w:c.width, h:c.height};
+}
+function makeArea(w,h,m={l:46,r:14,t:24,b:40}){
+  return {x0:m.l, x1:w-m.r, y0:h-m.b, y1:m.t};
+}
+function mapX(val,xMin,xMax,area){ return area.x0 + (val-xMin)/(xMax-xMin)*(area.x1-area.x0); }
+function mapY(val,yMin,yMax,area){ return area.y0 - (val-yMin)/(yMax-yMin)*(area.y0-area.y1); }
+function fmtNum(v){
+  if(Math.abs(v - Math.round(v)) < 1e-9) return Math.round(v).toString();
+  return v.toFixed(1);
+}
+function drawAxesBox(ctx, area, xMin,xMax,yMin,yMax, opts={}){
+  const {xticks=5, yticks=5, xlabel='', ylabel='', title=''} = opts;
+  ctx.strokeStyle = '#444';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(area.x0, area.y1, area.x1-area.x0, area.y0-area.y1);
+  ctx.fillStyle = '#888';
+  ctx.font = '10px "IBM Plex Mono", monospace';
+  ctx.textAlign='center';
+  for(let i=0;i<=xticks;i++){
+    const val = xMin + (xMax-xMin)*i/xticks;
+    const px = area.x0 + (area.x1-area.x0)*i/xticks;
+    ctx.beginPath(); ctx.moveTo(px, area.y0); ctx.lineTo(px, area.y0+4); ctx.stroke();
+    ctx.fillText(fmtNum(val), px, area.y0+16);
+  }
+  ctx.textAlign='right';
+  for(let i=0;i<=yticks;i++){
+    const val = yMin + (yMax-yMin)*i/yticks;
+    const py = area.y0 - (area.y0-area.y1)*i/yticks;
+    ctx.beginPath(); ctx.moveTo(area.x0-4, py); ctx.lineTo(area.x0, py); ctx.stroke();
+    ctx.fillText(fmtNum(val), area.x0-8, py+3);
+  }
+  if(title){
+    ctx.fillStyle='#ccc'; ctx.font='12px Sora, sans-serif'; ctx.textAlign='center';
+    ctx.fillText(title, (area.x0+area.x1)/2, area.y1-10);
+  }
+  if(xlabel){
+    ctx.fillStyle='#aaa'; ctx.font='11px Sora, sans-serif'; ctx.textAlign='center';
+    ctx.fillText(xlabel, (area.x0+area.x1)/2, area.y0+34);
+  }
+  if(ylabel){
+    ctx.save();
+    ctx.translate(14, (area.y0+area.y1)/2);
+    ctx.rotate(-Math.PI/2);
+    ctx.fillStyle='#aaa'; ctx.font='11px Sora, sans-serif'; ctx.textAlign='center';
+    ctx.fillText(ylabel, 0, 0);
+    ctx.restore();
+  }
+}
+function drawCategoricalFrame(ctx,area,yMin,yMax,yticks,ylabel,title){
+  ctx.strokeStyle='#444'; ctx.lineWidth=1;
+  ctx.strokeRect(area.x0,area.y1,area.x1-area.x0,area.y0-area.y1);
+  ctx.fillStyle='#888'; ctx.font='10px "IBM Plex Mono", monospace'; ctx.textAlign='right';
+  for(let i=0;i<=yticks;i++){
+    const val=yMin+(yMax-yMin)*i/yticks;
+    const py=mapY(val,yMin,yMax,area);
+    ctx.beginPath(); ctx.moveTo(area.x0-4,py); ctx.lineTo(area.x0,py); ctx.stroke();
+    ctx.fillText(fmtNum(val), area.x0-8, py+3);
+  }
+  if(ylabel){
+    ctx.save(); ctx.translate(14,(area.y0+area.y1)/2); ctx.rotate(-Math.PI/2);
+    ctx.fillStyle='#aaa'; ctx.font='11px Sora, sans-serif'; ctx.textAlign='center';
+    ctx.fillText(ylabel,0,0); ctx.restore();
+  }
+  if(title){
+    ctx.fillStyle='#ccc'; ctx.font='12px Sora, sans-serif'; ctx.textAlign='center';
+    ctx.fillText(title,(area.x0+area.x1)/2, area.y1-10);
+  }
+}
+function drawHFrame(ctx,area,xMin,xMax,xticks,xlabel,title){
+  ctx.strokeStyle='#444'; ctx.lineWidth=1;
+  ctx.strokeRect(area.x0,area.y1,area.x1-area.x0,area.y0-area.y1);
+  ctx.fillStyle='#888'; ctx.font='10px "IBM Plex Mono", monospace'; ctx.textAlign='center';
+  for(let i=0;i<=xticks;i++){
+    const val=xMin+(xMax-xMin)*i/xticks;
+    const px=mapX(val,xMin,xMax,area);
+    ctx.beginPath(); ctx.moveTo(px,area.y0); ctx.lineTo(px,area.y0+4); ctx.stroke();
+    ctx.fillText(fmtNum(val), px, area.y0+16);
+  }
+  if(xlabel){ ctx.fillStyle='#aaa'; ctx.font='11px Sora, sans-serif'; ctx.fillText(xlabel,(area.x0+area.x1)/2, area.y0+32); }
+  if(title){ ctx.fillStyle='#ccc'; ctx.font='12px Sora, sans-serif'; ctx.fillText(title,(area.x0+area.x1)/2, area.y1-8); }
+}
+function drawCurve(ctx,area,xMin,xMax,yMin,yMax,fn,color){
+  ctx.strokeStyle=color||'#1f77b4'; ctx.lineWidth=2; ctx.beginPath();
+  for(let i=0;i<=50;i++){
+    const x=xMin+(xMax-xMin)*i/50;
+    const y=fn(x);
+    const px=mapX(x,xMin,xMax,area), py=mapY(y,yMin,yMax,area);
+    if(i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+  }
+  ctx.stroke();
+}
+function drawBars(ctx,area,counts,yMin,yMax,fill,stroke){
+  const n=counts.length, barW=(area.x1-area.x0)/n;
+  counts.forEach((c,i)=>{
+    const x0=area.x0+i*barW;
+    const y1=mapY(c,yMin,yMax,area);
+    ctx.fillStyle=fill; ctx.fillRect(x0+1,y1,barW-2,area.y0-y1);
+    ctx.strokeStyle=stroke; ctx.strokeRect(x0+1,y1,barW-2,area.y0-y1);
+  });
+}
+function heatColor(t){
+  t=Math.max(0,Math.min(1,t));
+  const c1=[20,10,40], c2=[252,224,148];
+  const r=Math.round(c1[0]+(c2[0]-c1[0])*t);
+  const g=Math.round(c1[1]+(c2[1]-c1[1])*t);
+  const b=Math.round(c1[2]+(c2[2]-c1[2])*t);
+  return `rgb(${r},${g},${b})`;
+}
+function heatColorYlOrRd(t){
+  t=Math.max(0,Math.min(1,t));
+  const c1=[255,255,204], c2=[189,0,38];
+  const r=Math.round(c1[0]+(c2[0]-c1[0])*t);
+  const g=Math.round(c1[1]+(c2[1]-c1[1])*t);
+  const b=Math.round(c1[2]+(c2[2]-c1[2])*t);
+  return `rgb(${r},${g},${b})`;
+}
+
+/* ============ MATPLOTLIB CHARTS ============ */
+function drawBasic(){
+  const {ctx,w,h} = clearCanvas('chart-basic'); if(!ctx) return;
+  const area = makeArea(w,h,{l:46,r:14,t:20,b:36});
+  drawAxesBox(ctx, area, 0,5,0,25, {xticks:5, yticks:5});
+  drawCurve(ctx, area, 0,5,0,25, x=>x*x);
+}
+function drawLabels(){
+  const {ctx,w,h} = clearCanvas('chart-labels'); if(!ctx) return;
+  const area = makeArea(w,h,{l:54,r:14,t:34,b:50});
+  drawAxesBox(ctx, area, 0,5,0,25, {xticks:5,yticks:5, title:'Hello', xlabel:'number', ylabel:'square'});
+  drawCurve(ctx, area, 0,5,0,25, x=>x*x);
+}
+function drawSubgrid(){
+  const {ctx,w,h} = clearCanvas('chart-subgrid'); if(!ctx) return;
+  const pad=20, gap=16;
+  const cw=(w-2*pad-gap)/2, ch=(h-2*pad-gap)/2;
+  const labels=['plt.subplot(2,2,1)','plt.subplot(2,2,2)','plt.subplot(2,2,3)','plt.subplot(2,2,4)'];
+  let idx=0;
+  for(let r=0;r<2;r++){
+    for(let c=0;c<2;c++){
+      const x=pad+c*(cw+gap), y=pad+r*(ch+gap);
+      ctx.strokeStyle='#444'; ctx.strokeRect(x,y,cw,ch);
+      ctx.fillStyle='#888'; ctx.font='10px "IBM Plex Mono", monospace'; ctx.textAlign='left';
+      ctx.fillText(labels[idx], x+8, y+18);
+      ctx.fillStyle='#444'; ctx.font='26px Sora, sans-serif'; ctx.textAlign='center';
+      ctx.fillText((idx+1).toString(), x+cw/2, y+ch/2+10);
+      idx++;
+    }
+  }
+}
+function drawSub1(){
+  const {ctx,w,h}=clearCanvas('chart-sub1'); if(!ctx) return;
+  const pad=20, gap=16;
+  const cw=(w-2*pad-gap)/2, ch=(h-2*pad-gap)/2;
+  for(let r=0;r<2;r++){
+    for(let c=0;c<2;c++){
+      const x=pad+c*(cw+gap), y=pad+r*(ch+gap);
+      ctx.strokeStyle='#444'; ctx.strokeRect(x,y,cw,ch);
+      if(r===0 && c===0){
+        const area={x0:x+34,x1:x+cw-8,y0:y+ch-22,y1:y+8};
+        drawAxesBox(ctx,area,0,5,0,25,{xticks:2,yticks:2});
+        drawCurve(ctx,area,0,5,0,25,xv=>xv*xv);
+      } else {
+        ctx.fillStyle='#444'; ctx.font='20px Sora, sans-serif'; ctx.textAlign='center';
+        const num = r*2+c+1;
+        ctx.fillText(num.toString(), x+cw/2, y+ch/2+8);
+      }
+    }
+  }
+}
+function drawSub4(){
+  const {ctx,w,h}=clearCanvas('chart-sub4'); if(!ctx) return;
+  const pad=20, gap=16;
+  const cw=(w-2*pad-gap)/2, ch=(h-2*pad-gap)/2;
+  function cellArea(r,c){
+    const x=pad+c*(cw+gap), y=pad+r*(ch+gap);
+    ctx.strokeStyle='#444'; ctx.strokeRect(x,y,cw,ch);
+    return {x0:x+32,x1:x+cw-8,y0:y+ch-22,y1:y+8};
+  }
+  let area=cellArea(0,0);
+  drawAxesBox(ctx,area,0,5,0,25,{xticks:2,yticks:2});
+  drawCurve(ctx,area,0,5,0,25, x=>x*x);
+  area=cellArea(0,1);
+  drawAxesBox(ctx,area,0,25,0,25,{xticks:2,yticks:2});
+  drawCurve(ctx,area,0,25,0,25, x=>x);
+  area=cellArea(1,0);
+  drawAxesBox(ctx,area,0,25,0,25,{xticks:2,yticks:2});
+  drawCurve(ctx,area,0,25,0,25, x=>x);
+  area=cellArea(1,1);
+  drawAxesBox(ctx,area,0,5,0,25,{xticks:2,yticks:2});
+  drawCurve(ctx,area,0,5,0,25, x=>x*x);
+}
+function drawOO(){
+  const {ctx,w,h}=clearCanvas('chart-oo'); if(!ctx) return;
+  const mainArea = makeArea(w,h,{l:46,r:14,t:20,b:36});
+  drawAxesBox(ctx, mainArea, 0,5,0,25,{xticks:5,yticks:5});
+  drawCurve(ctx, mainArea, 0,5,0,25, x=>x*x);
+  const ix0 = mainArea.x0 + 0.32*(mainArea.x1-mainArea.x0);
+  const ix1 = mainArea.x0 + 0.78*(mainArea.x1-mainArea.x0);
+  const iy0 = mainArea.y0 - 0.40*(mainArea.y0-mainArea.y1);
+  const iy1 = mainArea.y0 - 0.85*(mainArea.y0-mainArea.y1);
+  ctx.fillStyle='#111'; ctx.fillRect(ix0,iy1,ix1-ix0,iy0-iy1);
+  const insetArea = {x0:ix0+22, x1:ix1-4, y0:iy0-4, y1:iy1+10};
+  drawAxesBox(ctx, insetArea, 0,5,0,25,{xticks:2,yticks:2});
+  drawCurve(ctx, insetArea, 0,5,0,25, x=>x*x);
+}
+function drawScatter(){
+  const {ctx,w,h}=clearCanvas('chart-scatter'); if(!ctx) return;
+  const area=makeArea(w,h,{l:46,r:14,t:30,b:44});
+  drawAxesBox(ctx,area,0,5,0,25,{xticks:5,yticks:5,title:'Scatter Plot',xlabel:'x',ylabel:'x\u00B2'});
+  ctx.fillStyle='#1f77b4';
+  for(let i=0;i<=10;i++){
+    const x=i*0.5, y=x*x;
+    const px=mapX(x,0,5,area), py=mapY(y,0,25,area);
+    ctx.beginPath(); ctx.arc(px,py,4,0,Math.PI*2); ctx.fill();
+  }
+}
+function drawHist(){
+  const {ctx,w,h}=clearCanvas('chart-hist'); if(!ctx) return;
+  const area=makeArea(w,h,{l:46,r:14,t:30,b:40});
+  const counts=[12,12,14,12,8,3,7,13,12,7];
+  drawAxesBox(ctx,area,0,1000,0,16,{xticks:5,yticks:4,title:'Histogram'});
+  drawBars(ctx,area,counts,0,16,'#1f77b4','#0a3a5c');
+}
+function drawBox(){
+  const {ctx,w,h}=clearCanvas('chart-box'); if(!ctx) return;
+  const area=makeArea(w,h,{l:46,r:30,t:30,b:40});
+  ctx.strokeStyle='#444'; ctx.strokeRect(area.x0,area.y1,area.x1-area.x0,area.y0-area.y1);
+  ctx.fillStyle='#888'; ctx.font='10px "IBM Plex Mono", monospace'; ctx.textAlign='right';
+  for(let v=0;v<=5;v++){
+    const py=mapY(v,0,5,area);
+    ctx.beginPath(); ctx.moveTo(area.x0-4,py); ctx.lineTo(area.x0,py); ctx.stroke();
+    ctx.fillText(v.toString(), area.x0-8, py+3);
+  }
+  ctx.fillStyle='#ccc'; ctx.font='12px Sora, sans-serif'; ctx.textAlign='center';
+  ctx.fillText('Boxplot', (area.x0+area.x1)/2, area.y1-12);
+  const cx=(area.x0+area.x1)/2;
+  const boxW=70;
+  const yQ1=mapY(1.25,0,5,area), yMed=mapY(2.5,0,5,area), yQ3=mapY(3.75,0,5,area);
+  const yLo=mapY(0,0,5,area), yHi=mapY(5,0,5,area);
+  ctx.strokeStyle='#1f77b4'; ctx.lineWidth=1.5;
+  ctx.beginPath();
+  ctx.moveTo(cx,yHi); ctx.lineTo(cx,yQ3);
+  ctx.moveTo(cx,yQ1); ctx.lineTo(cx,yLo);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(cx-18,yHi); ctx.lineTo(cx+18,yHi);
+  ctx.moveTo(cx-18,yLo); ctx.lineTo(cx+18,yLo);
+  ctx.stroke();
+  ctx.strokeRect(cx-boxW/2,yQ3,boxW,yQ1-yQ3);
+  ctx.strokeStyle='#ff7f0e'; ctx.lineWidth=2.5;
+  ctx.beginPath(); ctx.moveTo(cx-boxW/2,yMed); ctx.lineTo(cx+boxW/2,yMed); ctx.stroke();
+  ctx.fillStyle='#888'; ctx.font='10px "IBM Plex Mono", monospace'; ctx.textAlign='center';
+  ctx.fillText('1', cx, area.y0+16);
+}
+function drawImg(){
+  const {ctx,w,h}=clearCanvas('chart-img'); if(!ctx) return;
+  const boxW=210, boxH=140, gap=60;
+  const leftX=34, topY=18;
+  drawImagePlaceholder(ctx, leftX, topY, boxW, boxH, true);
+  ctx.fillStyle='#888'; ctx.font='11px Sora, sans-serif'; ctx.textAlign='center';
+  ctx.fillText('plt.imshow(img)', leftX+boxW/2, topY+boxH+44);
+  const rightX=leftX+boxW+gap+30;
+  drawImagePlaceholder(ctx, rightX, topY, boxW, boxH, false);
+  ctx.fillText('plt.axis("off")', rightX+boxW/2, topY+boxH+44);
+}
+function drawImagePlaceholder(ctx,x,y,bw,bh,showAxes){
+  const grad=ctx.createLinearGradient(x,y,x,y+bh);
+  grad.addColorStop(0,'#f4a259'); grad.addColorStop(0.45,'#e9c46a');
+  grad.addColorStop(0.46,'#7d9461'); grad.addColorStop(1,'#41501f');
+  ctx.fillStyle=grad; ctx.fillRect(x,y,bw,bh);
+  ctx.fillStyle='#c98a52';
+  ctx.beginPath(); ctx.ellipse(x+bw*0.55,y+bh*0.68,bw*0.20,bh*0.24,0,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#d9a463';
+  ctx.beginPath(); ctx.ellipse(x+bw*0.55,y+bh*0.42,bw*0.13,bh*0.16,0,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#fff';
+  ctx.beginPath(); ctx.ellipse(x+bw*0.51,y+bh*0.39,bw*0.02,bh*0.025,0,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(x+bw*0.59,y+bh*0.39,bw*0.02,bh*0.025,0,0,Math.PI*2); ctx.fill();
+  if(showAxes){
+    ctx.strokeStyle='#555'; ctx.lineWidth=1; ctx.strokeRect(x,y,bw,bh);
+    ctx.fillStyle='#888'; ctx.font='9px "IBM Plex Mono", monospace'; ctx.textAlign='center';
+    [0,50,100,150,200,250].forEach((v)=>{
+      const px=x+(v/250)*bw;
+      if(px<=x+bw+2) ctx.fillText(v.toString(), px, y+bh+14);
+    });
+    ctx.textAlign='right';
+    [0,25,50,75,100,125,150,175].forEach((v)=>{
+      const py=y+(v/175)*bh;
+      if(py<=y+bh+2) ctx.fillText(v.toString(), x-5, py+3);
+    });
+  } else {
+    ctx.strokeStyle='#222'; ctx.lineWidth=1; ctx.strokeRect(x,y,bw,bh);
+  }
+}
+
+/* ============ SEABORN DISTRIBUTION CHARTS ============ */
+function drawHistSns(){
+  const {ctx,w,h}=clearCanvas('chart-hist-sns'); if(!ctx) return;
+  const area=makeArea(w,h,{l:46,r:14,t:20,b:40});
+  const counts=[2,9,15,16,12,9,6,3,2,1];
+  drawAxesBox(ctx,area,0,50,0,16,{xticks:5,yticks:4,xlabel:'total_bill',ylabel:'Count'});
+  drawBars(ctx,area,counts,0,16,'#4c72b0','#33517d');
+}
+function drawHistKde(){
+  const {ctx,w,h}=clearCanvas('chart-hist-kde'); if(!ctx) return;
+  const area=makeArea(w,h,{l:46,r:14,t:20,b:40});
+  const counts=[7,42,68,51,31,19,12,7,3,4];
+  const maxC=70;
+  drawAxesBox(ctx,area,0,50,0,maxC,{xticks:5,yticks:4,xlabel:'total_bill',ylabel:'Count'});
+  drawBars(ctx,area,counts,0,maxC,'#4c72b0','#33517d');
+  ctx.strokeStyle='#1f4e8c'; ctx.lineWidth=2; ctx.beginPath();
+  for(let i=0;i<=100;i++){
+    const x=i*0.5;
+    const y = maxC* Math.exp(-Math.pow((x-15)/10,2)) * (x<15? 0.95: 0.8);
+    const px=mapX(x,0,50,area), py=mapY(Math.min(y,maxC),0,maxC,area);
+    if(i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+  }
+  ctx.stroke();
+}
+function drawTwoHist(){
+  const {ctx,w,h}=clearCanvas('chart-two-hist'); if(!ctx) return;
+  const gap=30;
+  const leftArea = {x0:46, x1: w/2-gap/2, y0:h-36, y1:20};
+  const rightArea = {x0: w/2+gap/2, x1: w-14, y0:h-36, y1:20};
+  const c1=[7,42,68,51,31,19,12,7,3,4]; const max1=70;
+  drawAxesBox(ctx,leftArea,0,50,0,max1,{xticks:2,yticks:2,xlabel:'total_bill',ylabel:'Count'});
+  drawBars(ctx,leftArea,c1,0,max1,'#4c72b0','#33517d');
+  const c2=[14,55,41,25,7,3,2,1,1,1]; const max2=60;
+  drawAxesBox(ctx,rightArea,0,10,0,max2,{xticks:2,yticks:2,xlabel:'tip',ylabel:'Count'});
+  drawBars(ctx,rightArea,c2,0,max2,'#4c72b0','#33517d');
+}
+function drawJoint(){
+  const {ctx,w,h}=clearCanvas('chart-joint'); if(!ctx) return;
+  const topH=46, rightW=66;
+  const mainArea={x0:60,x1:w-rightW-16,y0:h-40,y1:topH+24};
+  drawAxesBox(ctx,mainArea,0,50,0,10,{xticks:5,yticks:2,xlabel:'total_bill',ylabel:'tip'});
+  ctx.fillStyle='#4c72b0';
+  for(let i=0;i<80;i++){
+    const x = Math.random()*45+2;
+    const y = Math.min(10, Math.max(0.5, x*0.12 + (Math.random()-0.5)*2.5));
+    const px=mapX(x,0,50,mainArea), py=mapY(y,0,10,mainArea);
+    ctx.beginPath(); ctx.arc(px,py,2,0,Math.PI*2); ctx.fill();
+  }
+  const topArea={x0:mainArea.x0,x1:mainArea.x1,y0:topH+18,y1:6};
+  const topCounts=[2,9,15,16,12,9,6,3,2,1];
+  ctx.fillStyle='#4c72b0';
+  const n=topCounts.length, bw=(topArea.x1-topArea.x0)/n;
+  topCounts.forEach((c,i)=>{
+    const hgt=(c/16)*(topArea.y0-topArea.y1);
+    ctx.fillRect(topArea.x0+i*bw+1, topArea.y0-hgt, bw-2, hgt);
+  });
+  const rightArea={x0:mainArea.x1+10,x1:mainArea.x1+10+rightW-16,y0:mainArea.y0,y1:mainArea.y1};
+  const rightCounts=[14,55,41,25,7,3,2,1,1,1]; const maxR=60;
+  const m=rightCounts.length, bh=(rightArea.y0-rightArea.y1)/m;
+  ctx.fillStyle='#4c72b0';
+  rightCounts.forEach((c,i)=>{
+    const wid=(c/maxR)*(rightArea.x1-rightArea.x0);
+    ctx.fillRect(rightArea.x0, rightArea.y0-(i+1)*bh+1, wid, bh-2);
+  });
+}
+function drawPairplot(useHue){
+  const id = useHue? 'chart-pairplot-hue':'chart-pairplot';
+  const {ctx,w,h}=clearCanvas(id); if(!ctx) return;
+  const vars=['total_bill','tip','size'];
+  const pad=46, gap=8, topPad=16;
+  const cell=(w-pad-gap*2-14)/3;
+  for(let r=0;r<3;r++){
+    for(let c=0;c<3;c++){
+      const x=pad+c*(cell+gap), y=topPad+r*(cell+gap);
+      const area={x0:x,x1:x+cell,y0:y+cell,y1:y};
+      ctx.strokeStyle='#444'; ctx.strokeRect(area.x0,area.y1,cell,cell);
+      if(r===c){
+        const counts=[3,8,12,10,6,3,2,1];
+        const n=counts.length, bw=cell/n;
+        ctx.fillStyle = useHue ? '#4c72b0' : '#7c4dff';
+        counts.forEach((cnt,i)=>{
+          const hgt=(cnt/12)*cell*0.8;
+          ctx.fillRect(area.x0+i*bw+1, area.y0-hgt, bw-2, hgt);
+        });
+        if(useHue){
+          const counts2=[2,5,7,6,4,2,1,1];
+          ctx.fillStyle='#dd8452';
+          counts2.forEach((cnt,i)=>{
+            const hgt=(cnt/12)*cell*0.8;
+            ctx.fillRect(area.x0+i*bw+1, area.y0-hgt, bw-2, hgt);
+          });
+        }
+      } else {
+        ctx.fillStyle = useHue? '#4c72b0':'#7c4dff';
+        for(let i=0;i<22;i++){
+          const px=area.x0+8+Math.random()*(cell-16);
+          const py=area.y0-8-Math.random()*(cell-16);
+          ctx.beginPath(); ctx.arc(px,py,1.6,0,Math.PI*2); ctx.fill();
+        }
+        if(useHue){
+          ctx.fillStyle='#dd8452';
+          for(let i=0;i<14;i++){
+            const px=area.x0+8+Math.random()*(cell-16);
+            const py=area.y0-8-Math.random()*(cell-16);
+            ctx.beginPath(); ctx.arc(px,py,1.6,0,Math.PI*2); ctx.fill();
+          }
+        }
+      }
+      if(c===0){
+        ctx.save(); ctx.translate(16,(area.y0+area.y1)/2); ctx.rotate(-Math.PI/2);
+        ctx.fillStyle='#888'; ctx.font='10px "IBM Plex Mono", monospace'; ctx.textAlign='center';
+        ctx.fillText(vars[r],0,0); ctx.restore();
+      }
+      if(r===2){
+        ctx.fillStyle='#888'; ctx.font='10px "IBM Plex Mono", monospace'; ctx.textAlign='center';
+        ctx.fillText(vars[c], (area.x0+area.x1)/2, area.y0+16);
+      }
+    }
+  }
+  if(useHue){
+    ctx.fillStyle='#4c72b0'; ctx.fillRect(w-92,8,10,10);
+    ctx.fillStyle='#ccc'; ctx.font='10px Sora, sans-serif'; ctx.textAlign='left';
+    ctx.fillText('Male', w-78,17);
+    ctx.fillStyle='#dd8452'; ctx.fillRect(w-92,24,10,10);
+    ctx.fillStyle='#ccc'; ctx.fillText('Female', w-78,33);
+  }
+}
+
+/* ============ SEABORN CATEGORICAL CHARTS ============ */
+function drawCountplot(){
+  const {ctx,w,h}=clearCanvas('chart-countplot'); if(!ctx) return;
+  const area=makeArea(w,h,{l:46,r:14,t:30,b:40});
+  drawCategoricalFrame(ctx,area,0,100,4,'count','countplot: sex, hue=smoker');
+  const groups=[{label:'Male', yes:60, no:97},{label:'Female', yes:33, no:54}];
+  const groupW=(area.x1-area.x0)/2;
+  groups.forEach((g,i)=>{
+    const gx=area.x0+i*groupW;
+    const barW=groupW*0.28;
+    const y1=mapY(g.yes,0,100,area);
+    ctx.fillStyle='#4c72b0'; ctx.fillRect(gx+groupW*0.18,y1,barW,area.y0-y1);
+    const y2=mapY(g.no,0,100,area);
+    ctx.fillStyle='#dd8452'; ctx.fillRect(gx+groupW*0.54,y2,barW,area.y0-y2);
+    ctx.fillStyle='#888'; ctx.font='11px Sora, sans-serif'; ctx.textAlign='center';
+    ctx.fillText(g.label, gx+groupW/2, area.y0+16);
+  });
+  ctx.fillStyle='#4c72b0'; ctx.fillRect(w-130,18,10,10);
+  ctx.fillStyle='#ccc'; ctx.font='10px Sora, sans-serif'; ctx.textAlign='left';
+  ctx.fillText('smoker: Yes', w-116,27);
+  ctx.fillStyle='#dd8452'; ctx.fillRect(w-130,34,10,10);
+  ctx.fillText('smoker: No', w-116,43);
+}
+function drawBarplot(){
+  const {ctx,w,h}=clearCanvas('chart-barplot'); if(!ctx) return;
+  const area=makeArea(w,h,{l:46,r:14,t:30,b:40});
+  drawCategoricalFrame(ctx,area,0,25,5,'total_bill','barplot: mean total_bill by sex');
+  const groups=[{label:'Male', val:20.7, err:1.5},{label:'Female', val:18.1, err:1.7}];
+  const groupW=(area.x1-area.x0)/2;
+  groups.forEach((g)=>{
+    const gx=area.x0+groups.indexOf(g)*groupW;
+    const barW=groupW*0.4;
+    const y1=mapY(g.val,0,25,area);
+    ctx.fillStyle='#4c72b0'; ctx.fillRect(gx+groupW*0.3,y1,barW,area.y0-y1);
+    const yErrTop=mapY(g.val+g.err,0,25,area), yErrBot=mapY(g.val-g.err,0,25,area);
+    ctx.strokeStyle='#222'; ctx.lineWidth=1.5; ctx.beginPath();
+    ctx.moveTo(gx+groupW*0.3+barW/2,yErrTop); ctx.lineTo(gx+groupW*0.3+barW/2,yErrBot); ctx.stroke();
+    ctx.fillStyle='#888'; ctx.font='11px Sora, sans-serif'; ctx.textAlign='center';
+    ctx.fillText(g.label, gx+groupW/2, area.y0+16);
+  });
+}
+function drawSnsBoxplot(){
+  const {ctx,w,h}=clearCanvas('chart-boxplot'); if(!ctx) return;
+  const area=makeArea(w,h,{l:60,r:20,t:20,b:40});
+  drawHFrame(ctx,area,0,10,5,'tip','');
+  const labels=['Thur','Fri','Sat','Sun'];
+  const colors=['#4c72b0','#55a868','#c44e52','#8172b2'];
+  const stats=[
+    {q1:1.5,med:2.3,q3:3.2,lo:1,hi:5.0, out:[5.5,6.5]},
+    {q1:1.6,med:2.0,q3:3.0,lo:1,hi:4.7, out:[]},
+    {q1:1.5,med:2.5,q3:3.5,lo:1,hi:5.0, out:[6.0,6.5,7.0,7.5,9,10]},
+    {q1:1.8,med:3.0,q3:3.7,lo:1,hi:6.5, out:[]}
+  ];
+  const rowH=(area.y0-area.y1)/4;
+  labels.forEach((day,i)=>{
+    const cy=area.y1+rowH*i+rowH/2;
+    const s=stats[i];
+    const xq1=mapX(s.q1,0,10,area), xq3=mapX(s.q3,0,10,area), xmed=mapX(s.med,0,10,area);
+    const xlo=mapX(s.lo,0,10,area), xhi=mapX(s.hi,0,10,area);
+    const boxH=rowH*0.5;
+    ctx.strokeStyle=colors[i]; ctx.lineWidth=1.2;
+    ctx.beginPath(); ctx.moveTo(xlo,cy); ctx.lineTo(xq1,cy); ctx.moveTo(xq3,cy); ctx.lineTo(xhi,cy); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(xlo,cy-boxH*0.25); ctx.lineTo(xlo,cy+boxH*0.25);
+    ctx.moveTo(xhi,cy-boxH*0.25); ctx.lineTo(xhi,cy+boxH*0.25); ctx.stroke();
+    ctx.fillStyle=colors[i]+'33';
+    ctx.fillRect(xq1,cy-boxH/2,xq3-xq1,boxH);
+    ctx.strokeRect(xq1,cy-boxH/2,xq3-xq1,boxH);
+    ctx.strokeStyle='#eee'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(xmed,cy-boxH/2); ctx.lineTo(xmed,cy+boxH/2); ctx.stroke();
+    ctx.fillStyle=colors[i];
+    s.out.forEach(o=>{
+      const xo=mapX(o,0,10,area);
+      ctx.beginPath(); ctx.arc(xo,cy,2.5,0,Math.PI*2); ctx.fill();
+    });
+    ctx.fillStyle='#888'; ctx.font='10px "IBM Plex Mono", monospace'; ctx.textAlign='right';
+    ctx.fillText(day, area.x0-8, cy+3);
+  });
+}
+function drawViolin(){
+  const {ctx,w,h}=clearCanvas('chart-violin'); if(!ctx) return;
+  const area=makeArea(w,h,{l:46,r:14,t:30,b:40});
+  drawCategoricalFrame(ctx,area,0,60,4,'total_bill','violinplot: day vs total_bill');
+  const days=['Thur','Fri','Sat','Sun'];
+  const groupW=(area.x1-area.x0)/4;
+  const colors=['#4c72b0','#55a868','#c44e52','#8172b2'];
+  days.forEach((day,i)=>{
+    const cx=area.x0+groupW*(i+0.5);
+    drawViolinShape(ctx, cx, area, colors[i]);
+    ctx.fillStyle='#888'; ctx.font='11px Sora, sans-serif'; ctx.textAlign='center';
+    ctx.fillText(day, cx, area.y0+16);
+  });
+}
+function drawViolinShape(ctx,cx,area,color){
+  const yMin=0, yMax=60, n=40;
+  const widths=[];
+  for(let i=0;i<=n;i++){
+    const yv=yMin+(yMax-yMin)*i/n;
+    const w_ = 22*Math.exp(-Math.pow((yv-18)/14,2)) + 5*Math.exp(-Math.pow((yv-45)/10,2)) + 1;
+    widths.push(w_);
+  }
+  ctx.fillStyle=color+'55'; ctx.strokeStyle=color; ctx.lineWidth=1.2;
+  ctx.beginPath();
+  for(let i=0;i<=n;i++){
+    const yv=yMin+(yMax-yMin)*i/n;
+    const py=mapY(yv,yMin,yMax,area);
+    const px=cx+widths[i];
+    if(i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+  }
+  for(let i=n;i>=0;i--){
+    const yv=yMin+(yMax-yMin)*i/n;
+    const py=mapY(yv,yMin,yMax,area);
+    const px=cx-widths[i];
+    ctx.lineTo(px,py);
+  }
+  ctx.closePath(); ctx.fill(); ctx.stroke();
+}
+function drawStrip(){
+  const {ctx,w,h}=clearCanvas('chart-strip'); if(!ctx) return;
+  const area=makeArea(w,h,{l:40,r:10,t:16,b:34});
+  drawCategoricalFrame(ctx,area,0,55,3,'total_bill','');
+  const days=['Thur','Fri','Sat','Sun'];
+  const colors=['#4c72b0','#55a868','#c44e52','#8172b2'];
+  const groupW=(area.x1-area.x0)/4;
+  days.forEach((day,i)=>{
+    const cx=area.x0+groupW*(i+0.5);
+    ctx.fillStyle=colors[i];
+    const npts = i===1? 15: (i===0?30: 45);
+    for(let k=0;k<npts;k++){
+      const yv= Math.random()*45+3;
+      const jitter=(Math.random()-0.5)*groupW*0.5;
+      const px=cx+jitter, py=mapY(yv,0,55,area);
+      ctx.beginPath(); ctx.arc(px,py,2,0,Math.PI*2); ctx.fill();
+    }
+    ctx.fillStyle='#888'; ctx.font='10px Sora, sans-serif'; ctx.textAlign='center';
+    ctx.fillText(day,cx,area.y0+16);
+  });
+}
+function drawSwarm(){
+  const {ctx,w,h}=clearCanvas('chart-swarm'); if(!ctx) return;
+  const area=makeArea(w,h,{l:40,r:10,t:16,b:34});
+  drawCategoricalFrame(ctx,area,0,55,3,'total_bill','');
+  const days=['Thur','Fri','Sat','Sun'];
+  const colors=['#4c72b0','#55a868','#c44e52','#8172b2'];
+  const groupW=(area.x1-area.x0)/4;
+  days.forEach((day,i)=>{
+    const cx=area.x0+groupW*(i+0.5);
+    ctx.fillStyle=colors[i];
+    const npts = i===1? 15: (i===0?30: 45);
+    const buckets={};
+    for(let k=0;k<npts;k++){
+      const yv= Math.random()*45+3;
+      const bucket=Math.round(yv/2);
+      buckets[bucket]=(buckets[bucket]||0)+1;
+      const count=buckets[bucket];
+      const offset=(count%2===0? 1:-1)*Math.ceil(count/2)*4;
+      const px=cx+offset, py=mapY(yv,0,55,area);
+      ctx.beginPath(); ctx.arc(px,py,2,0,Math.PI*2); ctx.fill();
+    }
+    ctx.fillStyle='#888'; ctx.font='10px Sora, sans-serif'; ctx.textAlign='center';
+    ctx.fillText(day,cx,area.y0+16);
+  });
+}
+
+/* ============ SEABORN MATRIX CHARTS ============ */
+function drawCorrDemo(){
+  const {ctx,w,h}=clearCanvas('chart-corr-demo'); if(!ctx) return;
+  const area=makeArea(w,h,{l:54,r:14,t:24,b:34});
+  drawAxesBox(ctx,area,1,5,0,1000,{xticks:4,yticks:4,xlabel:'A (Index)'});
+  const B=[1000,900,500,400,300];
+  const C=[100,200,300,400,550];
+  ctx.strokeStyle='#ef476f'; ctx.lineWidth=2; ctx.beginPath();
+  B.forEach((v,i)=>{ const px=mapX(i+1,1,5,area), py=mapY(v,0,1000,area); if(i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py); });
+  ctx.stroke();
+  ctx.strokeStyle='#06d6a0'; ctx.lineWidth=2; ctx.beginPath();
+  C.forEach((v,i)=>{ const px=mapX(i+1,1,5,area), py=mapY(v,0,1000,area); if(i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py); });
+  ctx.stroke();
+  ctx.fillStyle='#ef476f'; ctx.fillRect(w-100,16,12,3);
+  ctx.fillStyle='#ccc'; ctx.font='10px Sora, sans-serif'; ctx.textAlign='left'; ctx.fillText('B (negative corr.)', w-84,21);
+  ctx.fillStyle='#06d6a0'; ctx.fillRect(w-100,32,12,3);
+  ctx.fillText('C (positive corr.)', w-84,37);
+}
+function drawHeatmap(){
+  const {ctx,w,h}=clearCanvas('chart-heatmap'); if(!ctx) return;
+  const vars=['total_bill','tip','size'];
+  const data=[[1,0.6757,0.5983],[0.6757,1,0.4893],[0.5983,0.4893,1]];
+  const pad={l:90,t:20,r:64,b:50};
+  const cell=Math.min((w-pad.l-pad.r)/3,(h-pad.t-pad.b)/3);
+  for(let r=0;r<3;r++){
+    for(let c=0;c<3;c++){
+      const v=data[r][c];
+      const t=(v-0.45)/(1-0.45);
+      const color=heatColor(t);
+      const x=pad.l+c*cell, y=pad.t+r*cell;
+      ctx.fillStyle=color; ctx.fillRect(x,y,cell,cell);
+      ctx.strokeStyle='#0d0d0d'; ctx.strokeRect(x,y,cell,cell);
+      ctx.fillStyle = t>0.5 ? '#1a1a1a':'#eee';
+      ctx.font='13px "IBM Plex Mono", monospace'; ctx.textAlign='center';
+      ctx.fillText(v.toFixed(2), x+cell/2, y+cell/2+4);
+    }
+  }
+  ctx.fillStyle='#888'; ctx.font='10px "IBM Plex Mono", monospace';
+  vars.forEach((v,i)=>{
+    ctx.textAlign='right';
+    ctx.fillText(v, pad.l-8, pad.t+i*cell+cell/2+3);
+    ctx.save(); ctx.translate(pad.l+i*cell+cell/2, pad.t+3*cell+18); ctx.textAlign='center';
+    ctx.fillText(v,0,0); ctx.restore();
+  });
+  const lx=pad.l+3*cell+24, ly=pad.t, lh=3*cell;
+  const grad=ctx.createLinearGradient(0,ly+lh,0,ly);
+  for(let i=0;i<=10;i++) grad.addColorStop(i/10, heatColor(i/10));
+  ctx.fillStyle=grad; ctx.fillRect(lx,ly,18,lh);
+  ctx.strokeStyle='#444'; ctx.strokeRect(lx,ly,18,lh);
+  ctx.fillStyle='#888'; ctx.font='9px "IBM Plex Mono", monospace'; ctx.textAlign='left';
+  ctx.fillText('1.0', lx+22, ly+4);
+  ctx.fillText('0.5', lx+22, ly+lh);
+}
+function drawHeatmap2(){
+  const {ctx,w,h}=clearCanvas('chart-heatmap2'); if(!ctx) return;
+  const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const years=[]; for(let y=1949;y<=1960;y++) years.push(y);
+  const pad={l:50,t:14,r:14,b:50};
+  const cellW=(w-pad.l-pad.r)/years.length;
+  const cellH=(h-pad.t-pad.b)/months.length;
+  const data=[]; let maxV=0;
+  for(let mi=0;mi<12;mi++){
+    const row=[];
+    for(let yi=0;yi<years.length;yi++){
+      const seasonal = 1.3+0.9*Math.sin(((mi-2)/12)*Math.PI*2);
+      const growth = 1 + yi*0.13;
+      const val = Math.round(100*Math.max(0.3,seasonal)*growth);
+      row.push(val);
+      if(val>maxV) maxV=val;
+    }
+    data.push(row);
+  }
+  for(let mi=0;mi<12;mi++){
+    for(let yi=0;yi<years.length;yi++){
+      const v=data[mi][yi];
+      const t=v/maxV;
+      const x=pad.l+yi*cellW, y=pad.t+mi*cellH;
+      ctx.fillStyle=heatColorYlOrRd(t);
+      ctx.fillRect(x,y,cellW,cellH);
+      if(cellW>28){
+        ctx.fillStyle = t>0.55 ? '#3a2400':'#eee';
+        ctx.font='8px "IBM Plex Mono", monospace'; ctx.textAlign='center';
+        ctx.fillText(v.toString(), x+cellW/2, y+cellH/2+3);
+      }
+    }
+  }
+  ctx.fillStyle='#888'; ctx.font='10px "IBM Plex Mono", monospace'; ctx.textAlign='right';
+  months.forEach((m,i)=>{
+    ctx.fillText(m, pad.l-6, pad.t+i*cellH+cellH/2+3);
+  });
+  years.forEach((yr,i)=>{
+    if(i%2===0){
+      ctx.save();
+      ctx.translate(pad.l+i*cellW+cellW/2, pad.t+12*cellH+10);
+      ctx.rotate(-Math.PI/3);
+      ctx.fillStyle='#888'; ctx.font='9px "IBM Plex Mono", monospace'; ctx.textAlign='right';
+      ctx.fillText(yr.toString(),0,0);
+      ctx.restore();
+    }
+  });
+}
+
+/* ============ INIT ALL CHARTS ============ */
+function initCharts(){
+  drawBasic(); drawLabels(); drawSubgrid(); drawSub1(); drawSub4(); drawOO();
+  drawScatter(); drawHist(); drawBox(); drawImg();
+  drawHistSns(); drawHistKde(); drawTwoHist(); drawJoint();
+  drawPairplot(false); drawPairplot(true);
+  drawCountplot(); drawBarplot(); drawSnsBoxplot(); drawViolin(); drawStrip(); drawSwarm();
+  drawCorrDemo(); drawHeatmap(); drawHeatmap2();
+}
+window.addEventListener('DOMContentLoaded', initCharts);
+
+/* ============ NAVIGATION & COPY ============ */
+let visited = new Set(['home']);
+const total = 17;
+
+function nav(id, el, type) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(i => {
+    i.classList.remove('active');
+    i.classList.remove('sns-active');
+  });
+  const pg = document.getElementById('page-' + id);
+  if (pg) pg.classList.add('active');
+  if (el) {
+    el.classList.add(type === 'sns' ? 'sns-active' : 'active');
+  }
+  document.getElementById('ttitle').textContent = el ? el.textContent.trim() : id;
+  visited.add(id);
+  const pct = Math.min(100, Math.round((visited.size / total) * 100));
+  document.getElementById('pfill').style.width = pct + '%';
+  document.getElementById('ppct').textContent = pct + '%';
+  window.scrollTo(0, 0);
+}
+
+function cp(btn) {
+  const block = btn.closest('.cb');
+  const text = block.querySelector('pre').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 2000);
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+    btn.textContent = 'copied!'; btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+</script>
+</body>
+</html>

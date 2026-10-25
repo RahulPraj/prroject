@@ -1,0 +1,1867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NumPy & Pandas — The Complete Course</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&family=Sora:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d0d0d;--surface:#161616;--surface2:#1e1e1e;--border:#2a2a2a;--border2:#333;
+  --np:#4dabf7;--np2:#74c0fc;--pd:#f783ac;--pd2:#faa2c1;
+  --accent:#4dabf7;--accent2:#f783ac;
+  --green:#06d6a0;--red:#ef476f;--yellow:#ffd166;--orange:#fb8500;
+  --text:#f0f0f0;--text2:#a0a0a0;--text3:#555;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;display:flex;min-height:100vh;}
+
+/* SIDEBAR */
+#sidebar{width:260px;min-width:260px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;overflow-y:auto;z-index:100;}
+.sb-logo{padding:20px 18px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.sb-icon{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;background:linear-gradient(135deg,#1864ab,#862e9c);}
+.sb-logo h2{font-size:13.5px;font-weight:700;line-height:1.25;}
+.sb-logo span{font-size:11px;color:var(--text3);}
+.sb-section{padding:13px 18px 5px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text3);}
+.sb-item{display:flex;align-items:center;gap:9px;padding:8px 18px;cursor:pointer;font-size:12.5px;color:var(--text2);border-left:3px solid transparent;transition:all .15s;line-height:1.3;}
+.sb-item:hover{color:var(--text);background:rgba(255,255,255,.04);}
+.sb-item.active{color:var(--np);background:rgba(77,171,247,.08);border-left-color:var(--np);font-weight:600;}
+.sb-item.pd-active{color:var(--pd);background:rgba(247,131,172,.08);border-left-color:var(--pd);}
+.sb-item .ic{width:15px;text-align:center;font-size:13px;flex-shrink:0;}
+.sb-divider{border:none;border-top:1px solid var(--border);margin:8px 0;}
+.prog-wrap{margin:14px;margin-top:auto;background:var(--surface2);border-radius:8px;padding:12px;border:1px solid var(--border);}
+.prog-wrap .lbl{font-size:11px;color:var(--text2);margin-bottom:7px;display:flex;justify-content:space-between;}
+.prog-track{height:5px;background:var(--border2);border-radius:3px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,#1864ab,#4dabf7,#f783ac);border-radius:3px;transition:width .5s ease;}
+
+/* MAIN */
+#main{margin-left:260px;flex:1;display:flex;flex-direction:column;min-height:100vh;}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.topbar-title{font-size:13px;color:var(--text2);}
+.topbar-title b{color:var(--text);}
+.badges{display:flex;gap:8px;}
+.badge{padding:3px 10px;border-radius:20px;font-size:10px;font-weight:600;font-family:'IBM Plex Mono',monospace;}
+.badge-np{background:rgba(77,171,247,.15);color:var(--np);border:1px solid rgba(77,171,247,.3);}
+.badge-pd{background:rgba(247,131,172,.15);color:var(--pd);border:1px solid rgba(247,131,172,.3);}
+
+/* PAGES */
+.page{display:none;padding:36px 44px;max-width:1080px;animation:fadeIn .3s ease;}
+.page.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* PAGE HEADER */
+.page-header{margin-bottom:32px;}
+.phase-tag{display:inline-block;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:3px 9px;border-radius:4px;margin-bottom:10px;font-family:'IBM Plex Mono',monospace;}
+.ph-np{background:rgba(77,171,247,.15);color:var(--np);}
+.ph-pd{background:rgba(247,131,172,.15);color:var(--pd);}
+.ph-np2{background:rgba(116,192,252,.15);color:#74c0fc;}
+.ph-pd2{background:rgba(250,162,193,.15);color:#faa2c1;}
+.ph-adv{background:rgba(6,214,160,.12);color:var(--green);}
+.page-header h1{font-size:34px;font-weight:800;line-height:1.1;margin-bottom:10px;}
+.page-header h1.np-grad{background:linear-gradient(135deg,var(--text) 0%,var(--np) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.page-header h1.pd-grad{background:linear-gradient(135deg,var(--text) 0%,var(--pd) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.page-header p{font-size:14px;color:var(--text2);line-height:1.75;max-width:660px;}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;margin-bottom:22px;}
+.card-title{font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text2);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.card-title::before{content:'';width:3px;height:13px;background:var(--np);border-radius:2px;flex-shrink:0;}
+.card-title.pd-bar::before{background:var(--pd);}
+
+/* CODE BLOCKS */
+.cb{background:#0a0a0a;border:1px solid var(--border);border-radius:8px;margin:14px 0;overflow:hidden;font-family:'IBM Plex Mono',monospace;font-size:12.5px;line-height:1.75;}
+.ch{background:var(--surface2);border-bottom:1px solid var(--border);padding:7px 14px;display:flex;align-items:center;justify-content:space-between;}
+.clang{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--np);font-family:'IBM Plex Mono',monospace;}
+.clang.pd{color:var(--pd);}
+.cpbtn{background:none;border:1px solid var(--border2);color:var(--text2);padding:2px 9px;border-radius:4px;cursor:pointer;font-size:10px;font-family:'IBM Plex Mono',monospace;transition:all .15s;}
+.cpbtn:hover{background:var(--border2);color:var(--text);}
+.cpbtn.copied{color:var(--green);border-color:var(--green);}
+.cbody{padding:14px;overflow-x:auto;}
+.cbody pre{white-space:pre;}
+
+/* Python syntax highlighting */
+.kw{color:#c792ea;font-weight:600;}
+.fn{color:#82aaff;}
+.fn2{color:#ffcb6b;}
+.str{color:#c3e88d;}
+.num{color:#f78c6c;}
+.cmt{color:#546e7a;font-style:italic;}
+.cls{color:#ffcb6b;}
+.imp{color:#c792ea;}
+.op{color:#89ddff;}
+.var{color:#eeffff;}
+.np-c{color:#4dabf7;}
+.pd-c{color:#f783ac;}
+.attr{color:#82aaff;}
+
+/* INFO BOXES */
+.ib{border-radius:8px;padding:14px 18px;margin:14px 0;display:flex;gap:11px;align-items:flex-start;font-size:13px;line-height:1.65;}
+.ib .ico{font-size:17px;flex-shrink:0;margin-top:1px;}
+.ib.info{background:rgba(77,171,247,.07);border:1px solid rgba(77,171,247,.2);}
+.ib.pd{background:rgba(247,131,172,.07);border:1px solid rgba(247,131,172,.2);}
+.ib.warn{background:rgba(255,209,102,.07);border:1px solid rgba(255,209,102,.2);}
+.ib.ok{background:rgba(6,214,160,.07);border:1px solid rgba(6,214,160,.2);}
+.ib.err{background:rgba(239,71,111,.07);border:1px solid rgba(239,71,111,.2);}
+
+/* TABLES */
+.st{width:100%;border-collapse:collapse;font-size:12.5px;margin:10px 0;font-family:'IBM Plex Mono',monospace;}
+.st th{background:var(--surface2);padding:9px 13px;text-align:left;font-weight:600;color:var(--np);border:1px solid var(--border);font-size:11px;letter-spacing:.4px;}
+.st th.pd-h{color:var(--pd);}
+.st td{padding:8px 13px;border:1px solid var(--border);color:var(--text2);}
+.st tr:hover td{background:rgba(255,255,255,.02);}
+.vnull{color:var(--red);font-style:italic;} .vok{color:var(--green);}
+
+/* GRIDS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+
+/* CONCEPT CARDS */
+.cc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;}
+.cc .ico{font-size:22px;margin-bottom:8px;}
+.cc h3{font-size:13px;font-weight:700;margin-bottom:5px;}
+.cc p{font-size:12.5px;color:var(--text2);line-height:1.6;}
+
+/* MISC */
+.ll{list-style:none;}
+.ll li{padding:7px 0;border-bottom:1px solid var(--border);font-size:13.5px;color:var(--text2);display:flex;align-items:flex-start;gap:9px;line-height:1.5;}
+.ll li:last-child{border-bottom:none;}
+.ll li::before{content:'→';color:var(--np);font-weight:700;flex-shrink:0;margin-top:1px;}
+.ll.pd-li li::before{color:var(--pd);}
+.out{background:#080808;border:1px solid var(--border);border-radius:8px;padding:14px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--green);margin:10px 0;}
+.out-lbl{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);font-weight:700;margin-bottom:7px;}
+.hint-box{background:rgba(77,171,247,.07);border:1px solid rgba(77,171,247,.15);border-radius:8px;padding:14px 18px;font-size:13px;color:var(--text2);margin:14px 0;line-height:1.65;}
+.hint-box.pd-hint{background:rgba(247,131,172,.07);border-color:rgba(247,131,172,.15);}
+code{background:#111;border:1px solid var(--border2);border-radius:4px;padding:2px 6px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--np);}
+code.pd{color:var(--pd);}
+
+/* HERO */
+.hero{border-radius:16px;padding:44px;margin-bottom:28px;position:relative;overflow:hidden;border:1px solid var(--border);}
+.hero-np{background:linear-gradient(135deg,#0a1628 0%,#0d0d0d 50%,#0a0a1a 100%);}
+.hero-pd{background:linear-gradient(135deg,#1a0a14 0%,#0d0d0d 50%,#0d0a0a 100%);}
+.hero::before{content:'';position:absolute;top:-50px;right:-50px;width:280px;height:280px;border-radius:50%;}
+.hero-np::before{background:radial-gradient(circle,rgba(29,78,216,.3) 0%,transparent 70%);}
+.hero-pd::before{background:radial-gradient(circle,rgba(157,23,77,.3) 0%,transparent 70%);}
+.hero::after{content:'';position:absolute;bottom:-30px;left:30%;width:180px;height:180px;border-radius:50%;}
+.hero-np::after{background:radial-gradient(circle,rgba(77,171,247,.12) 0%,transparent 70%);}
+.hero-pd::after{background:radial-gradient(circle,rgba(247,131,172,.12) 0%,transparent 70%);}
+.hero h1{font-size:46px;font-weight:800;line-height:1.05;margin-bottom:14px;position:relative;z-index:1;}
+.hero-np h1{background:linear-gradient(135deg,#fff 0%,var(--np) 65%,#74c0fc 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hero-pd h1{background:linear-gradient(135deg,#fff 0%,var(--pd) 65%,#faa2c1 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hero p{font-size:15px;color:var(--text2);line-height:1.8;max-width:580px;position:relative;z-index:1;margin-bottom:26px;}
+.hero-stats{display:flex;gap:28px;position:relative;z-index:1;}
+.hs .val{font-size:26px;font-weight:800;}
+.hero-np .hs .val{color:var(--np);}
+.hero-pd .hs .val{color:var(--pd);}
+.hs .lbl{font-size:11px;color:var(--text3);margin-top:2px;}
+
+@media(max-width:860px){#sidebar{transform:translateX(-100%);}#main{margin-left:0;}.page{padding:22px 18px;}.g2,.g3{grid-template-columns:1fr;}.hero h1{font-size:30px;}}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <div class="sb-logo">
+    <div class="sb-icon">🔬</div>
+    <div><h2>NumPy & Pandas</h2><span>The Complete Course</span></div>
+  </div>
+
+  <div class="sb-section">Getting Started</div>
+  <div class="sb-item active" onclick="nav('home',this)"><span class="ic">🏠</span>Home</div>
+  <div class="sb-item" onclick="nav('setup',this)"><span class="ic">⚙️</span>Notebooks & Setup</div>
+
+  <div class="sb-section">NumPy</div>
+  <div class="sb-item" onclick="nav('numpy-intro',this)"><span class="ic">📐</span>What is NumPy?</div>
+  <div class="sb-item" onclick="nav('numpy-arrays',this)"><span class="ic">📦</span>NumPy Arrays</div>
+  <div class="sb-item" onclick="nav('array-creation',this)"><span class="ic">🏗️</span>Array Creation Functions</div>
+  <div class="sb-item" onclick="nav('array-attributes',this)"><span class="ic">🔍</span>Array Attributes & Methods</div>
+  <div class="sb-item" onclick="nav('indexing-slicing',this)"><span class="ic">✂️</span>Indexing & Slicing</div>
+  <div class="sb-item" onclick="nav('array-ops',this)"><span class="ic">➕</span>Array Operations</div>
+  <div class="sb-item" onclick="nav('matrix-ops',this)"><span class="ic">🔢</span>Matrix Operations</div>
+  <div class="sb-item" onclick="nav('advanced-numpy',this)"><span class="ic">🚀</span>Advanced Array Manipulation</div>
+
+  <div class="sb-section">Pandas</div>
+  <div class="sb-item" onclick="nav('pandas-intro',this)"><span class="ic">🐼</span>What is Pandas?</div>
+  <div class="sb-item" onclick="nav('series',this)"><span class="ic">📊</span>Pandas Series</div>
+  <div class="sb-item" onclick="nav('dataframes',this)"><span class="ic">📋</span>DataFrames</div>
+  <div class="sb-item" onclick="nav('selection',this)"><span class="ic">🎯</span>Selection & Indexing</div>
+  <div class="sb-item" onclick="nav('missing-data',this)"><span class="ic">❓</span>Missing Data</div>
+  <div class="sb-item" onclick="nav('merge-join',this)"><span class="ic">🔗</span>Merge, Join & Concat</div>
+  <div class="sb-item" onclick="nav('groupby',this)"><span class="ic">📊</span>GroupBy & Aggregation</div>
+  <div class="sb-item" onclick="nav('pivot',this)"><span class="ic">🔄</span>Pivot Tables & Crosstab</div>
+  <div class="sb-item" onclick="nav('df-operations',this)"><span class="ic">⚡</span>DataFrame Operations</div>
+  <div class="sb-item" onclick="nav('project',this)"><span class="ic">🎬</span>Feature Extraction Project</div>
+
+  <div class="prog-wrap">
+    <div class="lbl"><span>Progress</span><span id="ppct">5%</span></div>
+    <div class="prog-track"><div class="prog-fill" id="pfill" style="width:5%"></div></div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div id="main">
+  <div class="topbar">
+    <div class="topbar-title"><b id="ttitle">Home</b></div>
+    <div class="badges">
+      <span class="badge badge-np">NumPy</span>
+      <span class="badge badge-pd">Pandas</span>
+    </div>
+  </div>
+<!-- HOME PAGE -->
+<div class="page active" id="page-home">
+  <div class="hero hero-np">
+    <h1>NumPy &amp; Pandas<br>Complete Course</h1>
+    <p>From installing Jupyter Notebooks, creating your first NumPy array, all the way to building a feature extraction project with real anime data. Every concept from your notes — detailed, with code and outputs.</p>
+    <div class="hero-stats">
+      <div class="hs"><div class="val">20</div><div class="lbl">Topics</div></div>
+      <div class="hs"><div class="val">2</div><div class="lbl">Libraries</div></div>
+      <div class="hs"><div class="val">80+</div><div class="lbl">Code Examples</div></div>
+      <div class="hs"><div class="val">1</div><div class="lbl">Real Project</div></div>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-title">NumPy Topics</div>
+      <ul class="ll">
+        <li>Origin of NumPy — why it was created</li>
+        <li>Arrays vs Lists — key differences explained</li>
+        <li>1D vectors and 2D matrices</li>
+        <li>Creation functions: arange, zeros, ones, linspace, random</li>
+        <li>Array attributes: shape, size, dtype</li>
+        <li>Array methods: min, max, sum (row-wise &amp; column-wise)</li>
+        <li>Indexing &amp; Slicing — vectors and matrices</li>
+        <li>Boolean indexing</li>
+        <li>Arithmetic operations &amp; Broadcasting</li>
+        <li>Deep copy vs Shallow copy</li>
+        <li>Matrix operations: multiply (@), dot, transpose</li>
+        <li>Stacking &amp; Splitting arrays</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title pd-bar">Pandas Topics</div>
+      <ul class="ll pd-li">
+        <li>Origin of Pandas — panel data story</li>
+        <li>Series — 1D labeled array from lists, arrays, dicts</li>
+        <li>DataFrames — from dict and list, custom columns</li>
+        <li>Column selection, add &amp; remove columns</li>
+        <li>Row selection with .loc, conditional filtering</li>
+        <li>Missing Data — isna, dropna, fillna, mean fill</li>
+        <li>Merge (inner/left/right/outer), Join, Concat</li>
+        <li>GroupBy + Aggregation (sum, mean, multi-col)</li>
+        <li>Pivot Tables &amp; Crosstab</li>
+        <li>DataFrame operations: shape, columns, info, apply</li>
+        <li>File handling — read_csv, read_excel, read_json</li>
+        <li>Feature Extraction Project — anime.csv with 7 tasks</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- SETUP PAGE -->
+<div class="page" id="page-setup">
+  <div class="page-header">
+    <div class="phase-tag ph-np">Getting Started</div>
+    <h1 class="np-grad">Notebooks & Setup</h1>
+    <p>Before writing any NumPy or Pandas code, you need a place to run it. That place is called a Notebook.</p>
+  </div>
+  <div class="card">
+    <div class="card-title">What is a Notebook?</div>
+    <p style="font-size:13.5px;color:var(--text2);line-height:1.8;margin-bottom:14px">A notebook is a special file (usually <code>.ipynb</code>) that lets you write code, run it, see its output, and add notes, equations, images and charts — all in one place. It's like a smart document where code is live and executable.</p>
+    <div class="g3">
+      <div class="cc"><div class="ico">✍️</div><h3>Write Code</h3><p>Type Python code in cells, one block at a time.</p></div>
+      <div class="cc"><div class="ico">▶️</div><h3>Run Code</h3><p>Press <code>Shift+Enter</code> to execute a cell and see the output instantly.</p></div>
+      <div class="cc"><div class="ico">📝</div><h3>Add Notes</h3><p>Mix Markdown text, images, equations and charts alongside your code.</p></div>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-title">Jupyter Notebook via Anaconda</div>
+      <p style="font-size:13px;color:var(--text2);line-height:1.75;margin-bottom:12px">The most popular notebook is <strong style="color:var(--text)">Jupyter Notebook</strong>. The easiest way to get it is through <strong style="color:var(--text)">Anaconda</strong> — a Python distribution that comes with all data science libraries pre-installed.</p>
+      <div class="cb">
+        <div class="ch"><span class="clang">Shell — Setup Steps</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+        <div class="cbody"><pre><span class="cmt"># Step 1: Download Anaconda from:</span>
+<span class="cmt"># https://www.anaconda.com/download</span>
+
+<span class="cmt"># Step 2: After installing, launch Jupyter</span>
+<span class="cmt"># from Anaconda Navigator or terminal:</span>
+jupyter notebook
+
+<span class="cmt"># Step 3: It opens in your browser</span>
+<span class="cmt"># Navigate to your folder, create new .ipynb file</span>
+
+<span class="cmt"># Step 4: In each cell:</span>
+<span class="cmt"># Enter = new line inside cell</span>
+<span class="cmt"># Shift+Enter = RUN the cell</span></pre></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">VS Code Alternative</div>
+      <p style="font-size:13px;color:var(--text2);line-height:1.75;margin-bottom:12px">If you prefer VS Code, you can install packages directly with pip and run .ipynb files in VS Code with the Jupyter extension.</p>
+      <div class="cb">
+        <div class="ch"><span class="clang">Shell — VS Code Setup</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+        <div class="cbody"><pre><span class="cmt"># Install NumPy</span>
+pip install numpy
+
+<span class="cmt"># Install Pandas</span>
+pip install pandas
+
+<span class="cmt"># Install Jupyter for VS Code</span>
+pip install jupyter
+
+<span class="cmt"># In a notebook cell, you can also use:</span>
+!pip install pandas   <span class="cmt"># the ! runs shell commands</span></pre></div>
+      </div>
+      <div class="ib info"><span class="ico">💡</span><div>All cells in a notebook share the same memory — a variable created in cell 1 is available in cell 5. They are all <strong>interconnected</strong>.</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Your First Cells</div>
+    <div class="cb">
+      <div class="ch"><span class="clang">Python — First cells in Jupyter</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="cmt"># Cell 1: Import both libraries</span>
+<span class="imp">import</span> <span class="np-c">numpy</span> <span class="imp">as</span> <span class="np-c">np</span>
+<span class="imp">import</span> <span class="pd-c">pandas</span> <span class="imp">as</span> <span class="pd-c">pd</span>
+
+<span class="cmt"># Cell 2: Quick test</span>
+<span class="fn">print</span>(<span class="np-c">np</span>.__version__)  <span class="cmt"># NumPy version</span>
+<span class="fn">print</span>(<span class="pd-c">pd</span>.__version__)  <span class="cmt"># Pandas version</span>
+
+<span class="cmt"># Cell 3: Cells are interconnected!</span>
+<span class="kw">def</span> <span class="fn2">hello</span>():
+    <span class="fn">print</span>(<span class="str">"hello how are you"</span>)
+
+<span class="fn2">hello</span>()  <span class="cmt"># call in same or later cell</span></pre></div>
+      </div>
+  </div>
+</div>
+
+<!-- NUMPY INTRO -->
+<div class="page" id="page-numpy-intro">
+  <div class="page-header">
+    <div class="phase-tag ph-np">NumPy</div>
+    <h1 class="np-grad">What is NumPy?</h1>
+    <p>NumPy (Numerical Python) is the foundation of all data science and machine learning in Python. It provides fast, efficient arrays and mathematical operations on them.</p>
+  </div>
+  <div class="card">
+    <div class="card-title">The Origin Story</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;gap:14px;padding:14px;background:var(--surface2);border-radius:8px;border:1px solid var(--border)">
+        <span style="font-size:20px;flex-shrink:0">📅</span>
+        <div><div style="font-size:12px;font-weight:700;color:var(--np);margin-bottom:3px">EARLY PYTHON — The Problem</div><div style="font-size:12.5px;color:var(--text2);line-height:1.65">Python was powerful for maths and science — but it had no efficient way to handle large arrays of numbers. Lists work, but are slow for numerical computation.</div></div>
+      </div>
+      <div style="display:flex;gap:14px;padding:14px;background:var(--surface2);border-radius:8px;border:1px solid var(--border)">
+        <span style="font-size:20px;flex-shrink:0">📐</span>
+        <div><div style="font-size:12px;font-weight:700;color:var(--np);margin-bottom:3px">1995 — Jim Hugunin builds Numeric</div><div style="font-size:12.5px;color:var(--text2);line-height:1.65">Introduced array support. Solved the basic problem but performance was not ideal.</div></div>
+      </div>
+      <div style="display:flex;gap:14px;padding:14px;background:var(--surface2);border-radius:8px;border:1px solid var(--border)">
+        <span style="font-size:20px;flex-shrink:0">⚡</span>
+        <div><div style="font-size:12px;font-weight:700;color:var(--np);margin-bottom:3px">Early 2000s — Numarray developed</div><div style="font-size:12.5px;color:var(--text2);line-height:1.65">Another attempt to fix performance issues. Still didn't fully resolve them.</div></div>
+      </div>
+      <div style="display:flex;gap:14px;padding:14px;background:rgba(77,171,247,.1);border-radius:8px;border:1px solid rgba(77,171,247,.25)">
+        <span style="font-size:20px;flex-shrink:0">🏆</span>
+        <div><div style="font-size:12px;font-weight:700;color:var(--np);margin-bottom:3px">2005 — Travis Oliphant creates NumPy</div><div style="font-size:12.5px;color:var(--text2);line-height:1.65">Combined Numeric + Numarray. Written in <strong style="color:var(--text)">C</strong> — a compiled language — making it highly efficient and fast. This is the NumPy we use today.</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">NumPy Array vs Python List</div>
+    <table class="st">
+      <tr><th>Feature</th><th>Python List</th><th>NumPy Array</th></tr>
+      <tr><td>Data types</td><td>Mixed allowed (int, str, float together)</td><td class="vok">Same data type only</td></tr>
+      <tr><td>Performance</td><td>Slower (Python loops)</td><td class="vok">Much faster (C-level)</td></tr>
+      <tr><td>Memory</td><td>Low efficiency</td><td class="vok">High efficiency</td></tr>
+      <tr><td>Vector ops</td><td>Manual loops needed</td><td class="vok">Easy + fast (no loops!)</td></tr>
+      <tr><td>Dimensions</td><td>1D only (nested lists for 2D)</td><td class="vok">Multi-dimensional (nD)</td></tr>
+      <tr><td>Math operations</td><td>Need loops or list comprehension</td><td class="vok">Direct: arr + 10 works</td></tr>
+    </table>
+    <div class="ib info"><span class="ico">💡</span><div>NumPy arrays force all elements to be the <strong>same data type</strong>. If you mix int and string, NumPy converts everything to string. This is called <strong>type coercion</strong>.</div></div>
+  </div>
+</div>
+
+<!-- NUMPY ARRAYS -->
+<div class="page" id="page-numpy-arrays">
+  <div class="page-header">
+    <div class="phase-tag ph-np">NumPy</div>
+    <h1 class="np-grad">NumPy Arrays</h1>
+    <p>In NumPy, we work with two kinds of arrays: 1D vectors and multi-dimensional matrices. Arrays are the core of NumPy — everything else is built on top of them.</p>
+  </div>
+  <div class="card">
+    <div class="card-title">Two Kinds of NumPy Arrays</div>
+    <div class="g2">
+      <div>
+        <p style="font-size:13px;font-weight:700;color:var(--np);margin-bottom:8px">1. Vector — 1D Array</p>
+        <p style="font-size:12.5px;color:var(--text2);margin-bottom:10px">A single row of numbers. Like a Python list but faster.</p>
+        <div class="out"><div class="out-lbl">Example</div>[1, 2, 3, 4, 5]</div>
+      </div>
+      <div>
+        <p style="font-size:13px;font-weight:700;color:var(--np);margin-bottom:8px">2. Matrix — 2D (or nD) Array</p>
+        <p style="font-size:12.5px;color:var(--text2);margin-bottom:10px">Rows and columns — like a grid or table. Can be 2D, 3D, or more.</p>
+        <div class="out"><div class="out-lbl">Example</div>[[1,2,3],<br>[4,5,6]]</div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Creating 1D and 2D Arrays</div>
+    <div class="cb">
+      <div class="ch"><span class="clang">Python — np.array()</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="imp">import</span> <span class="np-c">numpy</span> <span class="imp">as</span> <span class="np-c">np</span>
+
+<span class="cmt"># 1D array (vector)</span>
+arr_1d = <span class="np-c">np</span>.<span class="fn">array</span>([<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>,<span class="num">4</span>,<span class="num">5</span>])
+<span class="fn">print</span>(<span class="str">"1D array:"</span>, arr_1d)
+
+<span class="cmt"># 2D array (matrix) — list of lists</span>
+arr_2d = <span class="np-c">np</span>.<span class="fn">array</span>([[<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>],[<span class="num">4</span>,<span class="num">5</span>,<span class="num">6</span>]])
+<span class="fn">print</span>(<span class="str">"2D array:\n"</span>, arr_2d)</pre></div>
+    </div>
+    <div class="out"><div class="out-lbl">Output</div>1D array:  [1 2 3 4 5]<br>2D array:<br> [[1 2 3]<br>  [4 5 6]]</div>
+  </div>
+  <div class="card">
+    <div class="card-title">List vs Array — Type Coercion</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px">A list can accept different data types. A NumPy array <strong style="color:var(--text)">converts everything to the same type</strong>. If you mix int with string, NumPy converts all values to strings.</p>
+    <div class="cb">
+      <div class="ch"><span class="clang">Python — Type Coercion</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="cmt"># List: mixed types allowed</span>
+l = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3.5</span>, <span class="str">"hello"</span>]
+<span class="fn">print</span>(<span class="str">"list:"</span>, l)
+
+<span class="cmt"># Array: NumPy converts ALL to same type</span>
+<span class="np-c">np</span>.<span class="fn">array</span>(l)</pre></div>
+    </div>
+    <div class="out"><div class="out-lbl">Output</div>list:  [1, 2, 3.5, 'hello']<br>array(['1', '2', '3.5', 'hello'], dtype='&lt;U32')  ← ALL converted to string!</div>
+  </div>
+</div>
+
+<!-- ARRAY CREATION FUNCTIONS -->
+<div class="page" id="page-array-creation">
+  <div class="page-header">
+    <div class="phase-tag ph-np">NumPy</div>
+    <h1 class="np-grad">Array Creation Functions</h1>
+    <p>NumPy provides several functions to generate arrays without manually typing every value — useful for creating test data, grids, and mathematical sequences.</p>
+  </div>
+  <div class="card">
+    <div class="card-title">1. np.arange() — Range of Numbers</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px">Works like Python's <code>range()</code> but returns a NumPy array. Takes <code>start</code>, <code>stop</code>, optional <code>step</code>.</p>
+    <div class="cb">
+      <div class="ch"><span class="clang">Python</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="cmt"># arange(start, stop) — stop is excluded</span>
+<span class="np-c">np</span>.<span class="fn">arange</span>(<span class="num">1</span>, <span class="num">11</span>)
+<span class="cmt"># array([ 1,  2,  3,  4,  5,  6,  7,  8,  9, 10])</span>
+
+<span class="cmt"># With step</span>
+<span class="np-c">np</span>.<span class="fn">arange</span>(<span class="num">0</span>, <span class="num">20</span>, <span class="num">2</span>)
+<span class="cmt"># array([ 0,  2,  4,  6,  8, 10, 12, 14, 16, 18])</span></pre></div>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-title">2. np.zeros() — All Zeros</div>
+      <p style="font-size:12.5px;color:var(--text2);margin-bottom:10px">Create arrays filled with 0.0. Pass a single number for 1D, or a tuple <code>(rows, cols)</code> for 2D.</p>
+      <div class="cb">
+        <div class="ch"><span class="clang">Python</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+        <div class="cbody"><pre><span class="cmt"># 1D zeros</span>
+arr = <span class="np-c">np</span>.<span class="fn">zeros</span>(<span class="num">6</span>)
+<span class="cmt"># [0. 0. 0. 0. 0. 0.]</span>
+
+<span class="cmt"># 2D zeros: 4 rows, 4 columns</span>
+arr = <span class="np-c">np</span>.<span class="fn">zeros</span>((<span class="num">4</span>, <span class="num">4</span>))
+<span class="cmt"># [[0. 0. 0. 0.]
+#  [0. 0. 0. 0.]
+#  [0. 0. 0. 0.]
+#  [0. 0. 0. 0.]]</span></pre></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">3. np.ones() — All Ones</div>
+      <p style="font-size:12.5px;color:var(--text2);margin-bottom:10px">Same as zeros but filled with 1.0. Useful for initializing weight matrices.</p>
+      <div class="cb">
+        <div class="ch"><span class="clang">Python</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+        <div class="cbody"><pre><span class="cmt"># 2D ones: 6 rows, 8 columns</span>
+arr = <span class="np-c">np</span>.<span class="fn">ones</span>((<span class="num">6</span>, <span class="num">8</span>))
+<span class="cmt"># [[1. 1. 1. 1. 1. 1. 1. 1.]
+#  [1. 1. 1. 1. 1. 1. 1. 1.]
+#  ... (6 rows total)]</span></pre></div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">4. np.linspace() — Evenly Spaced Numbers</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px"><code>linspace(start, stop, num)</code> generates <code>num</code> evenly spaced values between <code>start</code> and <code>stop</code> (both endpoints <strong>included</strong>). Unlike <code>arange()</code>, you specify the count, not the step size.</p>
+    <div class="cb">
+      <div class="ch"><span class="clang">Python — linspace examples</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="cmt"># 3 numbers between 1 and 5</span>
+arr = <span class="np-c">np</span>.<span class="fn">linspace</span>(<span class="num">1</span>, <span class="num">5</span>, <span class="num">3</span>)
+<span class="cmt"># array([1., 3., 5.])</span>
+<span class="cmt"># Explanation: 1, then 3 (middle), then 5</span>
+
+<span class="cmt"># 5 numbers between 1 and 5</span>
+arr = <span class="np-c">np</span>.<span class="fn">linspace</span>(<span class="num">1</span>, <span class="num">5</span>, <span class="num">5</span>)
+<span class="cmt"># array([1., 2., 3., 4., 5.])</span>
+
+<span class="cmt"># 10 numbers between 1 and 5</span>
+arr = <span class="np-c">np</span>.<span class="fn">linspace</span>(<span class="num">1</span>, <span class="num">5</span>, <span class="num">10</span>)
+<span class="cmt"># array([1.  , 1.44, 1.89, 2.33, 2.78,
+#        3.22, 3.67, 4.11, 4.56, 5.  ])</span></pre></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">5. Random Generation Functions</div>
+    <div class="cb">
+      <div class="ch"><span class="clang">Python — Random arrays</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="cmt"># rand(): random floats between 0 (inclusive) and 1 (exclusive)</span>
+<span class="np-c">np</span>.random.<span class="fn">rand</span>(<span class="num">5</span>)
+<span class="cmt"># array([0.912, 0.720, 0.025, 0.421, 0.059])</span>
+
+<span class="cmt"># randn(): standard normal distribution (range -3 to +3)</span>
+<span class="np-c">np</span>.random.<span class="fn">randn</span>(<span class="num">10</span>)
+<span class="cmt"># array([ 0.869, 0.202, -2.834, -0.241, -0.398, ...])</span>
+
+<span class="cmt"># randint(start, stop, num): random integers</span>
+<span class="np-c">np</span>.random.<span class="fn">randint</span>(<span class="num">10</span>, <span class="num">20</span>, <span class="num">10</span>)
+<span class="cmt"># array([16, 18, 15, 15, 18, 16, 19, 16, 11, 19])</span></pre></div>
+    </div>
+    <div class="ib info"><span class="ico">💡</span><div><strong>rand()</strong> = uniform distribution (0 to 1). <strong>randn()</strong> = standard normal distribution (mostly between -3 and 3, bell curve). <strong>randint()</strong> = random whole numbers in a range.</div></div>
+  </div>
+</div>
+
+<!-- ARRAY ATTRIBUTES & METHODS -->
+<div class="page" id="page-array-attributes">
+  <div class="page-header">
+    <div class="phase-tag ph-np">NumPy</div>
+    <h1 class="np-grad">Array Attributes & Methods</h1>
+    <p>After creating an array, you need to inspect it and perform operations. Attributes tell you about the array's structure; methods perform calculations on the data.</p>
+  </div>
+  <div class="card">
+    <div class="card-title">Array Attributes — shape, size, dtype</div>
+    <div class="cb">
+      <div class="ch"><span class="clang">Python — Attributes</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre>arr = <span class="np-c">np</span>.<span class="fn">array</span>([[<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>],[<span class="num">4</span>,<span class="num">5</span>,<span class="num">6</span>],[<span class="num">7</span>,<span class="num">8</span>,<span class="num">9</span>]])
+
+<span class="cmt"># shape: returns (rows, columns)</span>
+arr.shape    <span class="cmt"># (3, 3) → 3 rows, 3 columns</span>
+
+<span class="cmt"># size: total number of elements</span>
+arr.size     <span class="cmt"># 9 → 3×3 = 9 elements</span>
+
+<span class="cmt"># dtype: data type of elements</span>
+arr.dtype    <span class="cmt"># dtype('int64')</span>
+
+<span class="cmt"># ndim: number of dimensions</span>
+arr.ndim     <span class="cmt"># 2</span></pre></div>
+    </div>
+    <table class="st">
+      <tr><th>Attribute</th><th>What it returns</th><th>Example</th></tr>
+      <tr><td><code>arr.shape</code></td><td>Tuple of (rows, columns)</td><td>(3, 3)</td></tr>
+      <tr><td><code>arr.size</code></td><td>Total number of elements</td><td>9</td></tr>
+      <tr><td><code>arr.dtype</code></td><td>Data type of elements</td><td>int64</td></tr>
+      <tr><td><code>arr.ndim</code></td><td>Number of dimensions</td><td>2</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-title">Array Methods — min, max, sum</div>
+    <div class="cb">
+      <div class="ch"><span class="clang">Python — Methods</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre>arr = <span class="np-c">np</span>.<span class="fn">array</span>([[<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>],[<span class="num">4</span>,<span class="num">5</span>,<span class="num">6</span>],[<span class="num">7</span>,<span class="num">8</span>,<span class="num">9</span>]])
+
+<span class="cmt"># min(): smallest value in entire array</span>
+arr.<span class="fn">min</span>()    <span class="cmt"># 1</span>
+
+<span class="cmt"># max(): largest value</span>
+arr.<span class="fn">max</span>()    <span class="cmt"># 9</span>
+
+<span class="cmt"># sum(): total of all elements</span>
+arr.<span class="fn">sum</span>()    <span class="cmt"># 45 (1+2+3+4+5+6+7+8+9)</span>
+
+<span class="cmt"># Row-wise vs Column-wise with axis parameter:</span>
+<span class="cmt"># axis=0 → column-wise (collapse rows)</span>
+<span class="np-c">np</span>.<span class="fn">sum</span>(arr, axis=<span class="num">0</span>)   <span class="cmt"># array([12, 15, 18])</span>
+<span class="cmt"># col1: 1+4+7=12, col2: 2+5+8=15, col3: 3+6+9=18</span>
+
+<span class="cmt"># axis=1 → row-wise (collapse columns)</span>
+<span class="np-c">np</span>.<span class="fn">sum</span>(arr, axis=<span class="num">1</span>)   <span class="cmt"># array([ 6, 15, 24])</span>
+<span class="cmt"># row1: 1+2+3=6, row2: 4+5+6=15, row3: 7+8+9=24</span></pre></div>
+    </div>
+    <div class="ib warn"><span class="ico">⚡</span><div><strong>axis=0 means column-wise, axis=1 means row-wise.</strong> Think of axis=0 as "collapsing vertically" (summing down the columns), and axis=1 as "collapsing horizontally" (summing across the rows).</div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">reshape() — Change Shape</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px">Convert a 1D array to a 2D array (or any other shape). The total number of elements must stay the same: <code>30 elements → reshape(6,5) = 6×5 = 30 ✅</code></p>
+    <div class="cb">
+      <div class="ch"><span class="clang">Python</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="cmt"># Create 1D array of 30 elements (1 to 30)</span>
+arr = <span class="np-c">np</span>.<span class="fn">arange</span>(<span class="num">1</span>, <span class="num">31</span>)
+<span class="cmt"># array([ 1,  2,  3, ..., 30])</span>
+
+<span class="cmt"># Reshape to 6 rows × 5 columns</span>
+arr.<span class="fn">reshape</span>(<span class="num">6</span>, <span class="num">5</span>)
+<span class="cmt"># array([[ 1,  2,  3,  4,  5],
+#        [ 6,  7,  8,  9, 10],
+#        [11, 12, 13, 14, 15],
+#        [16, 17, 18, 19, 20],
+#        [21, 22, 23, 24, 25],
+#        [26, 27, 28, 29, 30]])</span>
+
+<span class="cmt"># Chain: create and reshape in one line</span>
+arr = <span class="np-c">np</span>.<span class="fn">arange</span>(<span class="num">1</span>, <span class="num">26</span>).<span class="fn">reshape</span>(<span class="num">5</span>, <span class="num">5</span>)</pre></div>
+    </div>
+  </div>
+</div>
+<!-- INDEXING & SLICING -->
+<div class="page" id="page-indexing-slicing">
+  <div class="page-header">
+    <div class="phase-tag ph-np">NumPy</div>
+    <h1 class="np-grad">Indexing & Slicing</h1>
+    <p>Indexing lets you access a specific element. Slicing lets you extract a portion of an array. Both work differently for 1D vectors and 2D matrices.</p>
+  </div>
+  <div class="card">
+    <div class="card-title">1D Vector — Indexing</div>
+    <div class="cb">
+      <div class="ch"><span class="clang">Python — 1D indexing</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre>arr = <span class="np-c">np</span>.<span class="fn">arange</span>(<span class="num">11</span>, <span class="num">21</span>)
+<span class="cmt"># array([11, 12, 13, 14, 15, 16, 17, 18, 19, 20])</span>
+<span class="cmt">#  idx:   0   1   2   3   4   5   6   7   8   9</span>
+
+<span class="cmt"># Access element at index 6</span>
+arr[<span class="num">6</span>]            <span class="cmt"># 17</span>
+
+<span class="cmt"># .item() extracts a pure Python value (not np.int64)</span>
+arr[<span class="num">6</span>].<span class="fn">item</span>()     <span class="cmt"># 17  (plain Python int)</span></pre></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">1D Vector — Slicing</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px">Slicing syntax: <code>arr[start : stop : step]</code>. First value = start index, second = end index + 1, third = how many steps to skip.</p>
+    <div class="cb">
+      <div class="ch"><span class="clang">Python — 1D slicing</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre>arr = <span class="np-c">np</span>.<span class="fn">arange</span>(<span class="num">11</span>, <span class="num">21</span>)
+<span class="cmt"># array([11, 12, 13, 14, 15, 16, 17, 18, 19, 20])</span>
+
+<span class="cmt"># arr[start:stop] — stop is excluded</span>
+arr[<span class="num">1</span>:<span class="num">5</span>]          <span class="cmt"># array([12, 13, 14, 15])</span>
+
+<span class="cmt"># arr[:stop] — start defaults to 0</span>
+arr[:<span class="num">5</span>]           <span class="cmt"># array([11, 12, 13, 14, 15])</span>
+
+<span class="cmt"># arr[start:] — goes till end</span>
+arr[<span class="num">7</span>:]           <span class="cmt"># array([18, 19, 20])</span>
+
+<span class="cmt"># arr[:] — entire array</span>
+arr[:]            <span class="cmt"># array([11, 12, 13, 14, 15, 16, 17, 18, 19, 20])</span>
+
+<span class="cmt"># arr[start::step] — every 2nd element from index 3</span>
+arr[<span class="num">3</span>::<span class="num">2</span>]         <span class="cmt"># array([14, 16, 18, 20])</span></pre></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">2D Matrix — Indexing</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px">For 2D arrays: pass a single number to get a row. Pass <code>[row, col]</code> to get a single element.</p>
+    <div class="cb">
+      <div class="ch"><span class="clang">Python — 2D indexing</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre>arr = <span class="np-c">np</span>.<span class="fn">arange</span>(<span class="num">1</span>, <span class="num">31</span>).<span class="fn">reshape</span>(<span class="num">6</span>, <span class="num">5</span>)
+<span class="cmt"># [[ 1,  2,  3,  4,  5],
+#  [ 6,  7,  8,  9, 10],
+#  [11, 12, 13, 14, 15],
+#  [16, 17, 18, 19, 20],
+#  [21, 22, 23, 24, 25],
+#  [26, 27, 28, 29, 30]]</span>
+
+<span class="cmt"># Single number → returns full row</span>
+arr[<span class="num">1</span>]            <span class="cmt"># array([ 6,  7,  8,  9, 10])</span>
+
+<span class="cmt"># [row, col] → single element</span>
+arr[<span class="num">0</span>, <span class="num">0</span>]         <span class="cmt"># 1  (row 0, col 0)</span>
+arr[<span class="num">2</span>, <span class="num">3</span>]         <span class="cmt"># 14 (row 2, col 3)</span></pre></div>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-title">2D Matrix — Row & Column Slicing</div>
+      <div class="cb">
+        <div class="ch"><span class="clang">Python</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+        <div class="cbody"><pre><span class="cmt"># Slice rows 0-1, columns 1-2</span>
+arr[<span class="num">0</span>:<span class="num">2</span>, <span class="num">1</span>:<span class="num">3</span>]
+<span class="cmt"># array([[2, 3],
+#        [7, 8]])</span>
+
+<span class="cmt"># From row 3 onward, columns 3 onward</span>
+arr[<span class="num">3</span>:, <span class="num">3</span>:]
+<span class="cmt"># array([[19, 20],
+#        [24, 25],
+#        [29, 30]])</span>
+
+<span class="cmt"># Entire column at index 2 (all rows, col 2)</span>
+arr[:, <span class="num">2</span>]
+<span class="cmt"># array([ 3,  8, 13, 18, 23, 28])</span></pre></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Boolean Indexing</div>
+      <p style="font-size:12.5px;color:var(--text2);margin-bottom:10px">Create a boolean mask array, then use it to filter — returns only elements where mask is True.</p>
+      <div class="cb">
+        <div class="ch"><span class="clang">Python</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+        <div class="cbody"><pre>arr = <span class="np-c">np</span>.<span class="fn">arange</span>(<span class="num">11</span>, <span class="num">21</span>)
+<span class="cmt"># [11, 12, 13, 14, 15, 16, 17, 18, 19, 20]</span>
+
+<span class="cmt"># Boolean mask: True where even</span>
+bool_idx = arr % <span class="num">2</span> == <span class="num">0</span>
+<span class="cmt"># [False, True, False, True, False,
+#   True, False, True, False, True]</span>
+
+<span class="cmt"># Apply mask — only True positions returned</span>
+arr[bool_idx]
+<span class="cmt"># array([12, 14, 16, 18, 20])</span>
+
+<span class="cmt"># One-liner shortcut</span>
+arr[arr > <span class="num">15</span>]
+<span class="cmt"># array([16, 17, 18, 19, 20])</span></pre></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ARRAY OPERATIONS -->
+<div class="page" id="page-array-ops">
+  <div class="page-header">
+    <div class="phase-tag ph-np">NumPy</div>
+    <h1 class="np-grad">Array Operations</h1>
+    <p>NumPy's real power is vectorized operations — math that applies to every element at once, without loops. Plus Broadcasting lets you apply a single value to an entire array.</p>
+  </div>
+  <div class="card">
+    <div class="card-title">Arithmetic Operations Between Arrays</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px">You can use <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>//</code> directly between two arrays. The arrays must be the same size — otherwise NumPy raises a <code>ValueError</code>.</p>
+    <div class="cb">
+      <div class="ch"><span class="clang">Python — Array Arithmetic</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre>a1 = <span class="np-c">np</span>.<span class="fn">array</span>([<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>,<span class="num">4</span>,<span class="num">5</span>])
+a2 = <span class="np-c">np</span>.<span class="fn">array</span>([<span class="num">6</span>,<span class="num">7</span>,<span class="num">8</span>,<span class="num">9</span>,<span class="num">10</span>])
+
+<span class="cmt"># Addition (element-wise)</span>
+a1 + a2      <span class="cmt"># [ 7  9 11 13 15]</span>
+
+<span class="cmt"># Subtraction</span>
+a1 - a2      <span class="cmt"># [-5 -5 -5 -5 -5]</span>
+
+<span class="cmt"># Multiplication (element-wise, NOT matrix multiply)</span>
+a1 * a2      <span class="cmt"># [ 6 14 24 36 50]</span>
+
+<span class="cmt"># Division</span>
+a1 / a2      <span class="cmt"># [0.167 0.286 0.375 0.444 0.5]</span>
+
+<span class="cmt"># Floor division</span>
+a1 // a2     <span class="cmt"># [0 0 0 0 0]</span>
+
+<span class="cmt"># ❌ Different sizes → ValueError</span>
+a3 = <span class="np-c">np</span>.<span class="fn">array</span>([<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>,<span class="num">4</span>,<span class="num">5</span>,<span class="num">6</span>])
+a1 + a3  <span class="cmt"># ValueError: shapes (5,) and (6,) not aligned!</span></pre></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Broadcasting — Apply One Value to Entire Array</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px">Broadcasting means applying a single scalar value to every element of an array. In a Python list, you'd need a loop. In NumPy, you just write it directly.</p>
+    <div class="g2">
+      <div>
+        <p style="font-size:12.5px;font-weight:700;color:var(--red);margin-bottom:8px">❌ List — need a loop</p>
+        <div class="cb"><div class="ch"><span class="clang">Python — List way</span></div><div class="cbody"><pre>l = [<span class="num">10</span>,<span class="num">20</span>,<span class="num">30</span>,<span class="num">40</span>,<span class="num">50</span>]
+<span class="kw">for</span> i <span class="kw">in</span> l:
+    <span class="fn">print</span>(i + <span class="num">10</span>)
+<span class="cmt"># 20, 30, 40, 50, 60</span></pre></div></div>
+      </div>
+      <div>
+        <p style="font-size:12.5px;font-weight:700;color:var(--green);margin-bottom:8px">✅ NumPy — direct broadcasting</p>
+        <div class="cb"><div class="ch"><span class="clang">Python — NumPy way</span><button class="cpbtn" onclick="cp(this)">copy</button></div><div class="cbody"><pre>arr = <span class="np-c">np</span>.<span class="fn">array</span>([<span class="num">10</span>,<span class="num">20</span>,<span class="num">30</span>,<span class="num">40</span>,<span class="num">50</span>])
+arr + <span class="num">10</span>
+<span class="cmt"># array([20, 30, 40, 50, 60])</span></pre></div></div>
+      </div>
+    </div>
+    <div class="cb" style="margin-top:10px">
+      <div class="ch"><span class="clang">Python — Broadcasting in 2D Matrix</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre>arr2 = <span class="np-c">np</span>.<span class="fn">arange</span>(<span class="num">1</span>, <span class="num">26</span>).<span class="fn">reshape</span>(<span class="num">5</span>, <span class="num">5</span>)
+arr2 + <span class="num">10</span>
+<span class="cmt"># [[11, 12, 13, 14, 15],
+#  [16, 17, 18, 19, 20],
+#  [21, 22, 23, 24, 25],
+#  [26, 27, 28, 29, 30],
+#  [31, 32, 33, 34, 35]]</span>
+<span class="cmt"># 10 added to EVERY single element!</span></pre></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Deep Copy vs Shallow Copy</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px">This is a critical concept — how changes in one variable affect another depends on whether it's a deep or shallow copy.</p>
+    <div class="g2">
+      <div>
+        <p style="font-size:12.5px;font-weight:700;color:var(--yellow);margin-bottom:6px">Slicing = Shallow Copy (independent)</p>
+        <div class="cb"><div class="ch"><span class="clang">Python</span><button class="cpbtn" onclick="cp(this)">copy</button></div><div class="cbody"><pre>a = <span class="np-c">np</span>.<span class="fn">arange</span>(<span class="num">1</span>, <span class="num">21</span>)
+slice_ = a[:<span class="num">5</span>]  <span class="cmt"># [1,2,3,4,5]</span>
+slice_ = slice_ * <span class="num">10</span>
+<span class="cmt"># slice_ = [10,20,30,40,50]</span>
+<span class="cmt"># a is UNCHANGED ✅ (different memory)</span></pre></div></div>
+      </div>
+      <div>
+        <p style="font-size:12.5px;font-weight:700;color:var(--red);margin-bottom:6px">Assignment = Deep Copy (shared memory)</p>
+        <div class="cb"><div class="ch"><span class="clang">Python</span><button class="cpbtn" onclick="cp(this)">copy</button></div><div class="cbody"><pre>a = <span class="np-c">np</span>.<span class="fn">arange</span>(<span class="num">1</span>, <span class="num">21</span>)
+b = a          <span class="cmt"># same memory!</span>
+b[<span class="num">0</span>] = <span class="num">99</span>
+<span class="cmt"># b[0] = 99</span>
+<span class="cmt"># a[0] = 99 too! ← CHANGED!</span>
+
+<span class="cmt"># To get a TRUE independent copy:</span>
+b = a.<span class="fn">copy</span>()   <span class="cmt"># now b is independent</span></pre></div></div>
+      </div>
+    </div>
+    <div class="ib warn"><span class="ico">⚠️</span><div><strong>Key rule:</strong> <code>b = a</code> in NumPy creates a reference (same memory). Changing <code>b</code> changes <code>a</code>. Use <code>b = a.copy()</code> to get a completely independent copy.</div></div>
+  </div>
+</div>
+
+<!-- MATRIX OPERATIONS -->
+<div class="page" id="page-matrix-ops">
+  <div class="page-header">
+    <div class="phase-tag ph-np">NumPy</div>
+    <h1 class="np-grad">Matrix Operations</h1>
+    <p>NumPy supports all standard matrix math operations — multiplication, transpose, and more. These are the foundations of machine learning and linear algebra in Python.</p>
+  </div>
+  <div class="card">
+    <div class="card-title">Matrix Multiplication</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px">Important: <code>*</code> does element-wise multiplication. For true matrix multiplication (dot product), use <code>@</code> or <code>np.dot()</code>.</p>
+    <div class="cb">
+      <div class="ch"><span class="clang">Python — Matrix Multiply</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre>A = <span class="np-c">np</span>.<span class="fn">array</span>([[<span class="num">1</span>,<span class="num">2</span>],[<span class="num">3</span>,<span class="num">4</span>]])
+B = <span class="np-c">np</span>.<span class="fn">array</span>([[<span class="num">5</span>,<span class="num">6</span>],[<span class="num">7</span>,<span class="num">8</span>]])
+
+<span class="cmt"># ❌ Element-wise multiply (NOT matrix multiply)</span>
+A * B
+<span class="cmt"># array([[ 5, 12],
+#        [21, 32]])</span>
+
+<span class="cmt"># ✅ True matrix multiplication using @</span>
+A @ B
+<span class="cmt"># array([[19, 22],
+#        [43, 50]])</span>
+<span class="cmt"># 1×5 + 2×7 = 19,  1×6 + 2×8 = 22
+# 3×5 + 4×7 = 43,  3×6 + 4×8 = 50</span>
+
+<span class="cmt"># Same result using np.dot()</span>
+<span class="np-c">np</span>.<span class="fn">dot</span>(A, B)
+<span class="cmt"># array([[19, 22],
+#        [43, 50]])</span></pre></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Transpose — Swap Rows and Columns</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px">Transpose flips the matrix — rows become columns and columns become rows. Use <code>.T</code> attribute.</p>
+    <div class="g2">
+      <div class="cb">
+        <div class="ch"><span class="clang">Python — Transpose</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+        <div class="cbody"><pre>A = <span class="np-c">np</span>.<span class="fn">array</span>([[<span class="num">1</span>,<span class="num">2</span>],[<span class="num">3</span>,<span class="num">4</span>]])
+<span class="cmt"># A = [[1, 2],
+#       [3, 4]]  ← shape (2,2)</span>
+
+A.T
+<span class="cmt"># array([[1, 3],
+#        [2, 4]])  ← rows became cols</span></pre></div>
+      </div>
+      <div class="ib info" style="margin:0"><span class="ico">💡</span><div>For a 2×3 matrix, the transpose is 3×2. Row 0 becomes Column 0. This is used constantly in machine learning (e.g. multiplying weight matrices).</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ADVANCED NUMPY -->
+<div class="page" id="page-advanced-numpy">
+  <div class="page-header">
+    <div class="phase-tag ph-np">NumPy</div>
+    <h1 class="np-grad">Advanced Array Manipulation</h1>
+    <p>Stacking combines arrays together; splitting breaks them apart. These operations are essential when preparing data for machine learning models.</p>
+  </div>
+  <div class="card">
+    <div class="card-title">Stacking Arrays — 3 Types</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px">You can only stack 1D vectors (not matrices of arrays directly). There are 3 ways to stack:</p>
+    <div class="cb">
+      <div class="ch"><span class="clang">Python — vstack, hstack, column_stack</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre>a = <span class="np-c">np</span>.<span class="fn">array</span>([<span class="num">1</span>,<span class="num">2</span>,<span class="num">3</span>,<span class="num">4</span>])
+b = <span class="np-c">np</span>.<span class="fn">array</span>([<span class="num">5</span>,<span class="num">6</span>,<span class="num">7</span>,<span class="num">8</span>])
+
+<span class="cmt"># 1. vstack: vertical stack — stacks row-wise</span>
+<span class="np-c">np</span>.<span class="fn">vstack</span>([a, b])
+<span class="cmt"># array([[1, 2, 3, 4],
+#        [5, 6, 7, 8]])</span>
+
+<span class="cmt"># 2. hstack: horizontal stack — joins end-to-end</span>
+<span class="np-c">np</span>.<span class="fn">hstack</span>([a, b])
+<span class="cmt"># array([1, 2, 3, 4, 5, 6, 7, 8])</span>
+
+<span class="cmt"># 3. column_stack: stacks as columns in a 2D matrix</span>
+<span class="np-c">np</span>.<span class="fn">column_stack</span>([a, b])
+<span class="cmt"># array([[1, 5],
+#        [2, 6],
+#        [3, 7],
+#        [4, 8]])</span></pre></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Splitting Arrays — hsplit & vsplit</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px">Splitting breaks an array into equal pieces. Pass 2 things: the array, and how many parts to split into. Must divide equally — otherwise ValueError.</p>
+    <div class="cb">
+      <div class="ch"><span class="clang">Python — hsplit and vsplit</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre>c = <span class="np-c">np</span>.<span class="fn">arange</span>(<span class="num">16</span>).<span class="fn">reshape</span>(<span class="num">4</span>, <span class="num">4</span>)
+<span class="cmt"># [[ 0,  1,  2,  3],
+#  [ 4,  5,  6,  7],
+#  [ 8,  9, 10, 11],
+#  [12, 13, 14, 15]]</span>
+
+<span class="cmt"># hsplit(c, 2): split horizontally into 2 parts (split columns)</span>
+<span class="np-c">np</span>.<span class="fn">hsplit</span>(c, <span class="num">2</span>)
+<span class="cmt"># [array([[ 0,  1], [ 4,  5], [ 8,  9], [12, 13]]),
+#   array([[ 2,  3], [ 6,  7], [10, 11], [14, 15]])]</span>
+
+<span class="cmt"># vsplit(c, 2): split vertically into 2 parts (split rows)</span>
+<span class="np-c">np</span>.<span class="fn">vsplit</span>(c, <span class="num">2</span>)
+<span class="cmt"># [array([[ 0,  1,  2,  3], [ 4,  5,  6,  7]]),
+#   array([[ 8,  9, 10, 11], [12, 13, 14, 15]])]</span>
+
+<span class="cmt"># ❌ Must divide equally — this gives ValueError:</span>
+<span class="np-c">np</span>.<span class="fn">hsplit</span>(c, <span class="num">3</span>)  <span class="cmt"># 4 cols ÷ 3 = not equal → Error!</span></pre></div>
+    </div>
+    <div class="ib warn"><span class="ico">⚠️</span><div>Always make sure the split divides the array evenly. If you have 4 columns, you can split into 1, 2, or 4 parts — not 3.</div></div>
+  </div>
+</div>
+<!-- PANDAS INTRO -->
+<div class="page" id="page-pandas-intro">
+  <div class="page-header">
+    <div class="phase-tag ph-pd">Pandas</div>
+    <h1 class="pd-grad">What is Pandas?</h1>
+    <p>Pandas is the most widely used Python library for data manipulation and analysis. It gives you powerful tools to work with structured data — tables, spreadsheets, CSV files and more.</p>
+  </div>
+  <div class="card">
+    <div class="card-title pd-bar">The Origin Story</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;gap:14px;padding:14px;background:rgba(247,131,172,.08);border-radius:8px;border:1px solid rgba(247,131,172,.2)">
+        <span style="font-size:20px;flex-shrink:0">💹</span>
+        <div><div style="font-size:12px;font-weight:700;color:var(--pd);margin-bottom:3px">2008 — Wes McKinney, Finance Industry</div><div style="font-size:12.5px;color:var(--text2);line-height:1.65">Wes was working in finance and needed a fast, efficient way to handle large structured data in Python. At the time, Python had no powerful library for this purpose.</div></div>
+      </div>
+      <div style="display:flex;gap:14px;padding:14px;background:var(--surface2);border-radius:8px;border:1px solid var(--border)">
+        <span style="font-size:20px;flex-shrink:0">🔨</span>
+        <div><div style="font-size:12px;font-weight:700;color:var(--pd);margin-bottom:3px">Solution — builds Pandas</div><div style="font-size:12.5px;color:var(--text2);line-height:1.65">He created pandas, now widely used for data cleaning, analysis, transformation, visualization, aggregation, file handling, filtering, and time series analysis.</div></div>
+      </div>
+      <div style="display:flex;gap:14px;padding:14px;background:var(--surface2);border-radius:8px;border:1px solid var(--border)">
+        <span style="font-size:20px;flex-shrink:0">📛</span>
+        <div><div style="font-size:12px;font-weight:700;color:var(--pd);margin-bottom:3px">Name Origin</div><div style="font-size:12.5px;color:var(--text2);line-height:1.65">The name <strong style="color:var(--text)">"pandas"</strong> comes from <strong style="color:var(--text)">"panel data"</strong> — a term in economics for multi-dimensional structured data used in longitudinal studies.</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title pd-bar">Use Cases of Pandas</div>
+    <div class="g2">
+      <ul class="ll pd-li">
+        <li><strong>Data Cleaning</strong> — fix missing values, remove duplicates</li>
+        <li><strong>Data Analysis</strong> — summarize and explore datasets</li>
+        <li><strong>Data Transformation</strong> — reshape, pivot, melt data</li>
+        <li><strong>Data Visualization</strong> — basic charts with .plot()</li>
+      </ul>
+      <ul class="ll pd-li">
+        <li><strong>Data Aggregation</strong> — groupby, sum, mean, count</li>
+        <li><strong>File Handling</strong> — read CSV, Excel, JSON, SQL</li>
+        <li><strong>Data Filtering</strong> — boolean selection, loc, iloc</li>
+        <li><strong>Time Series</strong> — date ranges, resampling, rolling</li>
+      </ul>
+    </div>
+    <div class="cb" style="margin-top:10px">
+      <div class="ch"><span class="clang pd">Python — Install & Import</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="cmt"># Install (if using VS Code)</span>
+!pip install pandas
+
+<span class="cmt"># Import (always use these aliases)</span>
+<span class="imp">import</span> <span class="np-c">numpy</span> <span class="imp">as</span> <span class="np-c">np</span>
+<span class="imp">import</span> <span class="pd-c">pandas</span> <span class="imp">as</span> <span class="pd-c">pd</span>
+
+<span class="cmt"># Pandas is built on top of NumPy</span>
+<span class="cmt"># Everything in pandas internally uses NumPy arrays</span></pre></div>
+    </div>
+  </div>
+</div>
+
+<!-- PANDAS SERIES -->
+<div class="page" id="page-series">
+  <div class="page-header">
+    <div class="phase-tag ph-pd">Pandas</div>
+    <h1 class="pd-grad">Pandas Series</h1>
+    <p>A Series is a 1-Dimensional labeled array capable of holding any data type. Think of it as a column from a spreadsheet — values with an index. Series are <strong>vertical</strong>; arrays are horizontal.</p>
+  </div>
+  <div class="card">
+    <div class="card-title pd-bar">What is a Series?</div>
+    <div class="g2">
+      <div>
+        <p style="font-size:13px;color:var(--text2);line-height:1.75;margin-bottom:10px">A Series has two parts:</p>
+        <ul class="ll pd-li">
+          <li><strong>Index</strong> — labels on the left side (0,1,2 by default or custom)</li>
+          <li><strong>Values</strong> — actual data on the right side</li>
+        </ul>
+        <div class="ib pd"><span class="ico">💡</span><div>A <strong>DataFrame</strong> is a combination of multiple Series — each column is a Series.</div></div>
+      </div>
+      <div class="out" style="margin:0">
+        <div class="out-lbl">Series structure</div>
+        0&nbsp;&nbsp;&nbsp; 10<br>
+        1&nbsp;&nbsp;&nbsp; 20<br>
+        2&nbsp;&nbsp;&nbsp; 30<br>
+        dtype: int64<br><br>
+        ↑ index &nbsp;&nbsp; ↑ values
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title pd-bar">Creating Series — 4 Ways</div>
+    <div class="cb">
+      <div class="ch"><span class="clang pd">Python — pd.Series()</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="imp">import</span> <span class="np-c">numpy</span> <span class="imp">as</span> <span class="np-c">np</span>
+<span class="imp">import</span> <span class="pd-c">pandas</span> <span class="imp">as</span> <span class="pd-c">pd</span>
+
+labels = [<span class="str">'a'</span>, <span class="str">'b'</span>, <span class="str">'c'</span>]
+my_list = [<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>]
+arr = <span class="np-c">np</span>.<span class="fn">array</span>([<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>])
+d = {<span class="num">1</span>:<span class="num">10</span>, <span class="num">2</span>:<span class="num">20</span>, <span class="num">3</span>:<span class="num">30</span>}
+
+<span class="cmt"># Way 1: From a Python list (default index 0,1,2)</span>
+<span class="pd-c">pd</span>.<span class="fn">Series</span>(my_list)
+<span class="cmt"># 0    10
+# 1    20
+# 2    30
+# dtype: int64</span>
+
+<span class="cmt"># Way 2: From a list with CUSTOM labels</span>
+<span class="pd-c">pd</span>.<span class="fn">Series</span>(my_list, index=labels)
+<span class="cmt"># a    10
+# b    20
+# c    30
+# dtype: int64</span>
+
+<span class="cmt"># Way 3: From a NumPy array (same as list)</span>
+<span class="pd-c">pd</span>.<span class="fn">Series</span>(arr)             <span class="cmt"># default index</span>
+<span class="pd-c">pd</span>.<span class="fn">Series</span>(arr, index=labels) <span class="cmt"># custom labels</span>
+
+<span class="cmt"># Way 4: From a dictionary — keys become index!</span>
+<span class="pd-c">pd</span>.<span class="fn">Series</span>(d)
+<span class="cmt"># 1    10
+# 2    20
+# 3    30
+# dtype: int64</span></pre></div>
+    </div>
+  </div>
+</div>
+
+<!-- DATAFRAMES -->
+<div class="page" id="page-dataframes">
+  <div class="page-header">
+    <div class="phase-tag ph-pd">Pandas</div>
+    <h1 class="pd-grad">DataFrames</h1>
+    <p>A DataFrame is a 2-dimensional labeled data structure — like a table with rows and columns. It is a combination of multiple Series. It is the most important structure in Pandas.</p>
+  </div>
+  <div class="card">
+    <div class="card-title pd-bar">Creating DataFrames — 2 Ways</div>
+    <div class="cb">
+      <div class="ch"><span class="clang pd">Python — Way 1: From Dictionary</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="cmt"># Dictionary: keys become column headers</span>
+data = {
+    <span class="str">'Name'</span>:   [<span class="str">'John'</span>, <span class="str">'Anna'</span>, <span class="str">'Peter'</span>, <span class="str">'Linda'</span>],
+    <span class="str">'Age'</span>:    [<span class="num">28</span>, <span class="num">34</span>, <span class="num">29</span>, <span class="num">42</span>],
+    <span class="str">'City'</span>:   [<span class="str">'New York'</span>, <span class="str">'Paris'</span>, <span class="str">'Berlin'</span>, <span class="str">'London'</span>],
+    <span class="str">'Salary'</span>: [<span class="num">65000</span>, <span class="num">70000</span>, <span class="num">62000</span>, <span class="num">85000</span>]
+}
+df = <span class="pd-c">pd</span>.<span class="fn">DataFrame</span>(data)
+df</pre></div>
+    </div>
+    <table class="st">
+      <tr><th></th><th class="pd-h">Name</th><th class="pd-h">Age</th><th class="pd-h">City</th><th class="pd-h">Salary</th></tr>
+      <tr><td>0</td><td>John</td><td>28</td><td>New York</td><td>65000</td></tr>
+      <tr><td>1</td><td>Anna</td><td>34</td><td>Paris</td><td>70000</td></tr>
+      <tr><td>2</td><td>Peter</td><td>29</td><td>Berlin</td><td>62000</td></tr>
+      <tr><td>3</td><td>Linda</td><td>42</td><td>London</td><td>85000</td></tr>
+    </table>
+    <div class="cb" style="margin-top:16px">
+      <div class="ch"><span class="clang pd">Python — Way 2: From List of Lists</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="cmt"># List data — column headers default to 0,1,2,3</span>
+data_list = [
+    [<span class="str">'John'</span>,  <span class="num">28</span>, <span class="str">'New York'</span>, <span class="num">65000</span>],
+    [<span class="str">'Anna'</span>,  <span class="num">34</span>, <span class="str">'Paris'</span>,    <span class="num">70000</span>],
+    [<span class="str">'Peter'</span>, <span class="num">29</span>, <span class="str">'Berlin'</span>,   <span class="num">62000</span>],
+    [<span class="str">'Linda'</span>, <span class="num">42</span>, <span class="str">'London'</span>,   <span class="num">85000</span>]
+]
+df2 = <span class="pd-c">pd</span>.<span class="fn">DataFrame</span>(data_list)
+<span class="cmt"># Columns are: 0, 1, 2, 3  ← ugly defaults</span>
+
+<span class="cmt"># Add column names:</span>
+columns = [<span class="str">"name"</span>, <span class="str">"age"</span>, <span class="str">"city"</span>, <span class="str">"salary"</span>]
+df2 = <span class="pd-c">pd</span>.<span class="fn">DataFrame</span>(data_list, columns=columns)
+<span class="cmt"># Now columns are: name, age, city, salary ✅</span></pre></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title pd-bar">Adding & Removing Columns</div>
+    <div class="cb">
+      <div class="ch"><span class="clang pd">Python — Column Operations</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="cmt"># ADD a new column — provide values for each row</span>
+df2[<span class="str">"description"</span>] = [<span class="str">"Doctor"</span>, <span class="str">"Eng"</span>, <span class="str">"Doctor"</span>, <span class="str">"Eng"</span>]
+<span class="cmt"># df2 now has 5 columns: name, age, city, salary, description</span>
+
+<span class="cmt"># REMOVE a column — drop() returns a copy, doesn't modify original</span>
+df2.<span class="fn">drop</span>(<span class="str">"description"</span>, axis=<span class="num">1</span>)     <span class="cmt"># copy only</span>
+<span class="cmt"># df2 still has description!</span>
+
+<span class="cmt"># Remove PERMANENTLY from original with inplace=True</span>
+df2.<span class="fn">drop</span>(<span class="str">"description"</span>, axis=<span class="num">1</span>, inplace=<span class="kw">True</span>)
+<span class="cmt"># Now df2 no longer has description column</span>
+
+<span class="cmt"># Remove MULTIPLE columns at once</span>
+df2.<span class="fn">drop</span>([<span class="str">"city"</span>, <span class="str">"salary"</span>], axis=<span class="num">1</span>, inplace=<span class="kw">True</span>)
+<span class="cmt"># Only name and age remain</span>
+
+<span class="cmt"># Remove a ROW — change axis to 0</span>
+df2.<span class="fn">drop</span>(<span class="num">0</span>, axis=<span class="num">0</span>, inplace=<span class="kw">True</span>)
+<span class="cmt"># Removes row 0 (John)</span></pre></div>
+    </div>
+    <div class="ib warn"><span class="ico">💡</span><div><code>axis=1</code> means column (vertical). <code>axis=0</code> means row (horizontal). This is the opposite of what many people expect at first — just remember: <strong>axis=1 for columns, axis=0 for rows</strong>.</div></div>
+  </div>
+</div>
+
+<!-- SELECTION & INDEXING -->
+<div class="page" id="page-selection">
+  <div class="page-header">
+    <div class="phase-tag ph-pd">Pandas</div>
+    <h1 class="pd-grad">Selection & Indexing</h1>
+    <p>Selecting the right rows, columns, or subsets of data is one of the most common operations in Pandas. Here's everything you need to know.</p>
+  </div>
+  <div class="card">
+    <div class="card-title pd-bar">Selecting Columns</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px">You cannot select columns by integer index — you must use the column name as a key. Use <code>df["name"]</code> for one column and <code>df[["name","city"]]</code> for multiple.</p>
+    <div class="cb">
+      <div class="ch"><span class="clang pd">Python — Column Selection</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="cmt"># ❌ This gives KeyError — can't use integer index!</span>
+df2[<span class="num">0</span>]   <span class="cmt"># KeyError: 0</span>
+
+<span class="cmt"># ✅ Use column name as key</span>
+df2[<span class="str">"name"</span>]
+<span class="cmt"># 0     John
+# 1     Anna
+# 2    Peter
+# 3    Linda
+# Name: name, dtype: object</span>
+
+<span class="cmt"># Select MULTIPLE columns — use list of lists [[]]</span>
+df2[[<span class="str">"name"</span>, <span class="str">"city"</span>]]
+<span class="cmt"># Returns a DataFrame with only name and city columns</span>
+
+df2[[<span class="str">"name"</span>, <span class="str">"age"</span>, <span class="str">"salary"</span>]]
+<span class="cmt"># Returns 3 columns together</span></pre></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title pd-bar">Selecting Rows with .loc[]</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px"><code>.loc[]</code> selects rows by label/index. Pass a single number for one row, or a list for multiple rows.</p>
+    <div class="cb">
+      <div class="ch"><span class="clang pd">Python — Row Selection</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="cmt"># Select row at index 0</span>
+df2.<span class="fn">loc</span>[<span class="num">0</span>]
+<span class="cmt"># name        John
+# age           28
+# city    New York
+# salary     65000
+# Name: 0, dtype: object</span>
+
+<span class="cmt"># Select multiple rows</span>
+df2.<span class="fn">loc</span>[[<span class="num">0</span>, <span class="num">1</span>]]
+<span class="cmt"># Returns rows 0 and 1 (John and Anna)</span></pre></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title pd-bar">Selecting Subsets — Rows AND Columns Together</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px">Use <code>df.loc[row_list][column_list]</code> to get specific rows AND specific columns at the same time.</p>
+    <div class="cb">
+      <div class="ch"><span class="clang pd">Python — Subset Selection</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="cmt"># Rows 0,1 + columns city and salary</span>
+df2.<span class="fn">loc</span>[[<span class="num">0</span>,<span class="num">1</span>]][[<span class="str">"city"</span>,<span class="str">"salary"</span>]]
+<span class="cmt">#       city  salary
+# 0  New York   65000
+# 1     Paris   70000</span>
+
+<span class="cmt"># Rows 2,3 + columns name and age</span>
+df2.<span class="fn">loc</span>[[<span class="num">2</span>,<span class="num">3</span>]][[<span class="str">"name"</span>,<span class="str">"age"</span>]]
+<span class="cmt">#     name  age
+# 2  Peter   29
+# 3  Linda   42</span></pre></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title pd-bar">Conditional Selection (Filtering)</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px">Filter rows based on a condition — similar to SQL's WHERE clause. Pass the condition inside <code>df[condition]</code>.</p>
+    <div class="cb">
+      <div class="ch"><span class="clang pd">Python — Conditional Filtering</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="cmt"># Show only people whose age > 30</span>
+df2[df2[<span class="str">"age"</span>] > <span class="num">30</span>]
+<span class="cmt"># Returns Anna (34) and Linda (42)</span>
+
+<span class="cmt"># Multiple conditions: age > 30 AND city is Paris</span>
+<span class="cmt"># Use & for AND, | for OR (NOT 'and'/'or'!)</span>
+df2[(df2[<span class="str">"age"</span>] > <span class="num">30</span>) & (df2[<span class="str">"city"</span>] == <span class="str">'Paris'</span>)]
+<span class="cmt"># Returns only Anna (34, Paris)</span>
+
+<span class="cmt"># Filter salary > 65000</span>
+df2[df2[<span class="str">"salary"</span>] > <span class="num">65000</span>]
+<span class="cmt"># Returns Anna, Linda</span>
+
+<span class="cmt"># Filter with OR: city is Paris OR Berlin</span>
+df2[(df2[<span class="str">"city"</span>] == <span class="str">'Paris'</span>) | (df2[<span class="str">"city"</span>] == <span class="str">'Berlin'</span>)]
+<span class="cmt"># Returns Anna (Paris) and Peter (Berlin)</span></pre></div>
+    </div>
+    <div class="ib warn"><span class="ico">⚠️</span><div>Always wrap each condition in parentheses <code>()</code> when combining with <code>&</code> or <code>|</code>. Using Python's <code>and</code>/<code>or</code> keywords will give a ValueError.</div></div>
+  </div>
+</div>
+<!-- MISSING DATA -->
+<div class="page" id="page-missing-data">
+  <div class="page-header">
+    <div class="phase-tag ph-pd">Pandas</div>
+    <h1 class="pd-grad">Missing Data</h1>
+    <p>Real-world datasets almost always have missing values (NaN = Not a Number). Pandas gives you tools to find, remove, and fill missing data.</p>
+  </div>
+  <div class="card">
+    <div class="card-title pd-bar">What is NaN?</div>
+    <p style="font-size:13.5px;color:var(--text2);line-height:1.8;margin-bottom:12px"><code>np.nan</code> represents a missing or null value. It's not zero, not an empty string — it simply means <strong style="color:var(--text)">the value doesn't exist</strong>. Pandas displays it as <code>NaN</code>.</p>
+    <div class="cb">
+      <div class="ch"><span class="clang pd">Python — Create DataFrame with NaN</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre>data = {
+    <span class="str">'A'</span>: [<span class="num">1</span>, <span class="num">2</span>, <span class="np-c">np</span>.nan, <span class="num">4</span>, <span class="num">5</span>],
+    <span class="str">'B'</span>: [<span class="np-c">np</span>.nan, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>],
+    <span class="str">'C'</span>: [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="np-c">np</span>.nan, <span class="np-c">np</span>.nan],
+    <span class="str">'D'</span>: [<span class="num">1</span>, <span class="np-c">np</span>.nan, <span class="np-c">np</span>.nan, <span class="np-c">np</span>.nan, <span class="num">5</span>]
+}
+df = <span class="pd-c">pd</span>.<span class="fn">DataFrame</span>(data)
+df</pre></div>
+    </div>
+    <table class="st">
+      <tr><th></th><th class="pd-h">A</th><th class="pd-h">B</th><th class="pd-h">C</th><th class="pd-h">D</th></tr>
+      <tr><td>0</td><td>1.0</td><td class="vnull">NaN</td><td>1.0</td><td>1.0</td></tr>
+      <tr><td>1</td><td>2.0</td><td>2.0</td><td>2.0</td><td class="vnull">NaN</td></tr>
+      <tr><td>2</td><td class="vnull">NaN</td><td>3.0</td><td>3.0</td><td class="vnull">NaN</td></tr>
+      <tr><td>3</td><td>4.0</td><td>4.0</td><td class="vnull">NaN</td><td class="vnull">NaN</td></tr>
+      <tr><td>4</td><td>5.0</td><td>5.0</td><td class="vnull">NaN</td><td>5.0</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-title pd-bar">Finding Missing Data</div>
+    <div class="cb">
+      <div class="ch"><span class="clang pd">Python — isna(), sum(), any()</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="cmt"># isna(): returns boolean DataFrame — True=NaN, False=has value</span>
+df.<span class="fn">isna</span>()
+<span class="cmt">#        A      B      C      D
+# 0  False   True  False  False
+# 1  False  False  False   True
+# 2   True  False  False   True
+# 3  False  False   True   True
+# 4  False  False   True  False</span>
+
+<span class="cmt"># Count NaN per column</span>
+df.<span class="fn">isna</span>().<span class="fn">sum</span>()
+<span class="cmt"># A    1
+# B    1
+# C    2
+# D    3</span>
+
+<span class="cmt"># Check if ANY null exists per column (True=yes)</span>
+df.<span class="fn">isna</span>().<span class="fn">any</span>()
+<span class="cmt"># A    True
+# B    True
+# C    True
+# D    True
+# dtype: bool</span></pre></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title pd-bar">Removing Missing Data — dropna()</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px"><code>dropna()</code> works on rows — if any NaN exists in a row, the entire row is removed.</p>
+    <div class="cb">
+      <div class="ch"><span class="clang pd">Python — dropna()</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="cmt"># Remove ANY row that has at least one NaN</span>
+df.<span class="fn">dropna</span>()
+<span class="cmt"># Only row 0 had no NaN in every column... but wait:
+# Row 0 has NaN in B → it gets dropped too!
+# Result: empty (all rows had at least 1 NaN)</span>
+
+<span class="cmt"># thresh=n: keep rows with at least n NON-NULL values</span>
+df.<span class="fn">dropna</span>(thresh=<span class="num">3</span>)
+<span class="cmt"># Keeps rows where at least 3 values are NOT NaN
+# Row 0: A=1, C=1, D=1 (3 non-null) ✅ kept
+# Row 1: A=2, B=2, C=2 (3 non-null) ✅ kept
+# Row 3: A=4, B=4 (2 non-null) ❌ dropped
+# etc.</span></pre></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title pd-bar">Filling Missing Data — fillna()</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px"><code>fillna(value)</code> replaces every NaN with the given value. You can also fill with the column mean — a very common data cleaning technique.</p>
+    <div class="cb">
+      <div class="ch"><span class="clang pd">Python — fillna()</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="cmt"># Fill ALL NaN with 0</span>
+df.<span class="fn">fillna</span>(<span class="num">0</span>)
+<span class="cmt"># Every NaN becomes 0.0</span>
+
+<span class="cmt"># Fill each column with different values (dictionary)</span>
+values = {<span class="str">"A"</span>: <span class="num">0</span>, <span class="str">"B"</span>: <span class="num">100</span>, <span class="str">"C"</span>: <span class="num">300</span>, <span class="str">"D"</span>: <span class="num">400</span>}
+df.<span class="fn">fillna</span>(value=values)
+<span class="cmt"># Column A NaNs → 0
+# Column B NaNs → 100
+# Column C NaNs → 300
+# Column D NaNs → 400</span>
+
+<span class="cmt"># Fill with MEAN of each column (most common in data science!)</span>
+df.<span class="fn">fillna</span>(df.<span class="fn">mean</span>())
+<span class="cmt"># Each NaN is replaced by the average of its column
+# e.g. Column A mean = (1+2+4+5)/4 = 3.0
+# So NaN in A becomes 3.0</span></pre></div>
+    </div>
+    <div class="ib ok"><span class="ico">✅</span><div><strong>Best practice in data science:</strong> Fill missing numeric values with the column mean (<code>df.fillna(df.mean())</code>). This preserves the statistical distribution of the data without introducing bias.</div></div>
+  </div>
+</div>
+
+<!-- MERGE JOIN CONCAT -->
+<div class="page" id="page-merge-join">
+  <div class="page-header">
+    <div class="phase-tag ph-pd">Pandas</div>
+    <h1 class="pd-grad">Merge, Join & Concat</h1>
+    <p>Three ways to combine DataFrames. Merge combines on common columns (like SQL JOIN). Concat stacks them. Join combines on index.</p>
+  </div>
+  <div class="card">
+    <div class="card-title pd-bar">Merge — Combine on Common Column</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px">We have two DataFrames — <code>employees</code> (employee_id, name, dept) and <code>salaries</code> (employee_id, salary, bonus). We merge them on the common key <code>employee_id</code>.</p>
+    <div class="cb">
+      <div class="ch"><span class="clang pd">Python — Setup both DataFrames</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre>employees = <span class="pd-c">pd</span>.<span class="fn">DataFrame</span>({
+    <span class="str">'employee_id'</span>: [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>],
+    <span class="str">'name'</span>:        [<span class="str">'John'</span>, <span class="str">'Anna'</span>, <span class="str">'Peter'</span>, <span class="str">'Linda'</span>, <span class="str">'Bob'</span>],
+    <span class="str">'department'</span>:  [<span class="str">'HR'</span>, <span class="str">'IT'</span>, <span class="str">'Finance'</span>, <span class="str">'IT'</span>, <span class="str">'HR'</span>]
+})
+
+salaries = <span class="pd-c">pd</span>.<span class="fn">DataFrame</span>({
+    <span class="str">'employee_id'</span>: [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">6</span>, <span class="num">7</span>],
+    <span class="str">'salary'</span>:      [<span class="num">60000</span>, <span class="num">80000</span>, <span class="num">65000</span>, <span class="num">70000</span>, <span class="num">90000</span>],
+    <span class="str">'bonus'</span>:       [<span class="num">5000</span>, <span class="num">10000</span>, <span class="num">7000</span>, <span class="num">8000</span>, <span class="num">12000</span>]
+})</pre></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title pd-bar">4 Merge Types — how parameter</div>
+    <div class="cb">
+      <div class="ch"><span class="clang pd">Python — All 4 merge types</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="cmt"># INNER (default): only COMMON employee_ids in both</span>
+<span class="pd-c">pd</span>.<span class="fn">merge</span>(employees, salaries, on=<span class="str">"employee_id"</span>, how=<span class="str">"inner"</span>)
+<span class="cmt"># Returns: ids 1,2,3 (present in both)
+# Linda(4), Bob(5) dropped — not in salaries
+# ids 6,7 dropped — not in employees</span>
+
+<span class="cmt"># LEFT: keep ALL employees, match salary where available</span>
+<span class="pd-c">pd</span>.<span class="fn">merge</span>(employees, salaries, on=<span class="str">"employee_id"</span>, how=<span class="str">"left"</span>)
+<span class="cmt"># Returns all 5 employees
+# Linda(4), Bob(5) get NaN for salary/bonus</span>
+
+<span class="cmt"># RIGHT: keep ALL salaries, match employee where available</span>
+<span class="pd-c">pd</span>.<span class="fn">merge</span>(employees, salaries, on=<span class="str">"employee_id"</span>, how=<span class="str">"right"</span>)
+<span class="cmt"># Returns ids 1,2,3,6,7
+# ids 6,7 get NaN for name/department</span>
+
+<span class="cmt"># OUTER: keep EVERYTHING from both, NaN where missing</span>
+<span class="pd-c">pd</span>.<span class="fn">merge</span>(employees, salaries, on=<span class="str">"employee_id"</span>, how=<span class="str">"outer"</span>)
+<span class="cmt"># Returns all 7 unique ids (1,2,3,4,5,6,7)
+# Fills NaN where data is absent from either side</span></pre></div>
+    </div>
+    <table class="st">
+      <tr><th>how</th><th>Simple Meaning</th><th>Analogy</th></tr>
+      <tr><td><code>"inner"</code></td><td>Only common data</td><td>Intersection of two sets</td></tr>
+      <tr><td><code>"left"</code></td><td>All from left + matching right</td><td>Keep all employees</td></tr>
+      <tr><td><code>"right"</code></td><td>All from right + matching left</td><td>Keep all salaries</td></tr>
+      <tr><td><code>"outer"</code></td><td>Everything from both</td><td>Union of two sets</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-title pd-bar">Concatenation — Stack DataFrames</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px"><code>pd.concat()</code> stacks DataFrames vertically (row-wise) or horizontally (column-wise). Both must have matching column names for vertical concat.</p>
+    <div class="cb">
+      <div class="ch"><span class="clang pd">Python — concat()</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre>df1 = <span class="pd-c">pd</span>.<span class="fn">DataFrame</span>({<span class="str">'A'</span>:[<span class="str">'A0'</span>,<span class="str">'A1'</span>,<span class="str">'A2'</span>], <span class="str">'B'</span>:[<span class="str">'B0'</span>,<span class="str">'B1'</span>,<span class="str">'B2'</span>], <span class="str">'C'</span>:[<span class="str">'C0'</span>,<span class="str">'C1'</span>,<span class="str">'C2'</span>]})
+df2 = <span class="pd-c">pd</span>.<span class="fn">DataFrame</span>({<span class="str">'A'</span>:[<span class="str">'A3'</span>,<span class="str">'A4'</span>,<span class="str">'A5'</span>], <span class="str">'B'</span>:[<span class="str">'B3'</span>,<span class="str">'B4'</span>,<span class="str">'B5'</span>], <span class="str">'C'</span>:[<span class="str">'C3'</span>,<span class="str">'C4'</span>,<span class="str">'C5'</span>]})
+
+<span class="cmt"># Vertical concat (default axis=0): stack rows</span>
+<span class="pd-c">pd</span>.<span class="fn">concat</span>([df1, df2])
+<span class="cmt"># df2 rows appended BELOW df1 rows (6 rows total)</span>
+
+<span class="cmt"># Reverse order</span>
+<span class="pd-c">pd</span>.<span class="fn">concat</span>([df2, df1])
+<span class="cmt"># df1 rows appended below df2 rows</span>
+
+<span class="cmt"># Horizontal concat (axis=1): stack columns side by side</span>
+<span class="pd-c">pd</span>.<span class="fn">concat</span>([df1, df2], axis=<span class="num">1</span>)
+<span class="cmt"># A B C A B C  ← 6 columns total (df1 cols + df2 cols)</span></pre></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title pd-bar">Join — Combine on Index</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px"><code>join()</code> is similar to merge but combines based on the DataFrame's index instead of a column. Also supports how parameter (left, right, inner, outer).</p>
+    <div class="cb">
+      <div class="ch"><span class="clang pd">Python — join()</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre>df1 = <span class="pd-c">pd</span>.<span class="fn">DataFrame</span>({<span class="str">'name'</span>: [<span class="str">'Alice'</span>, <span class="str">'Bob'</span>, <span class="str">'Charlie'</span>]}, index=[<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>])
+df2 = <span class="pd-c">pd</span>.<span class="fn">DataFrame</span>({<span class="str">'score'</span>: [<span class="num">85</span>, <span class="num">90</span>, <span class="num">75</span>]},         index=[<span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>])
+
+<span class="cmt"># Default join (left): all from df1, match df2 by index</span>
+df1.<span class="fn">join</span>(df2)
+<span class="cmt"># index 1 (Alice): score=NaN (not in df2)
+# index 2 (Bob):   score=85
+# index 3 (Charlie): score=90</span>
+
+<span class="cmt"># Outer join: all indices from both</span>
+df1.<span class="fn">join</span>(df2, how=<span class="str">"outer"</span>)
+<span class="cmt"># index 1: Alice, NaN
+# index 2: Bob, 85
+# index 3: Charlie, 90
+# index 4: NaN, 75</span></pre></div>
+    </div>
+  </div>
+</div>
+
+<!-- GROUPBY -->
+<div class="page" id="page-groupby">
+  <div class="page-header">
+    <div class="phase-tag ph-pd">Pandas</div>
+    <h1 class="pd-grad">GroupBy & Aggregation</h1>
+    <p>GroupBy splits data into groups, applies a function to each group, and combines the results. Aggregation means combining multiple values into one summary statistic.</p>
+  </div>
+  <div class="card">
+    <div class="card-title pd-bar">Setup — Sales DataFrame</div>
+    <div class="cb">
+      <div class="ch"><span class="clang pd">Python — Create the data</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre>data = {
+    <span class="str">'Category'</span>: [<span class="str">'A'</span>,<span class="str">'B'</span>,<span class="str">'A'</span>,<span class="str">'B'</span>,<span class="str">'A'</span>,<span class="str">'B'</span>,<span class="str">'A'</span>,<span class="str">'B'</span>],
+    <span class="str">'Store'</span>:    [<span class="str">'S1'</span>,<span class="str">'S1'</span>,<span class="str">'S2'</span>,<span class="str">'S2'</span>,<span class="str">'S1'</span>,<span class="str">'S2'</span>,<span class="str">'S2'</span>,<span class="str">'S1'</span>],
+    <span class="str">'Sales'</span>:    [<span class="num">100</span>,<span class="num">200</span>,<span class="num">150</span>,<span class="num">250</span>,<span class="num">120</span>,<span class="num">180</span>,<span class="num">200</span>,<span class="num">300</span>],
+    <span class="str">'Quantity'</span>: [<span class="num">10</span>,<span class="num">15</span>,<span class="num">12</span>,<span class="num">18</span>,<span class="num">8</span>,<span class="num">20</span>,<span class="num">15</span>,<span class="num">25</span>],
+    <span class="str">'Date'</span>:     <span class="pd-c">pd</span>.<span class="fn">date_range</span>(<span class="str">'2023-01-01'</span>, periods=<span class="num">8</span>)
+}
+df = <span class="pd-c">pd</span>.<span class="fn">DataFrame</span>(data)</pre></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title pd-bar">GroupBy — Single Column</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px"><code>groupby()</code> returns a GroupBy object. To see data, loop over it or call an aggregation function on it.</p>
+    <div class="cb">
+      <div class="ch"><span class="clang pd">Python — groupby()</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="cmt"># groupby gives an object — not directly printable</span>
+cat = df.<span class="fn">groupby</span>(<span class="str">"Category"</span>)
+cat   <span class="cmt"># &lt;DataFrameGroupBy object at 0x...&gt;</span>
+
+<span class="cmt"># Loop to see each group</span>
+<span class="kw">for</span> i, v <span class="kw">in</span> cat:
+    <span class="fn">print</span>(i)  <span class="cmt"># group name: A or B</span>
+    <span class="fn">print</span>(v)  <span class="cmt"># all rows in that group</span>
+
+<span class="cmt"># Sum of Sales per Category</span>
+cat = df.<span class="fn">groupby</span>(<span class="str">"Category"</span>)[<span class="str">"Sales"</span>].<span class="fn">sum</span>()
+<span class="cmt"># Category
+# A    570   ← 100+150+120+200
+# B    930   ← 200+250+180+300
+# Name: Sales, dtype: int64</span></pre></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title pd-bar">GroupBy — Multiple Columns</div>
+    <div class="cb">
+      <div class="ch"><span class="clang pd">Python — Multi-column GroupBy</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="cmt"># Group by Category AND Store, sum Sales</span>
+cat = df.<span class="fn">groupby</span>([<span class="str">"Category"</span>, <span class="str">"Store"</span>])[<span class="str">"Sales"</span>].<span class="fn">sum</span>()
+<span class="cmt"># Category  Store
+# A         S1      220   (100+120)
+#           S2      350   (150+200)
+# B         S1      500   (200+300)
+#           S2      430   (250+180)</span></pre></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title pd-bar">Aggregation — Multiple Stats at Once</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px">Aggregation means combining multiple values into one result. You can get mean, sum, min, max, count, median, and std all at once using <code>.agg()</code>.</p>
+    <div class="cb">
+      <div class="ch"><span class="clang pd">Python — .agg() function</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="cmt"># Mean of Sales column</span>
+df[<span class="str">"Sales"</span>].<span class="fn">mean</span>().<span class="fn">item</span>()   <span class="cmt"># 187.5</span>
+
+<span class="cmt"># Multiple operations at once using .agg()</span>
+df[<span class="str">"Sales"</span>].<span class="fn">agg</span>([<span class="str">"sum"</span>, <span class="str">"mean"</span>, <span class="str">"median"</span>, <span class="str">"min"</span>, <span class="str">"max"</span>, <span class="str">"count"</span>, <span class="str">"std"</span>])
+<span class="cmt"># sum       1500.000000
+# mean       187.500000
+# median     190.000000
+# min        100.000000
+# max        300.000000
+# count        8.000000
+# std         66.062741
+# Name: Sales, dtype: float64</span></pre></div>
+    </div>
+  </div>
+</div>
+<!-- PIVOT TABLES -->
+<div class="page" id="page-pivot">
+  <div class="page-header">
+    <div class="phase-tag ph-pd">Pandas</div>
+    <h1 class="pd-grad">Pivot Tables & Crosstab</h1>
+    <p>Pivot tables let you summarize data dynamically by creating a custom table. Crosstab counts occurrences. Both are powerful for exploring patterns in data.</p>
+  </div>
+  <div class="card">
+    <div class="card-title pd-bar">pivot_table() — Build a Summary Table</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px">You pass 4 things to <code>pivot_table()</code>: the DataFrame, which column to summarize (<code>values</code>), what goes in the rows (<code>index</code>), what goes in the columns (<code>columns</code>), and how to aggregate (<code>aggfunc</code> — default is mean).</p>
+    <div class="cb">
+      <div class="ch"><span class="clang pd">Python — pivot_table()</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="cmt"># Setup: Sales data with Product, Region, Sales</span>
+<span class="imp">import</span> <span class="np-c">numpy</span> <span class="imp">as</span> <span class="np-c">np</span>
+<span class="imp">import</span> <span class="pd-c">pandas</span> <span class="imp">as</span> <span class="pd-c">pd</span>
+
+data = {
+    <span class="str">'Date'</span>:    <span class="pd-c">pd</span>.<span class="fn">date_range</span>(<span class="str">'2023-01-01'</span>, periods=<span class="num">20</span>),
+    <span class="str">'Product'</span>: [<span class="str">'A'</span>,<span class="str">'B'</span>,<span class="str">'C'</span>,<span class="str">'D'</span>] * <span class="num">5</span>,
+    <span class="str">'Region'</span>:  [<span class="str">'East'</span>,<span class="str">'West'</span>,<span class="str">'North'</span>,<span class="str">'South'</span>] * <span class="num">5</span>,
+    <span class="str">'Sales'</span>:   <span class="np-c">np</span>.random.<span class="fn">randint</span>(<span class="num">100</span>, <span class="num">1000</span>, <span class="num">20</span>),
+    <span class="str">'Units'</span>:   <span class="np-c">np</span>.random.<span class="fn">randint</span>(<span class="num">10</span>, <span class="num">100</span>, <span class="num">20</span>),
+}
+df = <span class="pd-c">pd</span>.<span class="fn">DataFrame</span>(data)
+
+<span class="cmt"># Basic pivot: avg Sales by Region (rows) vs Product (cols)</span>
+<span class="pd-c">pd</span>.<span class="fn">pivot_table</span>(df, values=<span class="str">"Sales"</span>, index=<span class="str">"Region"</span>, columns=<span class="str">"Product"</span>)
+<span class="cmt"># Product       A      B      C      D
+# Region
+# East      581.4    NaN    NaN    NaN
+# North       NaN    NaN  508.2    NaN
+# South       NaN    NaN    NaN  637.2
+# West        NaN  546.6    NaN    NaN</span>
+
+<span class="cmt"># Change aggfunc to median</span>
+<span class="pd-c">pd</span>.<span class="fn">pivot_table</span>(df, values=<span class="str">"Sales"</span>, index=<span class="str">"Region"</span>,
+              columns=<span class="str">"Product"</span>, aggfunc=<span class="str">"median"</span>)
+
+<span class="cmt"># Multiple values (Sales AND Units)</span>
+pivot2 = <span class="pd-c">pd</span>.<span class="fn">pivot_table</span>(df, values=[<span class="str">'Sales'</span>,<span class="str">'Units'</span>],
+                          index=<span class="str">'Region'</span>, columns=<span class="str">'Product'</span>)</pre></div>
+    </div>
+    <div class="ib warn"><span class="ico">💡</span><div><strong>Important:</strong> The <code>values</code> column must be numeric. If you pass a text column as values, you will get an error. Default <code>aggfunc</code> is <code>"mean"</code>.</div></div>
+  </div>
+  <div class="card">
+    <div class="card-title pd-bar">crosstab() — Count Occurrences</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px"><code>pd.crosstab()</code> counts how many times each combination appears. It does NOT need a values column — it just counts rows.</p>
+    <div class="cb">
+      <div class="ch"><span class="clang pd">Python — pd.crosstab()</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="cmt"># How many times each Region-Product combo appears</span>
+<span class="pd-c">pd</span>.<span class="fn">crosstab</span>(df[<span class="str">'Region'</span>], df[<span class="str">'Product'</span>])
+<span class="cmt"># Product  A  B  C  D
+# Region
+# East     5  0  0  0
+# North    0  0  5  0
+# South    0  0  0  5
+# West     0  5  0  0</span></pre></div>
+    </div>
+    <table class="st">
+      <tr><th>Feature</th><th class="pd-h">Crosstab</th><th class="pd-h">Pivot Table</th></tr>
+      <tr><td>Default purpose</td><td>Counting rows</td><td>Aggregation (mean, sum…)</td></tr>
+      <tr><td>Needs values column</td><td class="vnull">❌ No</td><td class="vok">✅ Yes</td></tr>
+      <tr><td>Functions (mean, sum)</td><td>Limited</td><td class="vok">Very flexible</td></tr>
+      <tr><td>Simplicity</td><td class="vok">Simple — just count</td><td>More powerful</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- DATAFRAME OPERATIONS -->
+<div class="page" id="page-df-operations">
+  <div class="page-header">
+    <div class="phase-tag ph-pd">Pandas</div>
+    <h1 class="pd-grad">DataFrame Operations</h1>
+    <p>Essential utility functions for inspecting and transforming your DataFrame — shape, columns, info, and applying custom functions to columns.</p>
+  </div>
+  <div class="card">
+    <div class="card-title pd-bar">Setup — Sample DataFrame</div>
+    <div class="cb">
+      <div class="ch"><span class="clang pd">Python — Create df1</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre>df1 = <span class="pd-c">pd</span>.<span class="fn">DataFrame</span>({
+    <span class="str">'A'</span>: [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>],
+    <span class="str">'B'</span>: [<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>, <span class="num">40</span>, <span class="num">50</span>],
+    <span class="str">'C'</span>: [<span class="num">100</span>, <span class="num">200</span>, <span class="num">300</span>, <span class="num">400</span>, <span class="num">500</span>]
+})</pre></div>
+    </div>
+    <table class="st">
+      <tr><th></th><th class="pd-h">A</th><th class="pd-h">B</th><th class="pd-h">C</th></tr>
+      <tr><td>0</td><td>1</td><td>10</td><td>100</td></tr>
+      <tr><td>1</td><td>2</td><td>20</td><td>200</td></tr>
+      <tr><td>2</td><td>3</td><td>30</td><td>300</td></tr>
+      <tr><td>3</td><td>4</td><td>40</td><td>400</td></tr>
+      <tr><td>4</td><td>5</td><td>50</td><td>500</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-title pd-bar">1. shape — 2. columns — 3. info()</div>
+    <div class="cb">
+      <div class="ch"><span class="clang pd">Python — Inspection Methods</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="cmt"># 1. shape: returns (rows, columns)</span>
+df1.shape
+<span class="cmt"># (5, 3)  ← 5 rows, 3 columns</span>
+
+<span class="cmt"># 2. columns: lists all column names</span>
+df1.columns
+<span class="cmt"># Index(['A', 'B', 'C'], dtype='object')</span>
+
+<span class="cmt"># 3. info(): full summary of DataFrame</span>
+df1.<span class="fn">info</span>()
+<span class="cmt"># &lt;class 'pandas.core.frame.DataFrame'&gt;
+# RangeIndex: 5 entries, 0 to 4
+# Data columns (total 3 columns):
+#  #   Column  Non-Null Count  Dtype
+# ---  ------  --------------  -----
+#  0   A       5 non-null      int64
+#  1   B       5 non-null      int64
+#  2   C       5 non-null      int64
+# dtypes: int64(3)
+# memory usage: 252.0 bytes</span>
+
+<span class="cmt"># 4. head(n): first n rows (default 5)</span>
+df1.<span class="fn">head</span>(<span class="num">3</span>)
+
+<span class="cmt"># 5. describe(): stats summary</span>
+df1.<span class="fn">describe</span>()</pre></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title pd-bar">4. apply() — Apply Custom Function to Column</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px"><code>apply()</code> lets you run any Python function on every element of a column. First define your function, then apply it using <code>df["col"].apply(function_name)</code>.</p>
+    <div class="cb">
+      <div class="ch"><span class="clang pd">Python — apply()</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="cmt"># Step 1: Define a function</span>
+<span class="kw">def</span> <span class="fn2">square</span>(x):
+    <span class="kw">return</span> x ** <span class="num">2</span>
+
+<span class="cmt"># Step 2: Apply to column B (shows result, doesn't change df)</span>
+df1[<span class="str">"B"</span>].<span class="fn">apply</span>(square)
+<span class="cmt"># 0     100
+# 1     400
+# 2     900
+# 3    1600
+# 4    2500</span>
+
+<span class="cmt"># Step 3: Save changes back to column B in original df</span>
+df1[<span class="str">"B"</span>] = df1[<span class="str">"B"</span>].<span class="fn">apply</span>(square)
+df1
+<span class="cmt">#    A     B    C
+# 0  1   100  100
+# 1  2   400  200
+# 2  3   900  300
+# 3  4  1600  400
+# 4  5  2500  500</span>
+
+<span class="cmt"># Using lambda (inline function) — same result:</span>
+df1[<span class="str">"B"</span>].<span class="fn">apply</span>(<span class="kw">lambda</span> x: x ** <span class="num">2</span>)</pre></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title pd-bar">File Handling — Read Different File Types</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px">In real projects, you won't create data manually. You'll load it from CSV, Excel, JSON, or databases. Pandas supports all common formats.</p>
+    <table class="st">
+      <tr><th class="pd-h">File Type</th><th class="pd-h">Extension</th><th class="pd-h">Pandas Method</th></tr>
+      <tr><td>CSV (most common)</td><td><code>.csv</code></td><td><code>pd.read_csv("file.csv")</code></td></tr>
+      <tr><td>Excel Spreadsheet</td><td><code>.xlsx</code>, <code>.xls</code></td><td><code>pd.read_excel("file.xlsx")</code></td></tr>
+      <tr><td>JSON / API data</td><td><code>.json</code></td><td><code>pd.read_json("file.json")</code></td></tr>
+      <tr><td>Text / TSV</td><td><code>.txt</code>, <code>.tsv</code></td><td><code>pd.read_csv("f.txt", sep="\t")</code></td></tr>
+      <tr><td>SQL Database</td><td>—</td><td><code>pd.read_sql(query, conn)</code></td></tr>
+      <tr><td>Parquet (big data)</td><td><code>.parquet</code></td><td><code>pd.read_parquet("file.parquet")</code></td></tr>
+      <tr><td>HTML table</td><td><code>.html</code></td><td><code>pd.read_html("file.html")</code></td></tr>
+    </table>
+    <div class="ib pd"><span class="ico">🌐</span><div>Get free real datasets to practice on <strong>Kaggle</strong>: <code>https://www.kaggle.com/datasets</code> — thousands of CSV files across every domain.</div></div>
+  </div>
+</div>
+
+<!-- FEATURE EXTRACTION PROJECT -->
+<div class="page" id="page-project">
+  <div class="page-header">
+    <div class="phase-tag ph-adv">Project</div>
+    <h1 style="background:linear-gradient(135deg,var(--text) 0%,var(--green) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">🎬 Feature Extraction Project</h1>
+    <p>A real data science project using <strong>anime.csv</strong> from Kaggle. We load real data, extract features from messy text, and answer 7 analytical questions.</p>
+  </div>
+  <div class="card">
+    <div class="card-title">Setup — Load the Data</div>
+    <div class="cb">
+      <div class="ch"><span class="clang pd">Python — Step 1 & 2</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="cmt"># Step 1: Import libraries</span>
+<span class="imp">import</span> <span class="pd-c">pandas</span> <span class="imp">as</span> <span class="pd-c">pd</span>
+<span class="imp">import</span> <span class="np-c">numpy</span> <span class="imp">as</span> <span class="np-c">np</span>
+
+<span class="cmt"># Step 2: Load the CSV file</span>
+df = <span class="pd-c">pd</span>.<span class="fn">read_csv</span>(<span class="str">r'anime.csv'</span>)
+
+<span class="cmt"># Step 3: Preview the data</span>
+df.<span class="fn">head</span>()
+<span class="cmt"># Rank  Title                                        Score
+# 1     Fullmetal Alchemist: BrotherhoodTV (64 eps)   9.10
+# 2     Steins;GateTV (24 eps)Apr 2011 - Sep 2012     9.07
+# 3     Bleach: Sennen Kessen-henTV (13 eps)Oct 2022  9.06
+# ...</span></pre></div>
+    </div>
+    <div class="ib info"><span class="ico">👁️</span><div>The <strong>Title</strong> column is messy — it contains the episode count in parentheses like <code>(64 eps)</code> and the air dates like <code>Apr 2009 - Jul 2010</code>. We need to extract these into separate columns.</div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Task 1 — Extract Episode Count Column</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px">The episode count is inside parentheses in the title. We write a function to extract text between <code>(</code> and <code>)</code>.</p>
+    <div class="cb">
+      <div class="ch"><span class="clang pd">Python — extract_episodes() function</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="cmt"># Function to extract text between ( and )</span>
+<span class="kw">def</span> <span class="fn2">extract_episodes</span>(txt):
+    check = <span class="kw">False</span>
+    data = <span class="str">""</span>
+    <span class="kw">for</span> i <span class="kw">in</span> txt:
+        <span class="kw">if</span> i == <span class="str">")"</span>:
+            check = <span class="kw">False</span>
+            <span class="kw">return</span> data
+        <span class="kw">if</span> check == <span class="kw">True</span>:
+            data = data + i
+        <span class="kw">if</span> i == <span class="str">"("</span>:
+            check = <span class="kw">True</span>
+
+<span class="cmt"># Apply function to Title column</span>
+df[<span class="str">'Episodes'</span>] = df[<span class="str">'Title'</span>].<span class="fn">apply</span>(extract_episodes)
+<span class="cmt"># New column Episodes: "64 eps", "24 eps", "13 eps"...</span>
+
+<span class="cmt"># Remove " eps" text from the column</span>
+df[<span class="str">"Episodes"</span>] = df[<span class="str">'Episodes'</span>].str.<span class="fn">replace</span>(<span class="str">" eps"</span>, <span class="str">""</span>)
+<span class="cmt"># Now Episodes: "64", "24", "13"...</span>
+
+<span class="cmt"># Convert string to integer for math operations</span>
+df[<span class="str">'Episodes'</span>] = df[<span class="str">'Episodes'</span>].<span class="fn">astype</span>(<span class="fn">int</span>)
+<span class="cmt"># Now Episodes: 64, 24, 13... (integers!)</span></pre></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Task 2 — Extract Timestamp Column</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px">After the closing bracket, the air dates start: <code>Apr 2009 - Jul 2010</code>. We extract the 20 characters right after the closing <code>)</code>.</p>
+    <div class="cb">
+      <div class="ch"><span class="clang pd">Python — extraction_time() function</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="kw">def</span> <span class="fn2">extraction_time</span>(txt):
+    check = <span class="kw">False</span>
+    data = <span class="str">""</span>
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">len</span>(txt)):
+        <span class="kw">if</span> txt[i] == <span class="str">')'</span>:
+            <span class="cmt"># grab 20 chars after the closing bracket</span>
+            <span class="kw">for</span> j <span class="kw">in</span> <span class="fn">range</span>(i+<span class="num">1</span>, i+<span class="num">20</span>):
+                data += txt[j]
+            <span class="kw">return</span> data
+
+<span class="cmt"># Create Total Time column</span>
+df[<span class="str">'Total Time'</span>] = df[<span class="str">'Title'</span>].<span class="fn">apply</span>(extraction_time)
+<span class="cmt"># Total Time: "Apr 2009 - Jul 2010", "Apr 2011 - Sep 2011"...</span></pre></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Task 2 cont. — Calculate Total Months</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px">Now extract the total months the anime aired (ChatGPT-assisted logic):</p>
+    <div class="cb">
+      <div class="ch"><span class="clang pd">Python — Calculate months from date range</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="cmt"># Split "Apr 2009 - Jul 2010" into start and end</span>
+df[[<span class="str">'start'</span>, <span class="str">'end'</span>]] = df[<span class="str">'Total Time'</span>].str.<span class="fn">split</span>(<span class="str">' - '</span>, expand=<span class="kw">True</span>)
+
+<span class="cmt"># Convert to datetime objects</span>
+df[<span class="str">'start'</span>] = <span class="pd-c">pd</span>.<span class="fn">to_datetime</span>(df[<span class="str">'start'</span>], format=<span class="str">'%b %Y'</span>)
+df[<span class="str">'end'</span>]   = <span class="pd-c">pd</span>.<span class="fn">to_datetime</span>(df[<span class="str">'end'</span>],   format=<span class="str">'%b %Y'</span>)
+
+<span class="cmt"># Calculate total months</span>
+df[<span class="str">'months'</span>] = (
+    (df[<span class="str">'end'</span>].dt.year  - df[<span class="str">'start'</span>].dt.year)  * <span class="num">12</span> +
+    (df[<span class="str">'end'</span>].dt.month - df[<span class="str">'start'</span>].dt.month)
+) + <span class="num">1</span>
+<span class="cmt"># Fullmetal Alchemist: Apr 2009 to Jul 2010 = 16 months</span></pre></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Tasks 3–7 — Analysis Questions</div>
+    <div class="cb">
+      <div class="ch"><span class="clang pd">Python — All analysis tasks</span><button class="cpbtn" onclick="cp(this)">copy</button></div>
+      <div class="cbody"><pre><span class="cmt"># Task 3: Which anime has the HIGHEST SCORE?</span>
+df.<span class="fn">loc</span>[df[<span class="str">'Score'</span>].<span class="fn">idxmax</span>()][<span class="str">'Title'</span>]
+<span class="cmt"># "Fullmetal Alchemist: Brotherhood..." (Score: 9.10)</span>
+
+df[df[<span class="str">'Score'</span>] == df[<span class="str">'Score'</span>].<span class="fn">max</span>()]
+<span class="cmt"># Row with highest score</span>
+
+<span class="cmt"># Task 4: Top 5 highest scoring anime</span>
+df.<span class="fn">nlargest</span>(<span class="num">5</span>, <span class="str">'Score'</span>)[[<span class="str">'Rank'</span>, <span class="str">'Score'</span>]]
+<span class="cmt"># Or using sort:</span>
+df.<span class="fn">sort_values</span>(<span class="str">'Score'</span>, ascending=<span class="kw">False</span>).<span class="fn">head</span>(<span class="num">5</span>)[[<span class="str">'Rank'</span>, <span class="str">'Score'</span>]]
+
+<span class="cmt"># Task 5: Which anime has the HIGHEST EPISODE COUNT?</span>
+df.<span class="fn">loc</span>[df[<span class="str">'Episodes'</span>].<span class="fn">idxmax</span>()][<span class="str">'Title'</span>]
+<span class="cmt"># The anime with most episodes</span>
+
+<span class="cmt"># Task 6: Top 5 animes by episode count</span>
+df.<span class="fn">nlargest</span>(<span class="num">5</span>, <span class="str">'Episodes'</span>)[[<span class="str">'Rank'</span>, <span class="str">'Episodes'</span>]]
+
+<span class="cmt"># Task 7: Which is the LONGEST RUNNING anime (most months)?</span>
+df.<span class="fn">loc</span>[df[<span class="str">'months'</span>].<span class="fn">idxmax</span>()][<span class="str">'Title'</span>]
+<span class="cmt"># The anime that aired for the most months</span>
+
+<span class="cmt"># Bonus: Full summary</span>
+df[df[<span class="str">'months'</span>] == df[<span class="str">'months'</span>].<span class="fn">max</span>()][
+    [<span class="str">'Rank'</span>, <span class="str">'Score'</span>, <span class="str">'Episodes'</span>, <span class="str">'Total Time'</span>, <span class="str">'months'</span>]
+]</pre></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">🏆 All 7 Tasks Summary</div>
+    <table class="st">
+      <tr><th class="pd-h">#</th><th class="pd-h">Task</th><th class="pd-h">Method Used</th></tr>
+      <tr><td>1</td><td>Make new column for episode count</td><td><code>apply(extract_episodes)</code> → <code>str.replace()</code> → <code>astype(int)</code></td></tr>
+      <tr><td>2</td><td>Make new column for timestamp + months</td><td><code>apply(extraction_time)</code> → <code>str.split()</code> → <code>to_datetime()</code></td></tr>
+      <tr><td>3</td><td>Anime with highest score</td><td><code>df['Score'].max()</code> or <code>idxmax()</code></td></tr>
+      <tr><td>4</td><td>Top 5 highest scoring anime</td><td><code>nlargest(5, 'Score')</code> or <code>sort_values().head(5)</code></td></tr>
+      <tr><td>5</td><td>Anime with highest episode count</td><td><code>df['Episodes'].idxmax()</code></td></tr>
+      <tr><td>6</td><td>Top 5 by episode count</td><td><code>nlargest(5, 'Episodes')</code></td></tr>
+      <tr><td>7</td><td>Longest running anime (months)</td><td><code>df['months'].idxmax()</code></td></tr>
+    </table>
+    <div class="ib ok" style="margin-top:14px"><span class="ico">🎉</span><div><strong>Congratulations!</strong> You've completed the full NumPy & Pandas course — from creating your first array to extracting features from real anime data. You now have the foundation for any data science or machine learning project!</div></div>
+  </div>
+</div>
+
+</div><!-- /#main -->
+
+<script>
+let visited = new Set(['home']);
+const total = 20;
+
+function nav(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(i => {
+    i.classList.remove('active');
+    i.classList.remove('pd-active');
+  });
+  const pg = document.getElementById('page-' + id);
+  if (pg) pg.classList.add('active');
+  if (el) {
+    const isPd = ['pandas-intro','series','dataframes','selection','missing-data','merge-join','groupby','pivot','df-operations','project'].includes(id);
+    el.classList.add(isPd ? 'pd-active' : 'active');
+  }
+  document.getElementById('ttitle').textContent = el ? el.textContent.trim() : id;
+  visited.add(id);
+  const pct = Math.min(100, Math.round((visited.size / total) * 100));
+  document.getElementById('pfill').style.width = pct + '%';
+  document.getElementById('ppct').textContent = pct + '%';
+  window.scrollTo(0, 0);
+}
+
+function cp(btn) {
+  const block = btn.closest('.cb');
+  const text = block.querySelector('pre').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 2000);
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+    btn.textContent = 'copied!'; btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+</script>
+</body>
+</html>

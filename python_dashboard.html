@@ -1,0 +1,1442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PyLearn — Python & Data Analytics</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Fraunces:ital,wght@0,300;0,500;0,700;1,300&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0f;--surface:#111118;--surface2:#16161f;--surface3:#1c1c28;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);--text:#f0f0f8;--text2:#9090a8;--text3:#5a5a72;--accent:#7c6aff;--accent2:#a78bfa;--teal:#2dd4bf;--teal2:#5eead4;--amber:#f59e0b;--amber2:#fbbf24;--coral:#f87171;--coral2:#fca5a5;--green:#34d399;--green2:#6ee7b7;--pink:#f472b6;--radius:14px;--radius-sm:8px;--sidebar-w:260px}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 60% at 20% -10%,rgba(124,106,255,0.08),transparent),radial-gradient(ellipse 60% 50% at 80% 110%,rgba(45,212,191,0.06),transparent);pointer-events:none;z-index:0}
+.app{display:flex;min-height:100vh;position:relative;z-index:1}
+.sidebar{width:var(--sidebar-w);min-width:var(--sidebar-w);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;overflow-y:auto;z-index:100;transition:transform .3s cubic-bezier(.4,0,.2,1)}
+.sidebar::-webkit-scrollbar{width:3px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
+.logo-area{padding:20px 20px 16px;border-bottom:1px solid var(--border)}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--accent),var(--teal));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.logo-text{font-size:17px;font-weight:700;color:var(--text);letter-spacing:-.3px}
+.logo-sub{font-size:10px;color:var(--text3);margin-top:1px}
+.progress-bar-wrap{padding:14px 20px 0}
+.progress-label{font-size:10px;color:var(--text3);display:flex;justify-content:space-between;margin-bottom:6px}
+.progress-bar{height:3px;background:var(--surface3);border-radius:99px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--teal));border-radius:99px;transition:width .5s ease;width:0%}
+.nav-section{padding:14px 12px 4px}
+.nav-section-label{font-size:9px;font-weight:600;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;padding:0 8px 8px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;cursor:pointer;transition:all .2s;border:none;background:none;width:100%;text-align:left;color:var(--text2);font-family:'Sora',sans-serif;font-size:12.5px;position:relative;font-weight:400}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:rgba(124,106,255,0.12);color:var(--accent2);font-weight:500}
+.nav-item.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:18px;background:var(--accent);border-radius:0 3px 3px 0}
+.nav-dot{width:5px;height:5px;border-radius:50%;background:var(--text3);flex-shrink:0}
+.nav-item.active .nav-dot{background:var(--accent)}
+.nav-badge{margin-left:auto;font-size:9px;padding:2px 6px;border-radius:99px;background:rgba(45,212,191,0.15);color:var(--teal2);font-weight:600}
+.main{margin-left:var(--sidebar-w);flex:1}
+.page{display:none;padding:32px 36px 60px;max-width:900px;animation:fadeUp .3s ease}
+.page.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.page-eyebrow{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+.page-title{font-family:'Fraunces',serif;font-size:36px;font-weight:700;color:var(--text);line-height:1.15;margin-bottom:10px}
+.page-title span{color:var(--accent2);font-style:italic}
+.page-desc{font-size:14px;color:var(--text2);line-height:1.8;max-width:640px;margin-bottom:24px}
+.page-hero{margin-bottom:28px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;margin-bottom:16px;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--border2),transparent)}
+.card-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px}
+.card-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.card-icon.purple{background:rgba(124,106,255,0.15)}
+.card-icon.teal{background:rgba(45,212,191,0.15)}
+.card-icon.amber{background:rgba(245,158,11,0.15)}
+.card-icon.coral{background:rgba(248,113,113,0.15)}
+.card-icon.green{background:rgba(52,211,153,0.15)}
+.card-title{font-size:15px;font-weight:600;color:var(--text);margin-bottom:3px}
+.card-subtitle{font-size:12px;color:var(--text3)}
+.card-body{font-size:13.5px;color:var(--text2);line-height:1.8}
+.card-body strong{color:var(--text);font-weight:500}
+.code-wrap{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);margin:14px 0;overflow:hidden}
+.code-header{display:flex;align-items:center;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--surface)}
+.code-dots{display:flex;gap:6px;margin-right:10px}
+.code-dot{width:10px;height:10px;border-radius:50%}
+.code-dot:nth-child(1){background:#ff6058}
+.code-dot:nth-child(2){background:#febc2e}
+.code-dot:nth-child(3){background:#28c840}
+.code-filename{font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace}
+.code-body{padding:16px 18px;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.8;overflow-x:auto;white-space:pre}
+.kw{color:#c084fc}.fn{color:#7dd3fc}.str{color:#86efac}.num{color:#fb923c}.cm{color:#4b5563;font-style:italic}.cls{color:#fde68a}
+.output{background:rgba(52,211,153,0.05);border:1px solid rgba(52,211,153,0.2);border-radius:var(--radius-sm);padding:12px 16px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--green2);margin:8px 0}
+.output-label{font-size:10px;font-weight:600;color:var(--green);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
+.callout{display:flex;gap:12px;padding:14px 16px;border-radius:var(--radius-sm);margin:14px 0;font-size:13px;line-height:1.7}
+.callout-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.callout.info{background:rgba(124,106,255,0.08);border:1px solid rgba(124,106,255,0.2);color:#c4b5fd}
+.callout.tip{background:rgba(45,212,191,0.07);border:1px solid rgba(45,212,191,0.2);color:var(--teal2)}
+.callout.warn{background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);color:var(--amber2)}
+.callout.danger{background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.2);color:var(--coral2)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.stat{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;text-align:center}
+.stat-value{font-family:'Fraunces',serif;font-size:26px;font-weight:700;margin-bottom:4px}
+.stat-label{font-size:11px;color:var(--text3)}
+.tool-row{display:flex;align-items:flex-start;gap:14px;padding:14px 0;border-bottom:1px solid var(--border)}
+.tool-row:last-child{border-bottom:none;padding-bottom:0}
+.tool-icon-wrap{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.tool-name{font-size:14px;font-weight:600;color:var(--text);margin-bottom:3px}
+.tool-desc{font-size:12.5px;color:var(--text2);line-height:1.7}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.tag{font-size:10.5px;padding:3px 10px;border-radius:99px;font-weight:500}
+.tag-purple{background:rgba(124,106,255,0.12);color:var(--accent2)}
+.tag-teal{background:rgba(45,212,191,0.1);color:var(--teal2)}
+.tag-amber{background:rgba(245,158,11,0.1);color:var(--amber2)}
+.tag-coral{background:rgba(248,113,113,0.1);color:var(--coral2)}
+.tag-green{background:rgba(52,211,153,0.1);color:var(--green2)}
+.table-wrap{overflow-x:auto;margin:14px 0;border-radius:var(--radius-sm);border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{background:var(--surface2);padding:10px 14px;text-align:left;font-size:11px;font-weight:600;color:var(--text2);letter-spacing:.05em;text-transform:uppercase;border-bottom:1px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--surface2)}
+.pillar-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
+.pillar{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px}
+.pillar-icon{font-size:24px;margin-bottom:8px}
+.pillar-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px}
+.pillar-desc{font-size:12px;color:var(--text2);line-height:1.7}
+.flow{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:14px 0}
+.flow-step{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 14px;font-size:12px;font-weight:500;color:var(--text2)}
+.flow-step.hl{background:rgba(124,106,255,0.12);border-color:rgba(124,106,255,0.3);color:var(--accent2)}
+.flow-arrow{color:var(--text3);font-size:14px}
+.section-title{font-size:12px;font-weight:600;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin:22px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.section-title::before{content:'';width:3px;height:12px;background:var(--accent);border-radius:99px}
+.concept{background:linear-gradient(135deg,rgba(124,106,255,0.08),rgba(45,212,191,0.05));border:1px solid rgba(124,106,255,0.2);border-radius:var(--radius-sm);padding:16px 18px;margin:0 0 16px}
+.concept-title{font-size:14px;font-weight:600;color:var(--accent2);margin-bottom:8px}
+.concept-body{font-size:13px;color:var(--text2);line-height:1.8}
+.compare-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px}
+.compare-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.compare-badge{font-size:9px;padding:2px 7px;border-radius:99px;background:rgba(45,212,191,0.12);color:var(--teal2)}
+.compare-desc{font-size:12px;color:var(--text2);line-height:1.6}
+.highlight-list{list-style:none;display:flex;flex-direction:column;gap:7px;margin-top:8px}
+.highlight-list li{font-size:13px;color:var(--text2);padding-left:18px;position:relative;line-height:1.6}
+.highlight-list li::before{content:'→';position:absolute;left:0;color:var(--accent);font-size:11px;top:2px}
+.menu-toggle{display:none;position:fixed;top:14px;left:14px;z-index:200;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:8px 10px;cursor:pointer;font-size:18px;color:var(--text)}
+@media(max-width:700px){.menu-toggle{display:flex}.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main{margin-left:0}.page{padding:20px 18px 60px}.page-title{font-size:26px}.grid2,.grid3,.grid4{grid-template-columns:1fr}.pillar-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+  <div class="logo-area">
+    <div class="logo">
+      <div class="logo-icon">🐍</div>
+      <div><div class="logo-text">PyLearn</div><div class="logo-sub">Python & Data Analytics</div></div>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-label"><span>Your progress</span><span id="prog-pct">0%</span></div>
+      <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
+    </div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">🌐 Foundation</div>
+    <button class="nav-item active" onclick="show('analytics')" id="nav-analytics"><div class="nav-dot"></div>What is Data Analytics?<span class="nav-badge">Start</span></button>
+    <button class="nav-item" onclick="show('tools')" id="nav-tools"><div class="nav-dot"></div>Tools &amp; Languages</button>
+    <button class="nav-item" onclick="show('intro')" id="nav-intro"><div class="nav-dot"></div>Introduction to Python</button>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">🧩 Core Python</div>
+    <button class="nav-item" onclick="show('variables')" id="nav-variables"><div class="nav-dot"></div>Variables &amp; Data Types</button>
+    <button class="nav-item" onclick="show('operators')" id="nav-operators"><div class="nav-dot"></div>Operators</button>
+    <button class="nav-item" onclick="show('conditionals')" id="nav-conditionals"><div class="nav-dot"></div>Conditionals (if / else)</button>
+    <button class="nav-item" onclick="show('loops')" id="nav-loops"><div class="nav-dot"></div>Loops</button>
+    <button class="nav-item" onclick="show('functions')" id="nav-functions"><div class="nav-dot"></div>Functions</button>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">📦 Data Structures</div>
+    <button class="nav-item" onclick="show('lists')" id="nav-lists"><div class="nav-dot"></div>Lists &amp; Tuples</button>
+    <button class="nav-item" onclick="show('dicts')" id="nav-dicts"><div class="nav-dot"></div>Dictionary &amp; Set</button>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">🚀 Advanced</div>
+    <button class="nav-item" onclick="show('oops')" id="nav-oops"><div class="nav-dot"></div>Object Oriented Programming</button>
+    <button class="nav-item" onclick="show('exceptions')" id="nav-exceptions"><div class="nav-dot"></div>Exception Handling</button>
+    <button class="nav-item" onclick="show('files')" id="nav-files"><div class="nav-dot"></div>File Handling</button>
+    <button class="nav-item" onclick="show('advanced')" id="nav-advanced"><div class="nav-dot"></div>Advanced Topics</button>
+  </div>
+</aside>
+<main class="main">
+
+<!-- PAGE: DATA ANALYTICS -->
+<div class="page active" id="page-analytics">
+  <div class="page-hero">
+    <div class="page-eyebrow">Module 1 — Foundation</div>
+    <div class="page-title">What is <span>Data Analytics?</span></div>
+    <div class="page-desc">Imagine you run a shop and want to know which products sell the most, which days are busiest, and which customers keep coming back. Data analytics is exactly that — the science of collecting information, examining it, and turning it into useful knowledge that helps you make smarter decisions.</div>
+  </div>
+  <div class="concept">
+    <div class="concept-title">📖 Simple Definition</div>
+    <div class="concept-body">Data analytics = <strong style="color:var(--text)">collecting data + cleaning it + analysing it + presenting findings</strong>. Think of it like being a detective. You gather clues (data), look for patterns, and come to a conclusion (insight) that helps someone decide what to do next.</div>
+  </div>
+  <div class="grid4">
+    <div class="stat"><div class="stat-value" style="color:var(--accent2)">2.5 EB</div><div class="stat-label">Data created every single day worldwide</div></div>
+    <div class="stat"><div class="stat-value" style="color:var(--teal)">97%</div><div class="stat-label">Companies investing in big data & AI</div></div>
+    <div class="stat"><div class="stat-value" style="color:var(--amber)">11M+</div><div class="stat-label">Data jobs estimated by 2026</div></div>
+    <div class="stat"><div class="stat-value" style="color:var(--green)">Top 3</div><div class="stat-label">Most in-demand tech skill globally</div></div>
+  </div>
+  <div class="section-title">Where is Data Analytics Used?</div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-header"><div class="card-icon teal">🛒</div><div><div class="card-title">E-Commerce & Retail</div><div class="card-subtitle">Amazon, Flipkart, Swiggy, Zomato</div></div></div>
+      <div class="card-body">When you shop online and see "Customers also bought…", that is data analytics. Companies analyse millions of purchases to recommend products. Swiggy analyses which restaurants get the most orders at which times to offer discounts at exactly the right moment.</div>
+      <div class="tags"><span class="tag tag-teal">Recommendations</span><span class="tag tag-teal">Demand forecasting</span><span class="tag tag-teal">Dynamic pricing</span></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-icon purple">🏥</div><div><div class="card-title">Healthcare</div><div class="card-subtitle">Hospitals, Pharma, Research Labs</div></div></div>
+      <div class="card-body">Doctors use data to predict which patients are at risk of a disease before symptoms appear. Drug companies analyse clinical trial data to check if a new medicine is safe. Analysing thousands of patient records can reveal patterns no single doctor would ever notice alone.</div>
+      <div class="tags"><span class="tag tag-purple">Patient prediction</span><span class="tag tag-purple">Drug trials</span><span class="tag tag-purple">Resource planning</span></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-icon amber">🏦</div><div><div class="card-title">Finance & Banking</div><div class="card-subtitle">Banks, Insurance, Stock Markets</div></div></div>
+      <div class="card-body">When your bank sends a fraud alert on a suspicious transaction, a data analytics model spotted an unusual pattern. Banks use data to decide whether to approve a loan. Stock traders use it to detect trends in market movements before acting.</div>
+      <div class="tags"><span class="tag tag-amber">Fraud detection</span><span class="tag tag-amber">Credit scoring</span><span class="tag tag-amber">Risk analysis</span></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-icon coral">📱</div><div><div class="card-title">Social Media & Technology</div><div class="card-subtitle">Instagram, YouTube, Google</div></div></div>
+      <div class="card-body">Every time you scroll Instagram, the algorithm analyses your behaviour in real time — what you pause on, skip, or like — to decide what to show next. YouTube's recommendation engine is entirely data-driven and accounts for over 70% of all watch time on the platform.</div>
+      <div class="tags"><span class="tag tag-coral">User behaviour</span><span class="tag tag-coral">Ad targeting</span><span class="tag tag-coral">A/B testing</span></div>
+    </div>
+  </div>
+  <div class="section-title">The 4 Types of Data Analytics</div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Type</th><th>Question it answers</th><th>Real example</th></tr></thead>
+      <tbody>
+        <tr><td><strong style="color:var(--accent2)">Descriptive</strong></td><td>What happened?</td><td>Sales last month were ₹50 lakhs — up 12% from last year</td></tr>
+        <tr><td><strong style="color:var(--teal2)">Diagnostic</strong></td><td>Why did it happen?</td><td>Sales rose because of the Diwali discount campaign</td></tr>
+        <tr><td><strong style="color:var(--amber2)">Predictive</strong></td><td>What will happen?</td><td>Based on trends, next month sales will be ₹55 lakhs</td></tr>
+        <tr><td><strong style="color:var(--green2)">Prescriptive</strong></td><td>What should we do?</td><td>Run a 15% discount in week one to hit ₹60 lakhs target</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout tip"><span class="callout-icon">💡</span><div>As a beginner, you will mostly work on <strong>descriptive analytics</strong> — summarising data and presenting it as charts and reports. Predictive analytics comes later when you study machine learning.</div></div>
+</div>
+
+<!-- PAGE: TOOLS -->
+<div class="page" id="page-tools">
+  <div class="page-hero">
+    <div class="page-eyebrow">Module 1 — Foundation</div>
+    <div class="page-title">Tools &amp; <span>Languages</span></div>
+    <div class="page-desc">To become a data analyst, you need a set of tools. Think of each tool like a different instrument in a band — each one does something specific, and together they let you tell a complete story with data.</div>
+  </div>
+  <div class="flow">
+    <div class="flow-step hl">📊 Excel</div><div class="flow-arrow">→</div>
+    <div class="flow-step hl">🗄️ SQL</div><div class="flow-arrow">→</div>
+    <div class="flow-step hl">🐍 Python</div><div class="flow-arrow">→</div>
+    <div class="flow-step hl">📈 Visualisation</div><div class="flow-arrow">→</div>
+    <div class="flow-step hl">📋 Reports &amp; Dashboards</div>
+  </div>
+  <p style="font-size:11px;color:var(--text3);margin-bottom:20px">Recommended learning order for a complete beginner</p>
+  <div class="card">
+    <div class="card-header"><div class="card-icon teal">📊</div><div><div class="card-title">Microsoft Excel — The Starting Point</div><div class="card-subtitle">No coding needed · Perfect for absolute beginners</div></div></div>
+    <div class="card-body">Excel is a spreadsheet software that looks like a giant grid of rows and columns. It is the most widely used data tool in business worldwide. You type data into cells, sort and filter it, and use formulas to do calculations automatically.<br><br><strong style="color:var(--text)">What you can do with Excel:</strong>
+      <ul class="highlight-list">
+        <li><strong style="color:var(--text)">Pivot Tables</strong> — automatically summarise huge datasets in seconds with drag and drop</li>
+        <li><strong style="color:var(--text)">VLOOKUP / XLOOKUP</strong> — search for values across sheets, like a search engine for your spreadsheet</li>
+        <li><strong style="color:var(--text)">Charts</strong> — create bar charts, pie charts, line graphs with just a few clicks</li>
+        <li><strong style="color:var(--text)">Conditional Formatting</strong> — cells automatically turn green or red based on their values</li>
+        <li><strong style="color:var(--text)">Formulas</strong> — =SUM(), =AVERAGE(), =IF(), =COUNTIF() for instant calculations</li>
+      </ul>
+    </div>
+    <div class="callout tip" style="margin:12px 0 0"><span class="callout-icon">💡</span><div>Excel is the tool used for final reporting and sharing results with non-technical people like managers and clients. Every data analyst uses it every single day.</div></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon purple">🗄️</div><div><div class="card-title">SQL — Talking to Databases</div><div class="card-subtitle">PostgreSQL · MySQL · SQLite</div></div></div>
+    <div class="card-body">Imagine a company with 10 million customer records. You cannot put that in Excel. It lives in a <strong style="color:var(--text)">database</strong> — a highly organised system built to store and retrieve huge amounts of data. SQL is the language you use to communicate with that database. It reads almost like plain English.</div>
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div></div><span class="code-filename">sales_query.sql</span></div>
+      <div class="code-body"><span class="cm">-- Find top 10 best-selling products in Mumbai this year</span>
+<span class="kw">SELECT</span>   product_name,
+         <span class="fn">SUM</span>(quantity_sold) <span class="kw">AS</span> total_units,
+         <span class="fn">SUM</span>(revenue)       <span class="kw">AS</span> total_revenue
+<span class="kw">FROM</span>     sales_table
+<span class="kw">WHERE</span>    sale_date >= <span class="str">'2024-01-01'</span>
+  <span class="kw">AND</span>    city = <span class="str">'Mumbai'</span>
+<span class="kw">GROUP BY</span> product_name
+<span class="kw">ORDER BY</span> total_revenue <span class="kw">DESC</span>
+<span class="kw">LIMIT</span>    <span class="num">10</span>;</div>
+    </div>
+    <div class="callout info" style="margin-top:0"><span class="callout-icon">ℹ️</span><div><strong>PostgreSQL</strong> is the most popular open-source SQL database, used by Instagram, Spotify, Reddit, and thousands of companies. It is completely free to download and use.</div></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon amber">🐍</div><div><div class="card-title">Python — The Power Tool</div><div class="card-subtitle">NumPy · Pandas · for data work</div></div></div>
+    <div class="card-body">Python is a programming language. Unlike Excel and SQL which have fixed commands, Python lets you write custom logic to do anything with data. It has a huge collection of <strong style="color:var(--text)">libraries</strong> — think of them as toolboxes full of pre-built tools.</div>
+    <div style="margin-top:10px">
+      <div class="tool-row"><div class="tool-icon-wrap" style="background:rgba(124,106,255,0.12)">🔢</div><div><div class="tool-name">NumPy — Numerical Python</div><div class="tool-desc">Works with huge arrays of numbers at lightning speed. Instead of writing a loop to multiply 1 million numbers one by one, NumPy does it all at once. It is the backbone of almost every data science library in existence.</div></div></div>
+      <div class="tool-row"><div class="tool-icon-wrap" style="background:rgba(45,212,191,0.12)">🐼</div><div><div class="tool-name">Pandas — Data Analysis Library</div><div class="tool-desc">Gives you a DataFrame — think of it as a supercharged Excel spreadsheet inside Python. Load CSV files, clean messy data, fix missing values, filter rows, group data, and merge multiple datasets. This is what analysts use most in their daily work.</div></div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon coral">📈</div><div><div class="card-title">Data Visualisation — Making Data Visual</div><div class="card-subtitle">Matplotlib · Seaborn · Power BI</div></div></div>
+    <div class="card-body">Numbers in a table are hard to understand. A chart tells the same story in 2 seconds. Data visualisation is the skill of turning numbers into images that communicate insights instantly.</div>
+    <div style="margin-top:10px">
+      <div class="tool-row"><div class="tool-icon-wrap" style="background:rgba(245,158,11,0.12)">📉</div><div><div class="tool-name">Matplotlib — The Foundation</div><div class="tool-desc">The original Python plotting library. Write code to build any chart from scratch — line charts, bar charts, histograms, scatter plots, pie charts. Full control over every detail of how your chart looks.</div></div></div>
+      <div class="tool-row"><div class="tool-icon-wrap" style="background:rgba(248,113,113,0.12)">🌊</div><div><div class="tool-name">Seaborn — Beautiful Statistical Charts</div><div class="tool-desc">Built on top of Matplotlib. Makes stunning charts with very little code — heatmaps, box plots, violin plots, pair plots. Used heavily in data science and research for exploring relationships in data.</div></div></div>
+      <div class="tool-row"><div class="tool-icon-wrap" style="background:rgba(52,211,153,0.12)">📊</div><div><div class="tool-name">Power BI — Business Dashboards</div><div class="tool-desc">Microsoft's drag-and-drop reporting tool. No coding required. Connect to Excel, databases, or websites and build interactive dashboards with filters and slicers. Used by virtually every large company for management reporting.</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE: INTRO TO PYTHON -->
+<div class="page" id="page-intro">
+  <div class="page-hero">
+    <div class="page-eyebrow">Module 2 — Python Basics</div>
+    <div class="page-title">Introduction to <span>Python</span></div>
+    <div class="page-desc">Python is one of the most popular programming languages in the world — used by NASA, Google, Netflix, and millions of developers. The best part? It reads almost like English, making it the perfect first language to learn.</div>
+  </div>
+  <div class="grid3">
+    <div class="compare-card"><div class="compare-name">🧪 Created</div><div class="compare-desc">1992 by Guido van Rossum. The name was inspired by a comedy TV show, not the snake!</div></div>
+    <div class="compare-card"><div class="compare-name">⚡ Type <span class="compare-badge">Key concept</span></div><div class="compare-desc">Interpreted — runs line by line, making it very easy to test and debug code instantly</div></div>
+    <div class="compare-card"><div class="compare-name">🌍 Used by</div><div class="compare-desc">Google, NASA, Netflix, Instagram, Spotify, and over 8 million developers worldwide</div></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon purple">⚙️</div><div><div class="card-title">How Python actually runs your code</div><div class="card-subtitle">What happens when you press Run?</div></div></div>
+    <div class="card-body">When you write Python code, the computer cannot understand it directly — computers only understand machine language (zeros and ones). Python acts as a translator between your human-readable instructions and machine code.</div>
+    <div style="display:flex;flex-direction:column;gap:6px;margin:16px 0">
+      <div style="display:flex;align-items:center;gap:10px"><div class="flow-step hl">1. Your code (.py file)</div><span style="color:var(--text3);font-size:12px">— You write human-readable instructions</span></div>
+      <div style="color:var(--text3);padding-left:14px;font-size:13px">↓ Python reads it line by line</div>
+      <div style="display:flex;align-items:center;gap:10px"><div class="flow-step">2. Bytecode (.pyc)</div><span style="color:var(--text3);font-size:12px">— Converted to a simplified middle format stored in __pycache__ folder</span></div>
+      <div style="color:var(--text3);padding-left:14px;font-size:13px">↓ PVM executes it</div>
+      <div style="display:flex;align-items:center;gap:10px"><div class="flow-step hl">3. Python Virtual Machine (PVM)</div><span style="color:var(--text3);font-size:12px">— The actual engine that runs your program</span></div>
+      <div style="color:var(--text3);padding-left:14px;font-size:13px">↓</div>
+      <div class="flow-step" style="background:rgba(52,211,153,0.1);border-color:rgba(52,211,153,0.3);color:var(--green2);width:fit-content">4. Output on your screen ✅</div>
+    </div>
+    <div class="callout info"><span class="callout-icon">ℹ️</span><div>Because Python uses this step-by-step translation process, it is called an <strong>interpreted language</strong>. This also means if line 5 has an error, Python runs lines 1–4 successfully before stopping at the error — making it easy to debug.</div></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon teal">🖥️</div><div><div class="card-title">Setting up your environment</div><div class="card-subtitle">Two things you need before writing any code</div></div></div>
+    <div class="tool-row" style="padding-top:0"><div class="tool-icon-wrap" style="background:rgba(245,158,11,0.12)">🐍</div><div><div class="tool-name">Step 1 — Download Python</div><div class="tool-desc">Go to <strong style="color:var(--text)">python.org</strong> → click Download → install for your operating system. This installs the Python Virtual Machine on your computer so it can run Python code.</div></div></div>
+    <div class="tool-row"><div class="tool-icon-wrap" style="background:rgba(124,106,255,0.12)">💻</div><div><div class="tool-name">Step 2 — Download VS Code (Code Editor)</div><div class="tool-desc">An <strong style="color:var(--text)">IDE (Integrated Development Environment)</strong> is a text editor built for writing code. VS Code is free and used by millions of developers. Download from <strong style="color:var(--text)">code.visualstudio.com</strong>. Then install the Python extension inside it.</div></div></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon amber">👋</div><div><div class="card-title">Your very first Python program</div><div class="card-subtitle">Create main.py and press the ▶ Run button in VS Code</div></div></div>
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div></div><span class="code-filename">main.py</span></div>
+      <div class="code-body"><span class="cm"># This is a comment — Python completely ignores this line</span>
+<span class="cm"># Use # at the start of a line to write notes for yourself</span>
+<span class="cm"># Comments make code easier to understand for others</span>
+
+<span class="fn">print</span>(<span class="str">"Hello, World!"</span>)       <span class="cm"># print() displays output on screen</span>
+<span class="fn">print</span>(<span class="str">"My name is Rahul"</span>)
+<span class="fn">print</span>(<span class="num">42</span>)                     <span class="cm"># can print numbers too</span>
+<span class="fn">print</span>(<span class="num">10</span> + <span class="num">5</span>)                <span class="cm"># can print results of calculations</span>
+
+<span class="cm">"""
+This is a multi-line comment called a docstring.
+It uses triple quotes on both sides.
+Python does not execute anything written inside here.
+Great for writing long explanations.
+"""</span>
+<span class="fn">print</span>(<span class="str">"Program finished!"</span>)</div>
+    </div>
+    <div class="output"><div class="output-label">Output</div>Hello, World!
+My name is Rahul
+42
+15
+Program finished!</div>
+    <div class="callout warn"><span class="callout-icon">⚠️</span><div>Python is <strong>case-sensitive</strong>. <code>print</code> must be all lowercase. Writing <code>Print</code> or <code>PRINT</code> will immediately give you a NameError. This is one of the most common beginner mistakes.</div></div>
+  </div>
+</div>
+
+<!-- PAGE: VARIABLES -->
+<div class="page" id="page-variables">
+  <div class="page-hero">
+    <div class="page-eyebrow">Module 3 — Core Python</div>
+    <div class="page-title">Variables &amp; <span>Data Types</span></div>
+    <div class="page-desc">Think of a variable as a labelled box. You put something inside the box and give it a name so you can find it later. Data types tell Python what kind of thing is inside — is it a number, text, or True/False?</div>
+  </div>
+  <div class="concept">
+    <div class="concept-title">📦 What is a Variable?</div>
+    <div class="concept-body">Every time you want Python to remember something, you store it in a variable. Think of it like filling out a form — you write your name, age, and city in separate boxes. In Python, those boxes are variables.<br><br><code style="color:var(--accent2)">name = "Rahul"</code> means: "Create a box called <em>name</em> and put the text Rahul inside it."</div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon purple">📝</div><div><div class="card-title">Naming Rules for Variables</div><div class="card-subtitle">What you can and cannot name a variable</div></div></div>
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div></div><span class="code-filename">naming.py</span></div>
+      <div class="code-body"><span class="cm"># ✅ VALID names</span>
+my_name = <span class="str">"Rahul"</span>       <span class="cm"># snake_case — recommended in Python</span>
+myName = <span class="str">"Rahul"</span>        <span class="cm"># camelCase</span>
+MyName = <span class="str">"Rahul"</span>        <span class="cm"># PascalCase</span>
+age = <span class="num">24</span>
+salary2024 = <span class="num">50000</span>
+
+<span class="cm"># ❌ INVALID — these will crash your program</span>
+<span class="cm"># 1age = 24          cannot start with a number</span>
+<span class="cm"># my name = "Rahul"  cannot have spaces</span>
+<span class="cm"># my-name = "Rahul"  cannot use hyphens</span>
+<span class="cm"># class = "Python"   cannot use Python reserved keywords</span></div>
+    </div>
+    <div class="callout tip"><span class="callout-icon">💡</span><div>Python convention: always use <strong>snake_case</strong> — words separated by underscores. Examples: <code>student_name</code>, <code>total_marks</code>, <code>is_active</code>, <code>monthly_salary</code>.</div></div>
+  </div>
+  <div class="section-title">The 8 Built-in Data Type Categories</div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon amber">🔢</div><div><div class="card-title">Numbers — int, float, complex</div><div class="card-subtitle">For storing all kinds of numeric values</div></div></div>
+    <div class="card-body"><strong style="color:var(--text)">int</strong> = whole numbers (no decimal). <strong style="color:var(--text)">float</strong> = numbers with decimals. <strong style="color:var(--text)">complex</strong> = numbers with imaginary parts (used in engineering and science).</div>
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div></div><span class="code-filename">numbers.py</span></div>
+      <div class="code-body"><span class="cm"># int — any whole number, positive or negative, no limit</span>
+age = <span class="num">24</span>
+temperature = <span class="num">-5</span>
+population = <span class="num">1400000000</span>
+
+<span class="cm"># float — any number with a decimal point</span>
+height = <span class="num">5.9</span>
+price = <span class="num">299.99</span>
+pi = <span class="num">3.14159</span>
+
+<span class="cm"># complex — real + imaginary part (j = imaginary unit)</span>
+z = <span class="num">3</span> + <span class="num">4</span>j
+
+<span class="cm"># Check what type a variable is using type()</span>
+<span class="fn">print</span>(<span class="fn">type</span>(age))        <span class="cm"># &lt;class 'int'&gt;</span>
+<span class="fn">print</span>(<span class="fn">type</span>(height))     <span class="cm"># &lt;class 'float'&gt;</span>
+<span class="fn">print</span>(<span class="fn">type</span>(z))          <span class="cm"># &lt;class 'complex'&gt;</span>
+
+<span class="cm"># IMPORTANT: division / always gives a float in Python 3</span>
+result = <span class="num">10</span> / <span class="num">2</span>
+<span class="fn">print</span>(result)           <span class="cm"># 5.0 (not 5!)</span></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon teal">💬</div><div><div class="card-title">Strings — str</div><div class="card-subtitle">For storing text of any kind</div></div></div>
+    <div class="card-body">A string is any sequence of characters inside quotes. It can contain letters, numbers, spaces, emojis — anything. Strings are the most used data type in real-world programming.</div>
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div></div><span class="code-filename">strings.py</span></div>
+      <div class="code-body"><span class="cm"># Creating strings — use single or double quotes (both work)</span>
+name = <span class="str">"Rahul"</span>
+city = <span class="str">'Mumbai'</span>
+message = <span class="str">"It's a great day!"</span>   <span class="cm"># single quote inside double quotes is fine</span>
+
+<span class="cm"># Indexing — access a single character</span>
+<span class="cm"># Index always starts at 0 (not 1!)</span>
+<span class="cm"># R=0  a=1  h=2  u=3  l=4</span>
+<span class="fn">print</span>(name[<span class="num">0</span>])      <span class="cm"># R  — first character</span>
+<span class="fn">print</span>(name[<span class="num">2</span>])      <span class="cm"># h  — third character</span>
+<span class="fn">print</span>(name[-<span class="num">1</span>])     <span class="cm"># l  — last character (-1 counts from end)</span>
+<span class="fn">print</span>(name[-<span class="num">2</span>])     <span class="cm"># u  — second from last</span>
+
+<span class="cm"># Slicing — extract a portion  string[start : stop : step]</span>
+<span class="cm"># The stop index is NOT included in the result</span>
+<span class="fn">print</span>(name[<span class="num">0</span>:<span class="num">3</span>])    <span class="cm"># Rah  — index 0, 1, 2 (stops before 3)</span>
+<span class="fn">print</span>(name[<span class="num">1</span>:])     <span class="cm"># ahul — from index 1 to the end</span>
+<span class="fn">print</span>(name[::<span class="num">-1</span>])   <span class="cm"># luhaR — reverse the entire string</span>
+
+<span class="cm"># f-strings — the modern way to embed variables into text</span>
+age = <span class="num">24</span>
+<span class="fn">print</span>(<span class="str">f"My name is </span>{name}<span class="str"> and I am </span>{age}<span class="str"> years old"</span>)
+<span class="fn">print</span>(<span class="str">f"In 10 years I will be </span>{age + <span class="num">10</span>}<span class="str">"</span>)  <span class="cm"># can compute inside {}</span>
+
+<span class="cm"># Useful string methods</span>
+<span class="fn">print</span>(<span class="fn">len</span>(name))              <span class="cm"># 5    — length of string</span>
+<span class="fn">print</span>(name.upper())           <span class="cm"># RAHUL</span>
+<span class="fn">print</span>(name.lower())           <span class="cm"># rahul</span>
+<span class="fn">print</span>(name.replace(<span class="str">"R"</span>,<span class="str">"r"</span>)) <span class="cm"># rahul</span>
+<span class="fn">print</span>(<span class="str">"  hello  "</span>.strip())    <span class="cm"># "hello" — removes extra spaces</span></div>
+    </div>
+    <div class="output"><div class="output-label">Output</div>R  h  l  u
+Rah
+ahul
+luhaR
+My name is Rahul and I am 24 years old
+In 10 years I will be 34</div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon green">✅</div><div><div class="card-title">Boolean &amp; Type Conversion</div><div class="card-subtitle">True/False values and converting between types</div></div></div>
+    <div class="card-body">A <strong style="color:var(--text)">Boolean</strong> can only be True or False. Essential for all decision-making in code. Type conversion lets you change data from one type to another.</div>
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div></div><span class="code-filename">boolean_conversion.py</span></div>
+      <div class="code-body"><span class="cm"># Boolean — always capital T and F</span>
+is_student = <span class="kw">True</span>
+has_paid = <span class="kw">False</span>
+
+<span class="cm"># Falsy values — these all convert to False</span>
+<span class="cm"># 0,  0.0,  "",  [],  (),  {}  — all considered "empty/nothing"</span>
+<span class="fn">print</span>(<span class="fn">bool</span>(<span class="num">0</span>))        <span class="cm"># False</span>
+<span class="fn">print</span>(<span class="fn">bool</span>(<span class="str">""</span>))       <span class="cm"># False  (empty string)</span>
+<span class="fn">print</span>(<span class="fn">bool</span>(<span class="num">42</span>))       <span class="cm"># True   (any non-zero number)</span>
+<span class="fn">print</span>(<span class="fn">bool</span>(<span class="str">"hello"</span>))  <span class="cm"># True   (non-empty string)</span>
+
+<span class="cm"># Type Conversion — int(), float(), str(), bool()</span>
+a = <span class="str">"45"</span>            <span class="cm"># this is TEXT, not a number yet</span>
+b = <span class="fn">int</span>(a)          <span class="cm"># now it is the number 45</span>
+<span class="fn">print</span>(b + <span class="num">5</span>)        <span class="cm"># 50 — can do maths now</span>
+
+c = <span class="fn">str</span>(<span class="num">100</span>)        <span class="cm"># number 100 → text "100"</span>
+<span class="fn">print</span>(<span class="str">"Score: "</span> + c) <span class="cm"># Score: 100  (can join text now)</span>
+
+<span class="cm"># input() ALWAYS returns a string — ALWAYS convert if you need a number!</span>
+age = <span class="fn">int</span>(<span class="fn">input</span>(<span class="str">"Enter your age: "</span>))
+<span class="fn">print</span>(<span class="str">f"Next year you will be </span>{age + <span class="num">1</span>}<span class="str">"</span>)</div>
+    </div>
+    <div class="callout danger"><span class="callout-icon">⛔</span><div>Most common beginner crash: <code>age = input("Enter age: ")</code> then trying <code>age + 1</code>. This fails because input gives a string! Always wrap with <code>int()</code> when you need to do maths with the input.</div></div>
+  </div>
+</div>
+
+<!-- PAGE: OPERATORS -->
+<div class="page" id="page-operators">
+  <div class="page-hero">
+    <div class="page-eyebrow">Module 4 — Core Python</div>
+    <div class="page-title">Operators &amp; <span>Expressions</span></div>
+    <div class="page-desc">Operators are symbols that perform actions on values. Think of them like buttons on a calculator — +, -, ×, ÷ — but Python has many more powerful operators for comparing things and combining conditions.</div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon amber">🔢</div><div><div class="card-title">Arithmetic Operators — doing maths</div><div class="card-subtitle">7 mathematical operations in Python</div></div></div>
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div></div><span class="code-filename">arithmetic.py</span></div>
+      <div class="code-body">a = <span class="num">17</span>
+b = <span class="num">5</span>
+
+<span class="fn">print</span>(a + b)    <span class="cm"># 22     — Addition</span>
+<span class="fn">print</span>(a - b)    <span class="cm"># 12     — Subtraction</span>
+<span class="fn">print</span>(a * b)    <span class="cm"># 85     — Multiplication</span>
+<span class="fn">print</span>(a / b)    <span class="cm"># 3.4    — Division (always gives float)</span>
+<span class="fn">print</span>(a // b)   <span class="cm"># 3      — Floor Division (removes decimal, rounds DOWN)</span>
+<span class="fn">print</span>(a % b)    <span class="cm"># 2      — Modulus (remainder: 17 ÷ 5 = 3, remainder 2)</span>
+<span class="fn">print</span>(a ** b)   <span class="cm"># 1419857 — Exponentiation (17 to the power 5)</span>
+
+<span class="cm"># BODMAS rule — Python respects operator precedence</span>
+<span class="fn">print</span>(<span class="num">2</span> + <span class="num">3</span> * <span class="num">4</span>)      <span class="cm"># 14  (multiplication first, then addition)</span>
+<span class="fn">print</span>((<span class="num">2</span> + <span class="num">3</span>) * <span class="num">4</span>)   <span class="cm"># 20  (brackets first)</span>
+
+<span class="cm"># Shorthand operators — very commonly used</span>
+score = <span class="num">100</span>
+score += <span class="num">10</span>   <span class="cm"># same as: score = score + 10  → 110</span>
+score -= <span class="num">5</span>    <span class="cm"># same as: score = score - 5   → 105</span>
+score *= <span class="num">2</span>    <span class="cm"># same as: score = score * 2   → 210</span>
+score //= <span class="num">3</span>   <span class="cm"># same as: score = score // 3  → 70</span></div>
+    </div>
+    <div class="callout tip"><span class="callout-icon">💡</span><div>The <strong>modulus operator %</strong> is very useful in real code. Common use: check if a number is even (<code>n % 2 == 0</code>) or odd (<code>n % 2 != 0</code>), or check if a year is a leap year.</div></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon teal">⚖️</div><div><div class="card-title">Comparison Operators — asking questions</div><div class="card-subtitle">Always return True or False</div></div></div>
+    <div class="card-body">Comparison operators compare two values and always return a Boolean result. They are the foundation of all decision-making in code.</div>
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div></div><span class="code-filename">comparison.py</span></div>
+      <div class="code-body">a, b = <span class="num">10</span>, <span class="num">20</span>
+
+<span class="fn">print</span>(a == b)   <span class="cm"># False — is a equal to b?       (== not =)</span>
+<span class="fn">print</span>(a != b)   <span class="cm"># True  — is a NOT equal to b?</span>
+<span class="fn">print</span>(a &gt; b)    <span class="cm"># False — is a greater than b?</span>
+<span class="fn">print</span>(a &lt; b)    <span class="cm"># True  — is a less than b?</span>
+<span class="fn">print</span>(a &gt;= b)   <span class="cm"># False — is a greater than OR equal to b?</span>
+<span class="fn">print</span>(a &lt;= b)   <span class="cm"># True  — is a less than OR equal to b?</span>
+
+<span class="cm"># Strings are compared by their ASCII character values</span>
+<span class="fn">print</span>(<span class="str">"A"</span> &lt; <span class="str">"B"</span>)      <span class="cm"># True  — A(65) comes before B(66) in ASCII</span>
+<span class="fn">print</span>(<span class="str">"abc"</span> == <span class="str">"ABC"</span>) <span class="cm"># False — lowercase ≠ uppercase</span></div>
+    </div>
+    <div class="callout warn"><span class="callout-icon">⚠️</span><div>Extremely common bug: using <code>=</code> when you mean <code>==</code>. A single <code>=</code> assigns a value. Double <code>==</code> compares values. <code>if a = 5:</code> is wrong. <code>if a == 5:</code> is correct.</div></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon purple">🧠</div><div><div class="card-title">Logical Operators — combining conditions</div><div class="card-subtitle">and, or, not</div></div></div>
+    <div class="card-body">Logical operators let you combine multiple conditions. Real decisions use multiple conditions — "If it is raining AND I don't have an umbrella, I'll stay inside."</div>
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div></div><span class="code-filename">logical.py</span></div>
+      <div class="code-body">age = <span class="num">22</span>
+has_ticket = <span class="kw">True</span>
+
+<span class="cm"># and — BOTH conditions must be True to get True</span>
+<span class="fn">print</span>(age >= <span class="num">18</span> <span class="kw">and</span> has_ticket)     <span class="cm"># True AND True  = True</span>
+<span class="fn">print</span>(age >= <span class="num">18</span> <span class="kw">and</span> age &lt; <span class="num">21</span>)      <span class="cm"># True AND False = False</span>
+
+<span class="cm"># or — at least ONE condition must be True</span>
+<span class="fn">print</span>(age &lt; <span class="num">18</span> <span class="kw">or</span> has_ticket)       <span class="cm"># False OR True  = True</span>
+<span class="fn">print</span>(age &lt; <span class="num">18</span> <span class="kw">or</span> age &gt; <span class="num">30</span>)        <span class="cm"># False OR False = False</span>
+
+<span class="cm"># not — completely reverses the boolean</span>
+<span class="fn">print</span>(<span class="kw">not</span> has_ticket)                <span class="cm"># not True  = False</span>
+<span class="fn">print</span>(<span class="kw">not</span> (age &lt; <span class="num">18</span>))               <span class="cm"># not False = True</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE: CONDITIONALS -->
+<div class="page" id="page-conditionals">
+  <div class="page-hero">
+    <div class="page-eyebrow">Module 5 — Core Python</div>
+    <div class="page-title">Conditional <span>Statements</span></div>
+    <div class="page-desc">Conditionals let your program make choices. Just like in real life — "If it is raining, take an umbrella. Otherwise, wear sunglasses." Python uses if, elif (else-if), and else to make these decisions.</div>
+  </div>
+  <div class="callout info"><span class="callout-icon">🔑</span><div><strong>Key rule in Python:</strong> indentation (4 spaces or 1 tab) defines which code belongs to which block. Everything indented under an <code>if</code> belongs to that block. Unlike most languages, Python does NOT use curly braces { }.</div></div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon teal">🌿</div><div><div class="card-title">if / elif / else — the full structure</div><div class="card-subtitle">Making multi-way decisions</div></div></div>
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div></div><span class="code-filename">conditionals.py</span></div>
+      <div class="code-body">age = <span class="fn">int</span>(<span class="fn">input</span>(<span class="str">"Enter your age: "</span>))
+
+<span class="kw">if</span> age &lt; <span class="num">13</span>:
+    <span class="cm"># this block runs ONLY if age < 13</span>
+    <span class="fn">print</span>(<span class="str">"You are a child"</span>)
+
+<span class="kw">elif</span> age &lt; <span class="num">18</span>:
+    <span class="cm"># runs if age is 13–17 (first condition was False)</span>
+    <span class="fn">print</span>(<span class="str">"You are a teenager"</span>)
+
+<span class="kw">elif</span> age &lt; <span class="num">60</span>:
+    <span class="cm"># runs if age is 18–59</span>
+    <span class="fn">print</span>(<span class="str">"You are an adult"</span>)
+
+<span class="kw">else</span>:
+    <span class="cm"># runs if NONE of the above conditions matched</span>
+    <span class="fn">print</span>(<span class="str">"You are a senior citizen"</span>)
+
+<span class="fn">print</span>(<span class="str">"Program finished"</span>)  <span class="cm"># always runs — not inside any block</span></div>
+    </div>
+    <div class="callout tip"><span class="callout-icon">💡</span><div>Python checks conditions <strong>from top to bottom</strong> and stops at the first True one. You can have as many <code>elif</code> blocks as you need, but only one <code>if</code> and one <code>else</code>.</div></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon amber">🧩</div><div><div class="card-title">Practice questions</div><div class="card-subtitle">Real examples from your notes</div></div></div>
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div></div><span class="code-filename">practice.py</span></div>
+      <div class="code-body"><span class="cm"># Q1: Take two numbers and print the greater one</span>
+num1 = <span class="fn">int</span>(<span class="fn">input</span>(<span class="str">"First number: "</span>))
+num2 = <span class="fn">int</span>(<span class="fn">input</span>(<span class="str">"Second number: "</span>))
+
+<span class="kw">if</span> num1 &gt; num2:
+    <span class="fn">print</span>(<span class="str">f"</span>{num1}<span class="str"> is greater than </span>{num2}<span class="str">"</span>)
+<span class="kw">elif</span> num2 &gt; num1:
+    <span class="fn">print</span>(<span class="str">f"</span>{num2}<span class="str"> is greater than </span>{num1}<span class="str">"</span>)
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="str">"Both numbers are equal"</span>)
+
+<span class="cm"># Q2: Gender-based greeting</span>
+gender = <span class="fn">input</span>(<span class="str">"Enter gender (M or F): "</span>)
+
+<span class="kw">if</span> gender == <span class="str">'M'</span> <span class="kw">or</span> gender == <span class="str">'m'</span>:
+    <span class="fn">print</span>(<span class="str">"Good morning Sir"</span>)
+<span class="kw">elif</span> gender == <span class="str">'F'</span> <span class="kw">or</span> gender == <span class="str">'f'</span>:
+    <span class="fn">print</span>(<span class="str">"Good morning Ma'am"</span>)
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="str">"Invalid input"</span>)</div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE: LOOPS -->
+<div class="page" id="page-loops">
+  <div class="page-hero">
+    <div class="page-eyebrow">Module 6 — Core Python</div>
+    <div class="page-title">Loops — <span>Repeat Yourself</span></div>
+    <div class="page-desc">Imagine printing numbers 1 to 1000 manually — that would take forever! Loops let you run the same block of code many times automatically. Python has two types: the for loop (a set number of times) and the while loop (runs as long as a condition is true).</div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon purple">🔄</div><div><div class="card-title">for loop with range()</div><div class="card-subtitle">Run code a specific number of times</div></div></div>
+    <div class="card-body"><code style="color:var(--accent2)">range(start, stop, step)</code> generates a sequence of numbers. The stop value is <strong style="color:var(--text)">never included</strong> — so range(1, 6) gives 1, 2, 3, 4, 5.</div>
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div></div><span class="code-filename">for_loops.py</span></div>
+      <div class="code-body"><span class="cm"># Print numbers 1 to 5</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">1</span>, <span class="num">6</span>):      <span class="cm"># stop=6 so last number is 5</span>
+    <span class="fn">print</span>(i)               <span class="cm"># 1, 2, 3, 4, 5</span>
+
+<span class="cm"># Count even numbers using step=2</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">0</span>, <span class="num">11</span>, <span class="num">2</span>):
+    <span class="fn">print</span>(i)               <span class="cm"># 0, 2, 4, 6, 8, 10</span>
+
+<span class="cm"># Count backwards from 10 to 1</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">10</span>, <span class="num">0</span>, -<span class="num">1</span>):  <span class="cm"># step=-1 means going down</span>
+    <span class="fn">print</span>(i)               <span class="cm"># 10, 9, 8 ... 1</span>
+
+<span class="cm"># Loop through a string character by character</span>
+name = <span class="str">"Python"</span>
+<span class="kw">for</span> letter <span class="kw">in</span> name:
+    <span class="fn">print</span>(letter)          <span class="cm"># P  y  t  h  o  n</span>
+
+<span class="cm"># Multiplication table of any number</span>
+n = <span class="fn">int</span>(<span class="fn">input</span>(<span class="str">"Which table? "</span>))
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">1</span>, <span class="num">11</span>):
+    <span class="fn">print</span>(<span class="str">f"</span>{n}<span class="str"> x </span>{i}<span class="str"> = </span>{n * i}<span class="str">"</span>)
+
+<span class="cm"># Sum of first n numbers</span>
+n = <span class="num">10</span>
+total = <span class="num">0</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">1</span>, n + <span class="num">1</span>):
+    total += i             <span class="cm"># total = total + i</span>
+<span class="fn">print</span>(<span class="str">f"Sum 1 to </span>{n}<span class="str"> = </span>{total}<span class="str">"</span>)  <span class="cm"># Sum 1 to 10 = 55</span>
+
+<span class="cm"># Factorial of a number</span>
+n = <span class="fn">int</span>(<span class="fn">input</span>(<span class="str">"Enter number: "</span>))
+fact = <span class="num">1</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">1</span>, n + <span class="num">1</span>):
+    fact *= i
+<span class="fn">print</span>(<span class="str">f"Factorial of </span>{n}<span class="str"> = </span>{fact}<span class="str">"</span>)</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon teal">⏳</div><div><div class="card-title">while loop — condition-based repetition</div><div class="card-subtitle">Runs as long as the condition stays True</div></div></div>
+    <div class="card-body">Use a while loop when you do not know in advance how many times to loop. The loop keeps running as long as the condition is True. If the condition never becomes False, it runs forever — this is called an <strong style="color:var(--coral)">infinite loop</strong> and will freeze your program.</div>
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div></div><span class="code-filename">while_loops.py</span></div>
+      <div class="code-body"><span class="cm"># Basic while loop</span>
+count = <span class="num">1</span>
+<span class="kw">while</span> count &lt;= <span class="num">5</span>:
+    <span class="fn">print</span>(count)
+    count = count + <span class="num">1</span>    <span class="cm"># MUST change count or it loops forever!</span>
+
+<span class="cm"># Reverse digits of a number</span>
+a = <span class="fn">int</span>(<span class="fn">input</span>(<span class="str">"Enter number: "</span>))
+rev = <span class="num">0</span>
+<span class="kw">while</span> a &gt; <span class="num">0</span>:
+    rev = rev * <span class="num">10</span> + a % <span class="num">10</span>  <span class="cm"># extract last digit</span>
+    a = a // <span class="num">10</span>             <span class="cm"># remove last digit</span>
+<span class="fn">print</span>(<span class="str">"Reversed:"</span>, rev)
+
+<span class="cm"># Number guessing game — while True with break</span>
+<span class="kw">import</span> random
+secret = random.randint(<span class="num">1</span>, <span class="num">10</span>)
+tries = <span class="num">0</span>
+
+<span class="kw">while</span> <span class="kw">True</span>:
+    guess = <span class="fn">int</span>(<span class="fn">input</span>(<span class="str">"Guess a number 1-10: "</span>))
+    tries += <span class="num">1</span>
+    <span class="kw">if</span> guess == secret:
+        <span class="fn">print</span>(<span class="str">f"Correct! You took </span>{tries}<span class="str"> tries"</span>)
+        <span class="kw">break</span>              <span class="cm"># exit loop immediately</span>
+    <span class="kw">elif</span> guess &lt; secret:
+        <span class="fn">print</span>(<span class="str">"Too low! Go higher."</span>)
+    <span class="kw">else</span>:
+        <span class="fn">print</span>(<span class="str">"Too high! Go lower."</span>)</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon coral">🎛️</div><div><div class="card-title">break, continue, and else in loops</div><div class="card-subtitle">Fine-grained control over loop behaviour</div></div></div>
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div></div><span class="code-filename">loop_control.py</span></div>
+      <div class="code-body"><span class="cm"># break — exit the loop entirely when a condition is met</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">1</span>, <span class="num">15</span>):
+    <span class="kw">if</span> i == <span class="num">10</span>:
+        <span class="kw">break</span>         <span class="cm"># stops loop, 10 onwards are skipped</span>
+    <span class="fn">print</span>(i)          <span class="cm"># prints 1 through 9</span>
+
+<span class="cm"># continue — skip THIS iteration only, keep looping</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">1</span>, <span class="num">11</span>):
+    <span class="kw">if</span> i == <span class="num">5</span>:
+        <span class="kw">continue</span>      <span class="cm"># skip 5, continue with 6, 7...</span>
+    <span class="fn">print</span>(i)          <span class="cm"># prints 1,2,3,4,6,7,8,9,10  (5 missing)</span>
+
+<span class="cm"># else with for — runs ONLY if loop finished without a break</span>
+<span class="cm"># Useful to check if something was found in a loop</span>
+target = <span class="num">15</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">1</span>, <span class="num">11</span>):
+    <span class="kw">if</span> i == target:
+        <span class="fn">print</span>(<span class="str">f"Found {target}!"</span>)
+        <span class="kw">break</span>
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="str">f"{target} was not found in range 1-10"</span>)  <span class="cm"># this runs</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE: FUNCTIONS -->
+<div class="page" id="page-functions">
+  <div class="page-hero">
+    <div class="page-eyebrow">Module 7 — Core Python</div>
+    <div class="page-title">Functions — <span>Reusable Code</span></div>
+    <div class="page-desc">Imagine writing the same 10 lines of code every time you want to do the same task. Functions solve this — write the code once, give it a name, and call that name whenever you need it. This is one of the most important concepts in all of programming.</div>
+  </div>
+  <div class="concept">
+    <div class="concept-title">🍕 Real-World Analogy</div>
+    <div class="concept-body">A function is like a recipe. You write it once ("mix flour, add water, bake at 200°C for 30 minutes"). Every time you want bread, you just say "make_bread()" instead of rewriting all the steps. Functions let you build programs like LEGO — snap reusable pieces together.</div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon purple">📋</div><div><div class="card-title">Defining and calling functions</div><div class="card-subtitle">The def keyword</div></div></div>
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div></div><span class="code-filename">functions.py</span></div>
+      <div class="code-body"><span class="cm"># DEFINING — this does NOT run the code yet, just saves it</span>
+<span class="kw">def</span> <span class="fn">say_hello</span>():
+    <span class="fn">print</span>(<span class="str">"Hello, welcome to Python!"</span>)
+    <span class="fn">print</span>(<span class="str">"This is your first function."</span>)
+
+<span class="cm"># CALLING — this actually runs the code inside</span>
+<span class="fn">say_hello</span>()    <span class="cm"># call it as many times as you want!</span>
+<span class="fn">say_hello</span>()
+<span class="fn">say_hello</span>()
+
+<span class="cm"># Function with a PARAMETER — accepts an input value</span>
+<span class="kw">def</span> <span class="fn">greet</span>(name):
+    <span class="fn">print</span>(<span class="str">f"Hello, </span>{name}<span class="str">! Welcome."</span>)
+
+<span class="fn">greet</span>(<span class="str">"Rahul"</span>)    <span class="cm"># Hello, Rahul! Welcome.</span>
+<span class="fn">greet</span>(<span class="str">"Priya"</span>)    <span class="cm"># Hello, Priya! Welcome.</span>
+<span class="fn">greet</span>(<span class="str">"Amit"</span>)     <span class="cm"># Hello, Amit! Welcome.</span>
+<span class="cm"># Same function, 3 different outputs — that's the power of functions</span></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon teal">📤</div><div><div class="card-title">return — sending a value back</div><div class="card-subtitle">Functions that produce results you can use</div></div></div>
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div></div><span class="code-filename">return_values.py</span></div>
+      <div class="code-body"><span class="cm"># Function that calculates and RETURNS a value</span>
+<span class="kw">def</span> <span class="fn">add</span>(a, b):
+    result = a + b
+    <span class="kw">return</span> result         <span class="cm"># send the result back to the caller</span>
+
+total = <span class="fn">add</span>(<span class="num">10</span>, <span class="num">20</span>)     <span class="cm"># total = 30</span>
+<span class="fn">print</span>(total)            <span class="cm"># 30</span>
+<span class="fn">print</span>(<span class="fn">add</span>(<span class="num">5</span>, <span class="num">7</span>) * <span class="num">2</span>)   <span class="cm"># 24 — use return value directly</span>
+
+<span class="cm"># Palindrome check — a real useful function</span>
+<span class="kw">def</span> <span class="fn">is_palindrome</span>(word):
+    reversed_word = word[::-<span class="num">1</span>]   <span class="cm"># reverse the string</span>
+    <span class="kw">if</span> word == reversed_word:
+        <span class="kw">return</span> <span class="kw">True</span>
+    <span class="kw">else</span>:
+        <span class="kw">return</span> <span class="kw">False</span>
+
+<span class="fn">print</span>(<span class="fn">is_palindrome</span>(<span class="str">"NAMAN"</span>))   <span class="cm"># True</span>
+<span class="fn">print</span>(<span class="fn">is_palindrome</span>(<span class="str">"HELLO"</span>))   <span class="cm"># False</span></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon amber">🎛️</div><div><div class="card-title">3 types of arguments</div><div class="card-subtitle">Positional, keyword, and default</div></div></div>
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div></div><span class="code-filename">argument_types.py</span></div>
+      <div class="code-body"><span class="cm"># 1. POSITIONAL — order matters, must match definition order</span>
+<span class="kw">def</span> <span class="fn">describe</span>(name, age, city):
+    <span class="fn">print</span>(<span class="str">f"</span>{name}<span class="str">, </span>{age}<span class="str">, from </span>{city}<span class="str">"</span>)
+
+<span class="fn">describe</span>(<span class="str">"Rahul"</span>, <span class="num">24</span>, <span class="str">"Mumbai"</span>)    <span class="cm"># must match the order!</span>
+
+<span class="cm"># 2. KEYWORD — use parameter names, order doesn't matter</span>
+<span class="fn">describe</span>(age=<span class="num">24</span>, city=<span class="str">"Mumbai"</span>, name=<span class="str">"Rahul"</span>)  <span class="cm"># same result</span>
+
+<span class="cm"># 3. DEFAULT — parameter has a pre-set value if not provided</span>
+<span class="kw">def</span> <span class="fn">power</span>(base, exponent=<span class="num">2</span>):    <span class="cm"># exponent defaults to 2</span>
+    <span class="kw">return</span> base ** exponent
+
+<span class="fn">print</span>(<span class="fn">power</span>(<span class="num">5</span>))        <span class="cm"># 25  — uses default exponent=2</span>
+<span class="fn">print</span>(<span class="fn">power</span>(<span class="num">5</span>, <span class="num">3</span>))     <span class="cm"># 125 — overrides default with 3</span>
+<span class="fn">print</span>(<span class="fn">power</span>(<span class="num">2</span>, <span class="num">10</span>))    <span class="cm"># 1024</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE: LISTS -->
+<div class="page" id="page-lists">
+  <div class="page-hero">
+    <div class="page-eyebrow">Module 8 — Data Structures</div>
+    <div class="page-title">Lists &amp; <span>Tuples</span></div>
+    <div class="page-desc">So far variables stored one value at a time. What if you need to store 100 student names? Data structures let you store collections of values in a single variable. Lists and Tuples are the two most fundamental ones in Python.</div>
+  </div>
+  <div class="pillar-grid">
+    <div class="pillar"><div class="pillar-icon">📋</div><div class="pillar-title">List [ ]</div><div class="pillar-desc">Mutable (changeable) · Ordered · Allows duplicates · Use when data needs to change over time</div></div>
+    <div class="pillar"><div class="pillar-icon">🔒</div><div class="pillar-title">Tuple ( )</div><div class="pillar-desc">Immutable (cannot change) · Ordered · Allows duplicates · Use for fixed, permanent data</div></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon teal">📋</div><div><div class="card-title">Lists — everything you need to know</div><div class="card-subtitle">Creating, accessing, modifying, looping</div></div></div>
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div></div><span class="code-filename">lists.py</span></div>
+      <div class="code-body"><span class="cm"># Creating lists — square brackets, comma-separated</span>
+fruits  = [<span class="str">"apple"</span>, <span class="str">"banana"</span>, <span class="str">"cherry"</span>, <span class="str">"mango"</span>]
+numbers = [<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>, <span class="num">40</span>, <span class="num">50</span>]
+mixed   = [<span class="str">"Rahul"</span>, <span class="num">24</span>, <span class="kw">True</span>, <span class="num">3.14</span>]  <span class="cm"># lists can mix data types!</span>
+
+<span class="cm"># Accessing items — same indexing rules as strings</span>
+<span class="fn">print</span>(fruits[<span class="num">0</span>])      <span class="cm"># apple  — first item (index starts at 0)</span>
+<span class="fn">print</span>(fruits[-<span class="num">1</span>])     <span class="cm"># mango  — last item</span>
+<span class="fn">print</span>(fruits[<span class="num">1</span>:<span class="num">3</span>])    <span class="cm"># ['banana', 'cherry']  — slicing</span>
+
+<span class="cm"># Modifying — lists are mutable, values can be changed</span>
+fruits[<span class="num">0</span>] = <span class="str">"watermelon"</span>    <span class="cm"># replace apple with watermelon</span>
+
+<span class="cm"># Adding items</span>
+fruits.append(<span class="str">"grape"</span>)       <span class="cm"># add to the END of the list</span>
+fruits.insert(<span class="num">1</span>, <span class="str">"kiwi"</span>)     <span class="cm"># insert at position 1</span>
+
+<span class="cm"># Removing items</span>
+fruits.remove(<span class="str">"banana"</span>)      <span class="cm"># remove by VALUE</span>
+popped = fruits.pop(<span class="num">2</span>)       <span class="cm"># remove by INDEX, returns the removed item</span>
+
+<span class="cm"># Sorting and reversing</span>
+numbers.sort()                 <span class="cm"># sort ascending [10,20,30,40,50]</span>
+numbers.sort(reverse=<span class="kw">True</span>)    <span class="cm"># sort descending [50,40,30,20,10]</span>
+numbers.reverse()              <span class="cm"># flip current order</span>
+
+<span class="cm"># Useful functions</span>
+<span class="fn">print</span>(<span class="fn">len</span>(fruits))             <span class="cm"># number of items in list</span>
+<span class="fn">print</span>(<span class="str">"mango"</span> <span class="kw">in</span> fruits)       <span class="cm"># True — check if item exists</span>
+<span class="fn">print</span>(fruits.count(<span class="str">"apple"</span>))  <span class="cm"># how many times apple appears</span>
+<span class="fn">print</span>(fruits.index(<span class="str">"cherry"</span>)) <span class="cm"># at which index is cherry?</span>
+copy = fruits.copy()           <span class="cm"># create an independent copy</span>
+fruits.clear()                 <span class="cm"># empty the entire list</span>
+
+<span class="cm"># Looping — two common ways</span>
+scores = [<span class="num">85</span>, <span class="num">92</span>, <span class="num">78</span>, <span class="num">95</span>, <span class="num">88</span>]
+
+<span class="cm"># Way 1: directly loop over values</span>
+<span class="kw">for</span> score <span class="kw">in</span> scores:
+    <span class="fn">print</span>(score)
+
+<span class="cm"># Way 2: loop using index (when you need the position)</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">len</span>(scores)):
+    <span class="fn">print</span>(<span class="str">f"Index </span>{i}<span class="str">: </span>{scores[i]}<span class="str">"</span>)
+
+<span class="cm"># Practice: find the largest number</span>
+nums = [<span class="num">12</span>, <span class="num">34</span>, <span class="num">56</span>, <span class="num">17</span>, <span class="num">120</span>, <span class="num">55</span>, <span class="num">100</span>]
+largest = nums[<span class="num">0</span>]
+index = <span class="num">0</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">len</span>(nums)):
+    <span class="kw">if</span> nums[i] &gt; largest:
+        largest = nums[i]
+        index = i
+<span class="fn">print</span>(<span class="str">f"Largest: </span>{largest}<span class="str"> at index </span>{index}<span class="str">"</span>)  <span class="cm"># Largest: 120 at index 4</span></div>
+    </div>
+    <div class="callout warn"><span class="callout-icon">⚠️</span><div>Never do <code>b = a</code> to copy a list — this makes b point to the SAME list, so changes in b also change a! Always use <code>b = a.copy()</code> to create a separate independent copy.</div></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon purple">🔒</div><div><div class="card-title">Tuples — immutable sequences</div><div class="card-subtitle">When your data must never change</div></div></div>
+    <div class="card-body">Use tuples for data that must stay fixed — GPS coordinates, RGB colours, database records, days of the week. They are faster than lists and protect important data from accidental change.</div>
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div></div><span class="code-filename">tuples.py</span></div>
+      <div class="code-body"><span class="cm"># Creating tuples — use parentheses</span>
+coordinates = (<span class="num">28.6139</span>, <span class="num">77.2090</span>)    <span class="cm"># Delhi lat, long — should never change</span>
+rgb_red     = (<span class="num">255</span>, <span class="num">0</span>, <span class="num">0</span>)           <span class="cm"># Red colour — fixed values</span>
+days        = (<span class="str">"Mon"</span>,<span class="str">"Tue"</span>,<span class="str">"Wed"</span>,<span class="str">"Thu"</span>,<span class="str">"Fri"</span>,<span class="str">"Sat"</span>,<span class="str">"Sun"</span>)
+
+<span class="cm"># Access just like a list</span>
+<span class="fn">print</span>(coordinates[<span class="num">0</span>])   <span class="cm"># 28.6139</span>
+<span class="fn">print</span>(days[-<span class="num">1</span>])          <span class="cm"># Sun</span>
+
+<span class="cm"># This WILL crash — tuples cannot be modified</span>
+<span class="cm"># coordinates[0] = 30.0  ← TypeError!</span>
+
+<span class="cm"># Two tuple methods</span>
+nums = (<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">2</span>, <span class="num">2</span>, <span class="num">4</span>)
+<span class="fn">print</span>(nums.count(<span class="num">2</span>))    <span class="cm"># 3 — how many times does 2 appear?</span>
+<span class="fn">print</span>(nums.index(<span class="num">4</span>))    <span class="cm"># 5 — at which index is 4?</span>
+
+<span class="cm"># Tuple unpacking — assign multiple variables at once</span>
+name, age, city = (<span class="str">"Rahul"</span>, <span class="num">24</span>, <span class="str">"Mumbai"</span>)
+<span class="fn">print</span>(name, age, city)   <span class="cm"># Rahul 24 Mumbai</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE: DICTS -->
+<div class="page" id="page-dicts">
+  <div class="page-hero">
+    <div class="page-eyebrow">Module 9 — Data Structures</div>
+    <div class="page-title">Dictionary &amp; <span>Set</span></div>
+    <div class="page-desc">A dictionary stores data as key-value pairs — like a real dictionary where you look up a word (key) and get its meaning (value). A set stores only unique values — no duplicates allowed, ever.</div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon amber">📖</div><div><div class="card-title">Dictionary — key-value storage</div><div class="card-subtitle">The most powerful built-in data structure</div></div></div>
+    <div class="card-body">In a list you access items by position (0, 1, 2...). In a dictionary you access them by a meaningful <strong style="color:var(--text)">key</strong> like "name", "age", "city". This makes your code much more readable and organised.</div>
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div></div><span class="code-filename">dictionaries.py</span></div>
+      <div class="code-body"><span class="cm"># Creating — curly braces, key: value pairs</span>
+student = {
+    <span class="str">"name"</span>  : <span class="str">"Rahul"</span>,
+    <span class="str">"age"</span>   : <span class="num">24</span>,
+    <span class="str">"city"</span>  : <span class="str">"Mumbai"</span>,
+    <span class="str">"marks"</span> : [<span class="num">85</span>, <span class="num">92</span>, <span class="num">78</span>]    <span class="cm"># values can be any type, even lists!</span>
+}
+
+<span class="cm"># READ — access by key name</span>
+<span class="fn">print</span>(student[<span class="str">"name"</span>])            <span class="cm"># Rahul</span>
+<span class="fn">print</span>(student[<span class="str">"marks"</span>][<span class="num">0</span>])       <span class="cm"># 85  (first mark)</span>
+<span class="fn">print</span>(student.get(<span class="str">"salary"</span>, <span class="num">0</span>))   <span class="cm"># 0   (safe — no crash if key missing)</span>
+
+<span class="cm"># UPDATE — change an existing value</span>
+student[<span class="str">"age"</span>] = <span class="num">25</span>
+student.update({<span class="str">"city"</span>: <span class="str">"Delhi"</span>, <span class="str">"age"</span>: <span class="num">26</span>})  <span class="cm"># update multiple at once</span>
+
+<span class="cm"># CREATE — add a new key-value pair</span>
+student[<span class="str">"email"</span>] = <span class="str">"rahul@email.com"</span>
+
+<span class="cm"># DELETE — remove a key-value pair</span>
+<span class="kw">del</span> student[<span class="str">"city"</span>]               <span class="cm"># removes key and its value</span>
+val = student.pop(<span class="str">"email"</span>)       <span class="cm"># removes and returns the value</span>
+
+<span class="cm"># Check if a key exists</span>
+<span class="fn">print</span>(<span class="str">"name"</span> <span class="kw">in</span> student)           <span class="cm"># True</span>
+<span class="fn">print</span>(<span class="str">"salary"</span> <span class="kw">in</span> student)         <span class="cm"># False</span>
+
+<span class="cm"># Traverse all key-value pairs</span>
+<span class="kw">for</span> key, value <span class="kw">in</span> student.items():
+    <span class="fn">print</span>(<span class="str">f"</span>{key}<span class="str">: </span>{value}<span class="str">"</span>)
+
+<span class="cm"># Real use case: count frequency of elements</span>
+marks = [<span class="num">85</span>, <span class="num">92</span>, <span class="num">85</span>, <span class="num">78</span>, <span class="num">92</span>, <span class="num">85</span>, <span class="num">100</span>]
+frequency = {}
+<span class="kw">for</span> mark <span class="kw">in</span> marks:
+    <span class="kw">if</span> mark <span class="kw">in</span> frequency:
+        frequency[mark] += <span class="num">1</span>
+    <span class="kw">else</span>:
+        frequency[mark] = <span class="num">1</span>
+<span class="fn">print</span>(frequency)  <span class="cm"># {85: 3, 92: 2, 78: 1, 100: 1}</span></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon coral">⭕</div><div><div class="card-title">Set — unique values and powerful operations</div><div class="card-subtitle">No duplicates · Unordered · Fast lookup</div></div></div>
+    <div class="card-body">Sets automatically remove duplicate values. They also support powerful mathematical operations like union, intersection, and difference — like Venn diagrams in school maths.</div>
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div></div><span class="code-filename">sets.py</span></div>
+      <div class="code-body"><span class="cm"># Creating a set — curly braces but NO key:value pairs</span>
+colours = {<span class="str">"red"</span>, <span class="str">"blue"</span>, <span class="str">"green"</span>, <span class="str">"blue"</span>, <span class="str">"red"</span>}
+<span class="fn">print</span>(colours)    <span class="cm"># {'red', 'blue', 'green'} — duplicates auto-removed!</span>
+
+<span class="cm"># Common use case: remove duplicates from a list</span>
+names = [<span class="str">"Alice"</span>, <span class="str">"Bob"</span>, <span class="str">"Alice"</span>, <span class="str">"Charlie"</span>, <span class="str">"Bob"</span>]
+unique = <span class="fn">list</span>(<span class="fn">set</span>(names))
+<span class="fn">print</span>(unique)    <span class="cm"># ['Alice', 'Bob', 'Charlie']</span>
+
+<span class="cm"># Set operations — like Venn diagrams in mathematics</span>
+class_A = {<span class="str">"Alice"</span>, <span class="str">"Bob"</span>, <span class="str">"Charlie"</span>, <span class="str">"David"</span>}
+class_B = {<span class="str">"Charlie"</span>, <span class="str">"David"</span>, <span class="str">"Eve"</span>, <span class="str">"Frank"</span>}
+
+<span class="cm"># Union — all students from EITHER class</span>
+<span class="fn">print</span>(class_A | class_B)   <span class="cm"># {'Alice','Bob','Charlie','David','Eve','Frank'}</span>
+
+<span class="cm"># Intersection — students in BOTH classes</span>
+<span class="fn">print</span>(class_A & class_B)   <span class="cm"># {'Charlie', 'David'}</span>
+
+<span class="cm"># Difference — only in class_A, NOT in class_B</span>
+<span class="fn">print</span>(class_A - class_B)   <span class="cm"># {'Alice', 'Bob'}</span>
+
+<span class="cm"># Symmetric difference — in one but NOT both</span>
+<span class="fn">print</span>(class_A ^ class_B)   <span class="cm"># {'Alice','Bob','Eve','Frank'}</span>
+
+<span class="cm"># Adding and removing from a set</span>
+s = {<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>}
+s.add(<span class="num">4</span>)          <span class="cm"># adds element</span>
+s.remove(<span class="num">2</span>)       <span class="cm"># removes element (crashes if not found)</span>
+s.discard(<span class="num">99</span>)     <span class="cm"># removes element (NO crash if not found)</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE: OOP -->
+<div class="page" id="page-oops">
+  <div class="page-hero">
+    <div class="page-eyebrow">Module 10 — Advanced</div>
+    <div class="page-title">Object Oriented <span>Programming</span></div>
+    <div class="page-desc">OOP is a way of organising large programs by modelling them around real-world objects. Instead of writing thousands of scattered lines of code, you group related data and functions together into neat structures called classes.</div>
+  </div>
+  <div class="concept">
+    <div class="concept-title">🏗️ The Blueprint Analogy</div>
+    <div class="concept-body">A <strong style="color:var(--text)">class</strong> is like an architectural blueprint for a house. The blueprint describes what every house will have — bedrooms, kitchen, a front door. An <strong style="color:var(--text)">object</strong> is an actual house built from that blueprint. You can build 100 different houses from the same blueprint — each house is a separate object with its own address, colour, and furniture.</div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon purple">🏛️</div><div><div class="card-title">Class, Object &amp; Constructor</div><div class="card-subtitle">The three building blocks of OOP</div></div></div>
+    <div class="card-body"><strong style="color:var(--text)">Class</strong> = the blueprint. <strong style="color:var(--text)">Object</strong> = an instance built from the blueprint. <strong style="color:var(--text)">Constructor (__init__)</strong> = a special method that runs automatically the moment an object is created, setting up its initial data.</div>
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div></div><span class="code-filename">classes.py</span></div>
+      <div class="code-body"><span class="kw">class</span> <span class="cls">Student</span>:
+    <span class="cm"># __init__ = constructor — runs automatically when object is created</span>
+    <span class="cm"># 'self' refers to the specific object being created</span>
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, name, age, grade):
+        <span class="kw">self</span>.name  = name     <span class="cm"># instance attributes (each object has its own)</span>
+        <span class="kw">self</span>.age   = age
+        <span class="kw">self</span>.grade = grade
+
+    <span class="kw">def</span> <span class="fn">introduce</span>(<span class="kw">self</span>):    <span class="cm"># instance method — action the object can perform</span>
+        <span class="fn">print</span>(<span class="str">f"Hi! I'm </span>{<span class="kw">self</span>.name}<span class="str">, age </span>{<span class="kw">self</span>.age}<span class="str">, grade </span>{<span class="kw">self</span>.grade}<span class="str">"</span>)
+
+    <span class="kw">def</span> <span class="fn">study</span>(<span class="kw">self</span>, subject):
+        <span class="fn">print</span>(<span class="str">f"</span>{<span class="kw">self</span>.name}<span class="str"> is studying </span>{subject}<span class="str">"</span>)
+
+<span class="cm"># Creating OBJECTS (instances) from the class</span>
+s1 = <span class="cls">Student</span>(<span class="str">"Rahul"</span>, <span class="num">20</span>, <span class="str">"A"</span>)   <span class="cm"># constructor called automatically</span>
+s2 = <span class="cls">Student</span>(<span class="str">"Priya"</span>, <span class="num">21</span>, <span class="str">"B"</span>)
+s3 = <span class="cls">Student</span>(<span class="str">"Amit"</span>,  <span class="num">22</span>, <span class="str">"A+"</span>)
+
+<span class="cm"># Each object has its OWN copy of attributes</span>
+<span class="fn">print</span>(s1.name)       <span class="cm"># Rahul</span>
+<span class="fn">print</span>(s2.grade)      <span class="cm"># B</span>
+<span class="fn">print</span>(s3.age)        <span class="cm"># 22</span>
+
+<span class="cm"># Call methods on objects</span>
+s1.introduce()        <span class="cm"># Hi! I'm Rahul, age 20, grade A</span>
+s2.study(<span class="str">"Python"</span>)  <span class="cm"># Priya is studying Python</span></div>
+    </div>
+  </div>
+  <div class="section-title">The 4 Pillars of OOP</div>
+  <div class="pillar-grid">
+    <div class="pillar"><div class="pillar-icon">🧬</div><div class="pillar-title">1. Inheritance</div><div class="pillar-desc">A child class inherits all attributes and methods from a parent class. Avoids rewriting duplicate code. Example: a Dog class can inherit from Animal and get eat(), breathe() methods for free.</div></div>
+    <div class="pillar"><div class="pillar-icon">🎭</div><div class="pillar-title">2. Polymorphism</div><div class="pillar-desc">Same method name behaves differently based on which class calls it. A speak() method returns "Woof" for Dog and "Meow" for Cat — same name, completely different behaviour.</div></div>
+    <div class="pillar"><div class="pillar-icon">🔒</div><div class="pillar-title">3. Encapsulation</div><div class="pillar-desc">Bundle data and methods together and control who can access them. Use _ (protected) or __ (private) prefixes. Prevents accidental modification of sensitive data.</div></div>
+    <div class="pillar"><div class="pillar-icon">🎨</div><div class="pillar-title">4. Abstraction</div><div class="pillar-desc">Show only what is necessary, hide complexity. Like a TV remote — you press On/Off without knowing the circuit board inside. Achieved in Python using the ABC module.</div></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon teal">🧬</div><div><div class="card-title">Inheritance — parent and child classes</div><div class="card-subtitle">Reuse code across related classes</div></div></div>
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div></div><span class="code-filename">inheritance.py</span></div>
+      <div class="code-body"><span class="kw">class</span> <span class="cls">Animal</span>:              <span class="cm"># PARENT class</span>
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, name, age):
+        <span class="kw">self</span>.name = name
+        <span class="kw">self</span>.age  = age
+
+    <span class="kw">def</span> <span class="fn">breathe</span>(<span class="kw">self</span>):
+        <span class="fn">print</span>(<span class="str">f"</span>{<span class="kw">self</span>.name}<span class="str"> breathes air"</span>)
+
+    <span class="kw">def</span> <span class="fn">eat</span>(<span class="kw">self</span>):
+        <span class="fn">print</span>(<span class="str">f"</span>{<span class="kw">self</span>.name}<span class="str"> is eating"</span>)
+
+<span class="kw">class</span> <span class="cls">Dog</span>(<span class="cls">Animal</span>):          <span class="cm"># CHILD class — inherits from Animal</span>
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, name, age, breed):
+        <span class="fn">super</span>().__init__(name, age)  <span class="cm"># call parent constructor</span>
+        <span class="kw">self</span>.breed = breed           <span class="cm"># Dog's own extra attribute</span>
+
+    <span class="kw">def</span> <span class="fn">speak</span>(<span class="kw">self</span>):            <span class="cm"># Dog's own method</span>
+        <span class="fn">print</span>(<span class="str">f"</span>{<span class="kw">self</span>.name}<span class="str"> says: Woof! Woof!"</span>)
+
+<span class="kw">class</span> <span class="cls">Cat</span>(<span class="cls">Animal</span>):           <span class="cm"># another child class</span>
+    <span class="kw">def</span> <span class="fn">speak</span>(<span class="kw">self</span>):
+        <span class="fn">print</span>(<span class="str">f"</span>{<span class="kw">self</span>.name}<span class="str"> says: Meow!"</span>)
+
+dog = <span class="cls">Dog</span>(<span class="str">"Buddy"</span>, <span class="num">3</span>, <span class="str">"Labrador"</span>)
+cat = <span class="cls">Cat</span>(<span class="str">"Whiskers"</span>, <span class="num">2</span>)
+
+dog.breathe()   <span class="cm"># Buddy breathes air     — inherited from Animal</span>
+dog.eat()       <span class="cm"># Buddy is eating        — inherited from Animal</span>
+dog.speak()     <span class="cm"># Buddy says: Woof!      — Dog's own method</span>
+cat.speak()     <span class="cm"># Whiskers says: Meow!   — Cat's own method (polymorphism)</span>
+<span class="fn">print</span>(dog.breed) <span class="cm"># Labrador              — Dog's own attribute</span></div>
+    </div>
+    <div class="callout tip"><span class="callout-icon">💡</span><div><strong>super()</strong> calls the parent class constructor. It is how you pass values up to the parent so you do not have to re-write the same assignment code. Always use it in child constructors.</div></div>
+  </div>
+</div>
+
+<!-- PAGE: EXCEPTIONS -->
+<div class="page" id="page-exceptions">
+  <div class="page-hero">
+    <div class="page-eyebrow">Module 11 — Advanced</div>
+    <div class="page-title">Exception <span>Handling</span></div>
+    <div class="page-desc">Things go wrong in programs. Users type letters where numbers are expected. Files are missing. Networks fail. Exception handling lets you manage these errors gracefully instead of crashing with an ugly error message.</div>
+  </div>
+  <div class="concept">
+    <div class="concept-title">🚗 Real-World Analogy</div>
+    <div class="concept-body">Exception handling is like a car's airbag system. The car (your program) runs normally. When a crash happens (an error), instead of being completely destroyed, the airbag (your except block) deploys and handles the situation. The <code style="color:var(--accent2)">finally</code> block is like post-accident cleanup — it always runs whether there was a crash or not.</div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Keyword</th><th>Purpose</th><th>When does it run?</th></tr></thead>
+      <tbody>
+        <tr><td><code style="color:#c084fc">try</code></td><td>Wrap code that might cause an error</td><td>Always — this is where the risky code goes</td></tr>
+        <tr><td><code style="color:#c084fc">except</code></td><td>Handle the error if it occurs</td><td>Only if an error occurred inside the try block</td></tr>
+        <tr><td><code style="color:#c084fc">else</code></td><td>Code to run on success</td><td>Only if NO error occurred in try block</td></tr>
+        <tr><td><code style="color:#c084fc">finally</code></td><td>Cleanup code</td><td>ALWAYS — whether or not an error occurred</td></tr>
+        <tr><td><code style="color:#c084fc">raise</code></td><td>Manually throw your own error</td><td>When you want to enforce your own conditions</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon teal">🛡️</div><div><div class="card-title">Complete exception handling example</div><div class="card-subtitle">try / except / else / finally</div></div></div>
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div></div><span class="code-filename">exceptions.py</span></div>
+      <div class="code-body">a = <span class="fn">int</span>(<span class="fn">input</span>(<span class="str">"Enter a number: "</span>))
+
+<span class="kw">try</span>:
+    result = <span class="num">100</span> / a              <span class="cm"># this crashes if a = 0</span>
+    <span class="fn">print</span>(<span class="str">f"Result: </span>{result}<span class="str">"</span>)
+
+<span class="kw">except</span> ZeroDivisionError:         <span class="cm"># catches ONLY division by zero</span>
+    <span class="fn">print</span>(<span class="str">"You cannot divide by zero!"</span>)
+
+<span class="kw">except</span> ValueError:                <span class="cm"># catches if input was not a number</span>
+    <span class="fn">print</span>(<span class="str">"Please enter a valid number"</span>)
+
+<span class="kw">except</span> Exception <span class="kw">as</span> err:         <span class="cm"># catches ANY other unexpected error</span>
+    <span class="fn">print</span>(<span class="str">f"Something went wrong: </span>{err}<span class="str">"</span>)
+
+<span class="kw">else</span>:
+    <span class="fn">print</span>(<span class="str">"Division was successful!"</span>)  <span class="cm"># only if no error occurred</span>
+
+<span class="kw">finally</span>:
+    <span class="fn">print</span>(<span class="str">"Program completed."</span>)         <span class="cm"># ALWAYS prints, no matter what</span></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon coral">🚨</div><div><div class="card-title">raise — creating your own errors</div><div class="card-subtitle">Enforce your own business rules</div></div></div>
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div></div><span class="code-filename">raise_example.py</span></div>
+      <div class="code-body"><span class="kw">def</span> <span class="fn">set_age</span>(age):
+    <span class="kw">if</span> age &lt; <span class="num">0</span> <span class="kw">or</span> age &gt; <span class="num">150</span>:
+        <span class="kw">raise</span> <span class="cls">ValueError</span>(<span class="str">f"Age </span>{age}<span class="str"> is not realistic"</span>)
+    <span class="fn">print</span>(<span class="str">f"Age set to </span>{age}<span class="str">"</span>)
+
+<span class="kw">def</span> <span class="fn">withdraw</span>(balance, amount):
+    <span class="kw">if</span> amount &gt; balance:
+        <span class="kw">raise</span> <span class="cls">ValueError</span>(<span class="str">"Insufficient funds!"</span>)
+    <span class="kw">return</span> balance - amount
+
+<span class="kw">try</span>:
+    <span class="fn">set_age</span>(-<span class="num">5</span>)
+<span class="kw">except</span> ValueError <span class="kw">as</span> e:
+    <span class="fn">print</span>(<span class="str">f"Error: </span>{e}<span class="str">"</span>)   <span class="cm"># Error: Age -5 is not realistic</span>
+
+<span class="kw">try</span>:
+    new_balance = <span class="fn">withdraw</span>(<span class="num">500</span>, <span class="num">1000</span>)
+<span class="kw">except</span> ValueError <span class="kw">as</span> e:
+    <span class="fn">print</span>(<span class="str">f"Transaction failed: </span>{e}<span class="str">"</span>)   <span class="cm"># Insufficient funds!</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE: FILES -->
+<div class="page" id="page-files">
+  <div class="page-hero">
+    <div class="page-eyebrow">Module 12 — Advanced</div>
+    <div class="page-title">File <span>Handling</span></div>
+    <div class="page-desc">Programs that only run in memory forget everything when you close them. File handling lets your Python program read from and write to files on disk — creating reports, saving results, reading configuration, and processing real data.</div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Mode</th><th>What it does</th><th>Creates file?</th><th>Deletes existing content?</th></tr></thead>
+      <tbody>
+        <tr><td><code>'r'</code></td><td>Read only — default mode</td><td>No — file must already exist</td><td>No</td></tr>
+        <tr><td><code>'w'</code></td><td>Write — creates or overwrites</td><td>Yes</td><td>Yes — wipes all existing content</td></tr>
+        <tr><td><code>'a'</code></td><td>Append — add to end</td><td>Yes</td><td>No — keeps existing, adds to end</td></tr>
+        <tr><td><code>'x'</code></td><td>Create new only</td><td>Yes</td><td>Throws error if file already exists</td></tr>
+        <tr><td><code>'r+'</code></td><td>Read and write</td><td>No — file must exist</td><td>No</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon teal">📁</div><div><div class="card-title">Reading and writing files</div><div class="card-subtitle">The open() function and with statement</div></div></div>
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div></div><span class="code-filename">file_handling.py</span></div>
+      <div class="code-body"><span class="cm"># WRITE — create a new file and write content to it</span>
+<span class="cm"># 'with' is best practice — auto-closes file even if an error occurs</span>
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">"students.txt"</span>, <span class="str">"w"</span>) <span class="kw">as</span> file:
+    file.write(<span class="str">"Rahul  - 85\n"</span>)   <span class="cm"># \n = new line character</span>
+    file.write(<span class="str">"Priya  - 92\n"</span>)
+    file.write(<span class="str">"Amit   - 78\n"</span>)
+<span class="cm"># file is automatically closed here</span>
+
+<span class="cm"># READ — read entire file content as one big string</span>
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">"students.txt"</span>, <span class="str">"r"</span>) <span class="kw">as</span> file:
+    content = file.read()
+    <span class="fn">print</span>(content)
+
+<span class="cm"># READ — line by line (better for very large files)</span>
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">"students.txt"</span>, <span class="str">"r"</span>) <span class="kw">as</span> file:
+    <span class="kw">for</span> line <span class="kw">in</span> file:
+        <span class="fn">print</span>(line.strip())    <span class="cm"># .strip() removes \n at end of each line</span>
+
+<span class="cm"># APPEND — add more lines WITHOUT deleting existing content</span>
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">"students.txt"</span>, <span class="str">"a"</span>) <span class="kw">as</span> file:
+    file.write(<span class="str">"Neha   - 95\n"</span>)   <span class="cm"># added safely to the end</span>
+
+<span class="cm"># ALWAYS handle missing file errors</span>
+<span class="kw">try</span>:
+    <span class="kw">with</span> <span class="fn">open</span>(<span class="str">"missing_file.txt"</span>, <span class="str">"r"</span>) <span class="kw">as</span> file:
+        <span class="fn">print</span>(file.read())
+<span class="kw">except</span> FileNotFoundError:
+    <span class="fn">print</span>(<span class="str">"File does not exist! Please check the filename."</span>)</div>
+    </div>
+    <div class="output"><div class="output-label">students.txt content after writing</div>Rahul  - 85
+Priya  - 92
+Amit   - 78</div>
+    <div class="callout tip"><span class="callout-icon">💡</span><div>Always use the <strong>with</strong> keyword when opening files. It automatically closes the file when the block ends, even if an error occurred inside. Never manually call <code>file.close()</code> — it is error-prone.</div></div>
+  </div>
+</div>
+
+<!-- PAGE: ADVANCED -->
+<div class="page" id="page-advanced">
+  <div class="page-hero">
+    <div class="page-eyebrow">Module 13 — Advanced Topics</div>
+    <div class="page-title">Advanced <span>Python</span></div>
+    <div class="page-desc">These are the tools that separate beginners from intermediate Python developers. Decorators, comprehensions, lambda, map, filter, and modules — these patterns appear everywhere in real Python code and data science work.</div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon purple">🎂</div><div><div class="card-title">Decorators — wrapping functions</div><div class="card-subtitle">Add behaviour to functions without modifying them</div></div></div>
+    <div class="card-body">A decorator is a function that takes another function as input, wraps it with extra behaviour before or after, and returns the improved version. Used heavily in web frameworks (Flask, Django) for authentication, logging, and caching.</div>
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div></div><span class="code-filename">decorators.py</span></div>
+      <div class="code-body"><span class="cm"># A decorator is simply a function that wraps another function</span>
+<span class="kw">def</span> <span class="fn">timer_decorator</span>(func):
+    <span class="kw">def</span> <span class="fn">wrapper</span>(*args, **kwargs):
+        <span class="fn">print</span>(<span class="str">f"Starting: </span>{func.__name__}<span class="str">"</span>)
+        result = <span class="fn">func</span>(*args, **kwargs)   <span class="cm"># call the original function</span>
+        <span class="fn">print</span>(<span class="str">f"Finished: </span>{func.__name__}<span class="str">"</span>)
+        <span class="kw">return</span> result
+    <span class="kw">return</span> wrapper
+
+<span class="cm"># Apply the decorator with @ syntax — runs timer_decorator(calculate_sum)</span>
+@timer_decorator
+<span class="kw">def</span> <span class="fn">calculate_sum</span>(n):
+    total = <span class="fn">sum</span>(<span class="fn">range</span>(n + <span class="num">1</span>))
+    <span class="fn">print</span>(<span class="str">f"Sum of 1 to </span>{n}<span class="str"> = </span>{total}<span class="str">"</span>)
+    <span class="kw">return</span> total
+
+<span class="fn">calculate_sum</span>(<span class="num">100</span>)</div>
+    </div>
+    <div class="output"><div class="output-label">Output</div>Starting: calculate_sum
+Sum of 1 to 100 = 5050
+Finished: calculate_sum</div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon teal">📦</div><div><div class="card-title">*args and **kwargs — flexible function inputs</div><div class="card-subtitle">Accept any number of arguments</div></div></div>
+    <div class="card-body"><code style="color:var(--accent2)">*args</code> collects any number of positional arguments into a <strong style="color:var(--text)">tuple</strong>. <code style="color:var(--accent2)">**kwargs</code> collects keyword arguments into a <strong style="color:var(--text)">dictionary</strong>. The * and ** are what matter — the names args and kwargs are just convention.</div>
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div></div><span class="code-filename">args_kwargs.py</span></div>
+      <div class="code-body"><span class="cm"># *args — accept any number of positional arguments as a tuple</span>
+<span class="kw">def</span> <span class="fn">add_all</span>(*numbers):
+    <span class="fn">print</span>(<span class="str">f"Received: </span>{numbers}<span class="str">"</span>)   <span class="cm"># it's a tuple!</span>
+    <span class="kw">return</span> <span class="fn">sum</span>(numbers)
+
+<span class="fn">print</span>(<span class="fn">add_all</span>(<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>))               <span class="cm"># 6</span>
+<span class="fn">print</span>(<span class="fn">add_all</span>(<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>, <span class="num">40</span>, <span class="num">50</span>))    <span class="cm"># 150</span>
+<span class="fn">print</span>(<span class="fn">add_all</span>(<span class="num">5</span>))                     <span class="cm"># 5  — works with any count</span>
+
+<span class="cm"># **kwargs — accept any number of keyword arguments as a dictionary</span>
+<span class="kw">def</span> <span class="fn">create_profile</span>(**details):
+    <span class="fn">print</span>(<span class="str">"User Profile:"</span>)
+    <span class="kw">for</span> key, value <span class="kw">in</span> details.items():
+        <span class="fn">print</span>(<span class="str">f"   </span>{key.capitalize()}<span class="str">: </span>{value}<span class="str">"</span>)
+
+<span class="fn">create_profile</span>(name=<span class="str">"Rahul"</span>, age=<span class="num">24</span>, city=<span class="str">"Mumbai"</span>, role=<span class="str">"student"</span>)
+<span class="cm"># User Profile:</span>
+<span class="cm">#    Name: Rahul</span>
+<span class="cm">#    Age: 24</span>
+<span class="cm">#    City: Mumbai</span>
+<span class="cm">#    Role: student</span></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon amber">⚡</div><div><div class="card-title">List &amp; Dictionary Comprehension</div><div class="card-subtitle">Write loops in a single clean line</div></div></div>
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div></div><span class="code-filename">comprehensions.py</span></div>
+      <div class="code-body"><span class="cm"># OLD way — 4 lines to build a list</span>
+squares = []
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">1</span>, <span class="num">6</span>):
+    squares.append(i ** <span class="num">2</span>)
+<span class="cm"># [1, 4, 9, 16, 25]</span>
+
+<span class="cm"># NEW way — list comprehension, 1 line, same result</span>
+squares = [i ** <span class="num">2</span> <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">1</span>, <span class="num">6</span>)]
+<span class="cm"># [1, 4, 9, 16, 25]</span>
+
+<span class="cm"># With a condition — only even squares</span>
+even_sq = [i**<span class="num">2</span> <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">1</span>, <span class="num">11</span>) <span class="kw">if</span> i%<span class="num">2</span> == <span class="num">0</span>]
+<span class="cm"># [4, 16, 36, 64, 100]</span>
+
+<span class="cm"># Dictionary comprehension</span>
+word_len = {w: <span class="fn">len</span>(w) <span class="kw">for</span> w <span class="kw">in</span> [<span class="str">"Python"</span>, <span class="str">"is"</span>, <span class="str">"awesome"</span>]}
+<span class="cm"># {'Python': 6, 'is': 2, 'awesome': 7}</span>
+
+<span class="cm"># Set comprehension — unique squared values</span>
+nums = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">3</span>, <span class="num">4</span>]
+unique_sq = {x**<span class="num">2</span> <span class="kw">for</span> x <span class="kw">in</span> nums}
+<span class="cm"># {1, 4, 9, 16}</span>
+
+<span class="cm"># Ternary operator — one-line if/else</span>
+age = <span class="num">20</span>
+status = <span class="str">"adult"</span> <span class="kw">if</span> age >= <span class="num">18</span> <span class="kw">else</span> <span class="str">"minor"</span>
+<span class="fn">print</span>(status)   <span class="cm"># adult</span></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon coral">λ</div><div><div class="card-title">Lambda, map, and filter</div><div class="card-subtitle">Functional programming in Python</div></div></div>
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div></div><span class="code-filename">lambda_map_filter.py</span></div>
+      <div class="code-body"><span class="cm"># Lambda — anonymous one-line function</span>
+<span class="cm"># Syntax:  lambda parameters : expression</span>
+square   = <span class="kw">lambda</span> x: x ** <span class="num">2</span>
+add      = <span class="kw">lambda</span> a, b: a + b
+is_even  = <span class="kw">lambda</span> x: x % <span class="num">2</span> == <span class="num">0</span>
+
+<span class="fn">print</span>(<span class="fn">square</span>(<span class="num">5</span>))       <span class="cm"># 25</span>
+<span class="fn">print</span>(<span class="fn">add</span>(<span class="num">3</span>, <span class="num">4</span>))        <span class="cm"># 7</span>
+<span class="fn">print</span>(<span class="fn">is_even</span>(<span class="num">8</span>))       <span class="cm"># True</span>
+
+<span class="cm"># map — apply a function to EVERY item in a list</span>
+prices = [<span class="num">100</span>, <span class="num">250</span>, <span class="num">400</span>, <span class="num">175</span>]
+
+<span class="cm"># Add 18% GST to every price</span>
+with_gst = <span class="fn">list</span>(<span class="fn">map</span>(<span class="kw">lambda</span> p: <span class="fn">round</span>(p * <span class="num">1.18</span>, <span class="num">2</span>), prices))
+<span class="fn">print</span>(with_gst)   <span class="cm"># [118.0, 295.0, 472.0, 206.5]</span>
+
+<span class="cm"># filter — keep only items that PASS the test (return True)</span>
+scores = [<span class="num">45</span>, <span class="num">72</span>, <span class="num">38</span>, <span class="num">91</span>, <span class="num">55</span>, <span class="num">88</span>, <span class="num">29</span>]
+
+<span class="cm"># Keep only passing scores (>= 50)</span>
+passed = <span class="fn">list</span>(<span class="fn">filter</span>(<span class="kw">lambda</span> s: s >= <span class="num">50</span>, scores))
+<span class="fn">print</span>(passed)   <span class="cm"># [72, 91, 55, 88]</span>
+
+<span class="cm"># Combine filter + map: filter top scorers then add bonus marks</span>
+top_with_bonus = <span class="fn">list</span>(<span class="fn">map</span>(
+    <span class="kw">lambda</span> s: s + <span class="num">5</span>,
+    <span class="fn">filter</span>(<span class="kw">lambda</span> s: s >= <span class="num">80</span>, scores)
+))
+<span class="fn">print</span>(top_with_bonus)   <span class="cm"># [96, 93]  — scorers above 80, each +5 bonus</span></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-icon green">📦</div><div><div class="card-title">Modules and Packages</div><div class="card-subtitle">Organising and reusing code across files</div></div></div>
+    <div class="card-body">A <strong style="color:var(--text)">module</strong> is a single .py file containing reusable code. A <strong style="color:var(--text)">package</strong> is a folder containing multiple modules. Python comes with a massive standard library of built-in modules you can import and use for free.</div>
+    <div class="code-wrap">
+      <div class="code-header"><div class="code-dots"><div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div></div><span class="code-filename">modules.py</span></div>
+      <div class="code-body"><span class="cm"># Import entire built-in module</span>
+<span class="kw">import</span> math
+<span class="fn">print</span>(math.sqrt(<span class="num">16</span>))       <span class="cm"># 4.0</span>
+<span class="fn">print</span>(math.pi)              <span class="cm"># 3.141592...</span>
+<span class="fn">print</span>(math.ceil(<span class="num">4.2</span>))      <span class="cm"># 5  — round up</span>
+<span class="fn">print</span>(math.floor(<span class="num">4.9</span>))     <span class="cm"># 4  — round down</span>
+
+<span class="cm"># Import specific function only</span>
+<span class="kw">from</span> math <span class="kw">import</span> sqrt, pi
+<span class="fn">print</span>(<span class="fn">sqrt</span>(<span class="num">25</span>))             <span class="cm"># 5.0  — no need to write math.sqrt now</span>
+
+<span class="cm"># Random module — for generating random numbers</span>
+<span class="kw">import</span> random
+<span class="fn">print</span>(random.randint(<span class="num">1</span>, <span class="num">100</span>))    <span class="cm"># random integer between 1 and 100</span>
+<span class="fn">print</span>(random.choice([<span class="str">"a"</span>,<span class="str">"b"</span>,<span class="str">"c"</span>]))  <span class="cm"># random choice from a list</span>
+
+<span class="cm"># datetime module — working with dates and times</span>
+<span class="kw">from</span> datetime <span class="kw">import</span> datetime
+now = datetime.now()
+<span class="fn">print</span>(now.strftime(<span class="str">"%d/%m/%Y %H:%M"</span>))   <span class="cm"># 05/06/2025 14:30</span>
+
+<span class="cm"># Import your own module (your own .py file)</span>
+<span class="cm"># If you have a file called maths_utils.py:</span>
+<span class="cm"># from maths_utils import add, multiply</span></div>
+    </div>
+    <div class="callout tip"><span class="callout-icon">💡</span><div>For data analytics you will mainly use <strong>NumPy</strong>, <strong>Pandas</strong>, <strong>Matplotlib</strong>, and <strong>Seaborn</strong>. Install them with: <code>pip install numpy pandas matplotlib seaborn</code> in your terminal.</div></div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+var visited = new Set(['analytics']);
+var allPages = ['analytics','tools','intro','variables','operators','conditionals','loops','functions','lists','dicts','oops','exceptions','files','advanced'];
+var total = allPages.length;
+
+function show(id) {
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.remove('active'); });
+  var page = document.getElementById('page-' + id);
+  var nav  = document.getElementById('nav-' + id);
+  if(page) page.classList.add('active');
+  if(nav)  nav.classList.add('active');
+  visited.add(id);
+  updateProgress();
+  if(window.innerWidth <= 700){ document.getElementById('sidebar').classList.remove('open'); }
+  window.scrollTo(0, 0);
+}
+
+function updateProgress() {
+  var pct = Math.round((visited.size / total) * 100);
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-pct').textContent  = pct + '%';
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+updateProgress();
+</script>
+</body>
+</html>
